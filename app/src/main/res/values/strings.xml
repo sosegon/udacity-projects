@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">Geography Quizz</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_finish">Finish</string>
+    <string name="btn_try_again">Try again</string>
+    <string name="text_hint">Type your answer here</string>
+
+    <string name="question_1">Which is the capital of Spain?</string>
+    <string name="question_1_answer">Madrid</string>
+    <string name="question_1_type">radio</string>
+    <string-array name="question_1_options">
+        <item>Barcelona</item>
+        <item>Madrid</item>
+    </string-array>
+
+    <string name="question_2">Which is the official language of Canada?</string>
+    <string name="question_2_answer">English,French</string>
+    <string name="question_2_type">check</string>
+    <string-array name="question_2_options">
+        <item>English</item>
+        <item>French</item>
+        <item>Spanish</item>
+        <item>Russian</item>
+    </string-array>
+
+    <string name="question_3">Which is largest country in the world?</string>
+    <string name="question_3_answer">Russia</string>
+    <string name="question_3_type">text</string>
+
+    <string name="question_4">How many states does USA have?</string>
+    <string name="question_4_answer">50</string>
+    <string name="question_4_type">radio</string>
+    <string-array name="question_4_options">
+        <item>50</item>
+        <item>51</item>
+    </string-array>
+
+    <string name="question_5">Which countries are in South America?</string>
+    <string name="question_5_answer">Ecuador,Brazil,Chile</string>
+    <string name="question_5_type">check</string>
+    <string-array name="question_5_options">
+        <item>Ecuador</item>
+        <item>Brazil</item>
+        <item>Mexico</item>
+        <item>Chile</item>
+    </string-array>
+
+    <string name="question_6">Which is largest ocean in the world?</string>
+    <string name="question_6_answer">Pacific</string>
+    <string name="question_6_type">text</string>
+
+    <string name="upto_2_correct_answers">Do not worry you can do better next time</string>
+    <string name="upto_4_correct_answers">Not bad</string>
+    <string name="upto_5_correct_answers">You are almost an expert</string>
+    <string name="upto_6_correct_answers">Excellent! You are an expert</string>
+</resources>
