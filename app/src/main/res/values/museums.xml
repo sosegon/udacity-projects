@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="museum_0">
+        <item>City\'s museum</item>
+        <item>https://www.google.com.ec/maps/place/Museo+de+la+Ciudad/@-0.2230828,-78.5149775,17z/</item>
+        <item>TUE - SUN 09h30 - 17h30</item>
+        <item>3</item>
+        <item>museum_de_la_ciudad</item>
+    </array>
+    <array name="museum_1">
+        <item>La Florida site\'s museum</item>
+        <item>https://www.google.com.ec/maps/place/Museo+de+Sitio+la+Florida/@-0.1469374,-78.5095132,17z/</item>
+        <item>WED - SUN 08h00 - 16h00</item>
+        <item>0</item>
+        <item>museum_de_sitio_la_florida</item>
+    </array>
+    <array name="museum_2">
+        <item>Aeronautical</item>
+        <item>https://www.google.com.ec/maps/@-0.135585,-78.4934429,18z</item>
+        <item>TUE - SUN 08h30 - 15h30</item>
+        <item>0</item>
+        <item>museum_aeronautical</item>
+    </array>
+    <array name="museum_3">
+        <item>Train\'s museum</item>
+        <item>https://www.google.com.ec/maps/place/Estacion+de+Trenes+Chimbacalle/@-0.2387715,-78.5150141,17z/</item>
+        <item>TUE - SUN 09h00 - 16h30</item>
+        <item>0</item>
+        <item>museum_train</item>
+    </array>
+    <array name="museum_4">
+        <item>Science\'s museum for kids</item>
+        <item>https://www.google.com.ec/maps/place/Museo+Interactivo+de+Ciencia/@-0.2365104,-78.5164732,18z/</item>
+        <item>TUE - SUN 09h00 - 17h30</item>
+        <item>3</item>
+        <item>museum_mic</item>
+    </array>
+    <array name="museum_5">
+        <item>Yaku, water\'s museum</item>
+        <item>https://www.google.com.ec/maps/place/Yaku+Museo+del+Agua/@-0.2167957,-78.5201733,17z</item>
+        <item>TUE - SUN 09h00 - 17h30</item>
+        <item>3</item>
+        <item>museum_yaku</item>
+    </array>
+    <array name="museum_6">
+        <item>Vivarium</item>
+        <item>https://www.google.com.ec/maps/place/Vivarium/@-0.1848878,-78.4889104,17z</item>
+        <item>TUE - SUN 09h30 - 17h30</item>
+        <item>3.5</item>
+        <item>museum_vivarium</item>
+    </array>
+    <array name="museum_7">
+        <item>Astronomy\'s museum</item>
+        <item>https://www.google.com.ec/maps/place/Observatorio+Astronómico+de+Quito/@-0.215002,-78.5048187,17z/</item>
+        <item>TUE - SUN 09h30 - 17h00</item>
+        <item>2</item>
+        <item>museum_astronomy</item>
+    </array>
+    <array name="museum_8">
+        <item>Colonial art museum</item>
+        <item>https://www.google.com.ec/maps/place/Museo+de+Arte+Colonial/@-0.2176447,-78.5152431,17z</item>
+        <item>TUE - SAT 09h30 - 17h00</item>
+        <item>2</item>
+        <item>museum_colonial_art</item>
+    </array>
+</resources>

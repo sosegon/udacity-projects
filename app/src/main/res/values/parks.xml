@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="park_0">
+        <item>La Carolina</item>
+        <item>https://www.google.com.ec/maps/@-0.1841929,-78.4848926,16z</item>
+        <item>Basketball, soccer, jogging</item>
+        <item>park_la_carolina</item>
+    </array>
+    <array name="park_1">
+        <item>Bicentenario</item>
+        <item>https://www.google.com.ec/maps/@-0.14077,-78.4881255,16z</item>
+        <item>Jogging, cycling, playground</item>
+        <item>park_bicentenario</item>
+    </array>
+    <array name="park_2">
+        <item>Metropolitano</item>
+        <item>https://www.google.com.ec/maps/@-0.1753314,-78.4649264,16z</item>
+        <item>Jogging, mountain bike</item>
+        <item>park_metropolitano</item>
+    </array>
+    <array name="park_3">
+        <item>De la mujer</item>
+        <item>https://www.google.com.ec/maps/@-0.1834048,-78.4978103,17z</item>
+        <item>Jogging, playground</item>
+        <item>park_de_la_mujer</item>
+    </array>
+    <array name="park_4">
+        <item>El Ejido</item>
+        <item>https://www.google.com.ec/maps/@-0.2091439,-78.4984942,17z</item>
+        <item>Jogging, playground, handicrafts</item>
+        <item>park_el_ejido</item>
+    </array>
+    <array name="park_5">
+        <item>La Alameda</item>
+        <item>https://www.google.com.ec/maps/@-0.2146116,-78.5024848,17z</item>
+        <item>Jogging, playground, lagoon</item>
+        <item>park_alameda</item>
+    </array>
+    <array name="park_6">
+        <item>Itchimbia</item>
+        <item>https://www.google.com.ec/maps/@-0.2229996,-78.4996225,17z</item>
+        <item>Jogging, playground, parking</item>
+        <item>park_itchimbia</item>
+    </array>
+    <array name="park_7">
+        <item>Cumandá</item>
+        <item>https://www.google.com.ec/maps/@-0.2284582,-78.5115086,17z</item>
+        <item>Playground, parking, gym</item>
+        <item>park_cumanda</item>
+    </array>
+    <array name="park_8">
+        <item>Equinoccial</item>
+        <item>https://www.google.com.ec/maps/@-0.0410411,-78.4467777,17z</item>
+        <item>Playground, parking, jogging</item>
+        <item>park_equinoccial</item>
+    </array>
+</resources>
