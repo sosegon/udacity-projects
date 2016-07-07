@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Book Listing</string>
+    <string name="no_connection">No connection available</string>
+    <string name="base_url">https://www.googleapis.com/books/v1/volumes?q=</string>
+    <string name="no_books">No books found</string>
+    <string name="unknown_author">Unknown author</string>
+    <string name="server_error">There is a problem with the server</string>
+</resources>

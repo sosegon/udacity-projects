@@ -1,0 +1,65 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- item_book style -->
+    <style name="ll_book_container">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="txt_detail">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/txt_padding</item>
+    </style>
+    <style name="txt_book_title" parent="txt_detail">
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/txt_book_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="txt_book_author" parent="txt_detail">
+        <item name="android:textSize">@dimen/txt_book_author</item>
+    </style>
+    <!-- activity_main style -->
+    <style name="ll_container">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="ll_header">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="etx_book">
+        <item name="android:layout_height">@dimen/imb_search</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">@dimen/txt_padding</item>
+    </style>
+    <style name="imb_search">
+        <item name="android:layout_width">@dimen/imb_search</item>
+        <item name="android:layout_height">@dimen/imb_search</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:src">@drawable/search</item>
+    </style>
+    <style name="prg_load">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">false</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+    <style name="txt_message">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
+</resources>
