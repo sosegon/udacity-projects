@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file:///media/sebastian/SEBASTIAN/workspace/udacity/News/News.iml" filepath="/media/sebastian/SEBASTIAN/workspace/udacity/News/News.iml" />
+      <module fileurl="file:///media/sebastian/SEBASTIAN/workspace/udacity/News/app/app.iml" filepath="/media/sebastian/SEBASTIAN/workspace/udacity/News/app/app.iml" />
+    </modules>
+  </component>
+</project>
