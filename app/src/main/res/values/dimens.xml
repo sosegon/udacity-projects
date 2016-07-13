@@ -1,5 +1,18 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+    <!-- layout -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="imv_product_picture">120dp</dimen>
+    <dimen name="product_image_size">160dp</dimen>
+    <dimen name="txt_padding">8dp</dimen>
+    <dimen name="btn_radius">12dp</dimen>
+
+    <!-- strings -->
+    <dimen name="btn_text">24sp</dimen>
+    <dimen name="txt_item_name">24sp</dimen>
+    <dimen name="txt_detailed_product_name">28sp</dimen>
+    <dimen name="txt_detailed_product_any_field">20sp</dimen>
+    <dimen name="txt_item_any_field">12sp</dimen>
+    <dimen name="etx_product_field">16sp</dimen>
 </resources>

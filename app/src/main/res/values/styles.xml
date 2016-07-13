@@ -8,4 +8,169 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- main activity -->
+    <style name="rcv_products">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:layout_below">@id/btn_add_product</item>
+    </style>
+
+    <style name="txt_message">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
+    <style name="btn_add_product">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:textSize">@dimen/btn_text</item>
+    </style>
+
+    <style name="rl_overall">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <!-- item product -->
+    <style name="crd_item_container">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ll_item_container" parent="crd_item_container">
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/txt_padding</item>
+    </style>
+
+    <style name="ll_item_row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="txt_item_any_field">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/txt_item_any_field</item>
+    </style>
+
+    <style name="txt_item_name" parent="txt_item_any_field">
+        <item name="android:textSize">@dimen/txt_item_name</item>
+    </style>
+
+    <!-- add product activity -->
+    <style name="txt_product_field">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/etx_product_field</item>
+        <item name="android:inputType">textCapSentences</item>
+        <item name="android:padding">@dimen/txt_padding</item>
+    </style>
+
+    <style name="ll_product_overall">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="imv_product_picture">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/imv_product_picture</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="btn_product">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="ll_product_row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- detailed product activity -->
+    <style name="ll_detailed_product_overall">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/cyan50</item>
+    </style>
+
+    <style name="imv_detailed_product_picture">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/product_image_size</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="ll_detailed_product_row">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="txt_detailed_product_supplier_info">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/txt_detailed_product_any_field</item>
+    </style>
+
+    <style name="txt_detailed_product_any_field">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/txt_detailed_product_any_field</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="txt_detailed_product_name_field">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/txt_detailed_product_name</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="txt_no_details">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ll_detailed_product_increase_decrease">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="btn_change_quantity">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="ll_detailed_product_modify">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="btn_detailed_view_modify">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 </resources>
+

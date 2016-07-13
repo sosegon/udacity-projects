@@ -23,7 +23,7 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
             InventoryContract.FeedInventory.COLUMN_NAME_PRODUCT_PICTURE + " BLOB NOT NULL," +
             InventoryContract.FeedInventory.COLUMN_NAME_PRODUCT_SUPPLIER_NAME + " TEXT NOT NULL," +
             InventoryContract.FeedInventory.COLUMN_NAME_PRODUCT_SUPPLIER_EMAIL + " TEXT NOT NULL," +
-            InventoryContract.FeedInventory.COLUMN_NAME_PRODUCT_SUPPLIER_PHONE + " INT NOT NULL," +
+            InventoryContract.FeedInventory.COLUMN_NAME_PRODUCT_SUPPLIER_PHONE + " INT NOT NULL" +
             ")";
 
     private static final String DELETE_PRODUCT_TABLE = "DROP TABLE IF EXISTS " + InventoryContract.FeedInventory.TABLE_NAME;
@@ -51,6 +51,11 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
         values.put(InventoryContract.FeedInventory.COLUMN_NAME_PRODUCT_SUPPLIER_PHONE, supplierPhone);
 
         db.insert(InventoryContract.FeedInventory.TABLE_NAME, null, values);
+    }
+
+    public Cursor getAllProducts(){
+        SQLiteDatabase db  = getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + InventoryContract.FeedInventory.TABLE_NAME, null);
     }
 
     public Cursor getProductById(int id){

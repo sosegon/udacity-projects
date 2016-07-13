@@ -12,17 +12,26 @@ public class Product {
     private int quantity;
     private float price;
     private Bitmap picture;
-    private String supplier;
-    private String emailSupplier;
+    private String supplierName;
+    private String supplierEmail;
+    private int supplierPhone;
 
-    public Product(int id, String name, int quantity, float price, Bitmap picture, String supplier, String emailSupplier) {
+    public Product(int id, String name, int quantity, float price, Bitmap picture, String supplierName, String supplierEmail, int supplierPhone) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.price = price;
         this.picture = picture;
-        this.supplier = supplier;
-        this.emailSupplier = emailSupplier;
+        this.supplierName = supplierName;
+        this.supplierEmail = supplierEmail;
+        this.supplierPhone = supplierPhone;
+    }
+
+    public Product(int id, String name, int quantity, float price) {
+        this.id = id;
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
     }
 
     public int getId() {
@@ -49,20 +58,20 @@ public class Product {
         this.picture = picture;
     }
 
-    public String getSupplier() {
-        return supplier;
+    public String getSupplierName() {
+        return supplierName;
     }
 
-    public void setSupplier(String supplier) {
-        this.supplier = supplier;
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
-    public String getEmailSupplier() {
-        return emailSupplier;
+    public String getSupplierEmail() {
+        return supplierEmail;
     }
 
-    public void setEmailSupplier(String emailSupplier) {
-        this.emailSupplier = emailSupplier;
+    public void setSupplierEmail(String supplierEmail) {
+        this.supplierEmail = supplierEmail;
     }
 
     public float getPrice() {
@@ -79,5 +88,37 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getSupplierPhone() {
+        return supplierPhone;
+    }
+
+    public void setSupplierPhone(int supplierPhone) {
+        this.supplierPhone = supplierPhone;
+    }
+
+    public void copy(Product product){
+        this.setId(product.getId());
+        this.setName(product.getName());
+        this.setQuantity(product.getQuantity());
+        this.setPrice(product.getPrice());
+        this.setPicture(product.getPicture());
+        this.setSupplierName(product.getSupplierName());
+        this.setSupplierEmail(product.getSupplierEmail());
+        this.setSupplierPhone(product.getSupplierPhone());
+    }
+
+    public Product clone(){
+        return new Product(
+            this.id,
+            this.name,
+            this.quantity,
+            this.price,
+            this.picture,
+            this.supplierName,
+            this.supplierEmail,
+            this.supplierPhone
+        );
     }
 }
