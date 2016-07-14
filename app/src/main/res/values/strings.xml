@@ -25,6 +25,7 @@
     <string name="label_delete_product">Delete product</string>
     <string name="label_cancel">Cancel</string>
     <string name="label_delete">Delete</string>
+    <string name="label_sell_item">Sell product</string>
     <string name="validate_inputs_product_quantity">Invalid product quantity</string>
     <string name="validate_inputs_product_price">Invalid product price</string>
     <string name="validate_inputs_product_supplier_name">Invalid supplierName name</string>

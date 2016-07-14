@@ -41,8 +41,7 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="ll_item_container" parent="crd_item_container">
-        <item name="android:orientation">vertical</item>
+    <style name="rl_item_container" parent="crd_item_container">
         <item name="android:padding">@dimen/txt_padding</item>
     </style>
 
@@ -60,7 +59,14 @@
     </style>
 
     <style name="txt_item_name" parent="txt_item_any_field">
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentTop">true</item>
         <item name="android:textSize">@dimen/txt_item_name</item>
+    </style>
+
+    <style name="btn_item_sell">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <!-- add product activity -->

@@ -8,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.keemsa.inventory.activity.DetailedProductActivity;
+import com.keemsa.inventory.database.InventoryDbHelper;
 import com.keemsa.inventory.model.Product;
+import com.keemsa.inventory.task.UpdateQuantityProductTask;
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ProductViewHolder holder, int position) {
+    public void onBindViewHolder(final ProductViewHolder holder, int position) {
         final Product productItem = productsDataset.get(position);
         final int color = position % 2 == 0 ?
                 mContext.getResources().getColor(R.color.green300) :
@@ -41,8 +43,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
         holder.txt_product_quantity.setText(" " + productItem.getQuantity());
         holder.txt_product_price.setText(" $" + productItem.getPrice());
 
-        holder.ll_container.setBackgroundColor(color);
-        holder.ll_container.setOnClickListener(new View.OnClickListener() {
+        holder.rl_container.setBackgroundColor(color);
+        holder.rl_container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intDetailedProduct = new Intent(mContext, DetailedProductActivity.class);
@@ -52,6 +54,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductViewHolder> {
             }
         });
 
+        holder.setProduct(productItem);
+
+        if(holder.getProduct().getQuantity() == 0){
+            holder.btn_item_sell.setEnabled(false);
+        }
+        else{
+            holder.btn_item_sell.setEnabled(true);
+        }
+
+        holder.btn_item_sell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UpdateQuantityProductTask task = new UpdateQuantityProductTask(holder, holder.getProduct().getId(), holder.getProduct().getQuantity() - 1);
+                task.execute(mContext);
+            }
+        });
     }
 
     @Override

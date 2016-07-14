@@ -135,6 +135,13 @@ public class DetailedProductActivity extends AppCompatActivity implements Produc
         txt_detailed_product_supplier_email.setText(" " + product.getSupplierEmail());
         txt_detailed_product_supplier_phone.setText(" " + String.valueOf(product.getSupplierPhone()));
         imv_detailed_product_picture.setImageBitmap(product.getPicture());
+
+        if(product.getQuantity() == 0){
+            btn_detailed_product_decrease.setEnabled(false);
+        }
+        else{
+            btn_detailed_product_decrease.setEnabled(true);
+        }
     }
 
     private void processNonExistingProductDetails(){
