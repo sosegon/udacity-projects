@@ -1,13 +1,18 @@
 package com.keemsa.inventory.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,6 +41,7 @@ public class AddProductActivity extends AppCompatActivity {
 
     private static final int CAMERA_REQUEST = 2000;
     private static final int GAllERY_REQUEST = 2001;
+    private static final int PERMISSION_STORAGE = 2002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,8 +141,51 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
     private void startGallery(){
+        int permissionCheck = ContextCompat.checkSelfPermission(AddProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(AddProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                new AlertDialog.Builder(AddProductActivity.this)
+                        .setMessage(getResources().getString(R.string.msg_permission_storage_needed))
+                        .setPositiveButton(getResources().getString(R.string.label_ok), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityCompat.requestPermissions(AddProductActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_STORAGE);
+                            }
+                        })
+                        .setNegativeButton(getResources().getString(R.string.label_cancel), null)
+                        .create()
+                        .show();
+
+
+            } else {
+                ActivityCompat.requestPermissions(AddProductActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_STORAGE);
+            }
+        } else {
+            goToGallery();
+        }
+    }
+
+    private void goToGallery(){
         Intent intPicture = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intPicture, GAllERY_REQUEST);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    goToGallery();
+                }
+                else{
+                    Toast.makeText(AddProductActivity.this, getResources().getString(R.string.msg_permission_storage_denied), Toast.LENGTH_LONG)
+                            .show();
+
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     protected String validateInputs(){

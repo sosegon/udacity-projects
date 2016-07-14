@@ -26,6 +26,7 @@
     <string name="label_cancel">Cancel</string>
     <string name="label_delete">Delete</string>
     <string name="label_sell_item">Sell product</string>
+    <string name="label_ok">Ok</string>
     <string name="validate_inputs_product_quantity">Invalid product quantity</string>
     <string name="validate_inputs_product_price">Invalid product price</string>
     <string name="validate_inputs_product_supplier_name">Invalid supplierName name</string>
@@ -38,6 +39,10 @@
     <string name="msg_email_supplier_subject">Need more </string>
     <string name="msg_email_supplier_body">Please send more </string>
     <string name="msg_click_to_add_product">Click on the + button to add a product</string>
+    <string name="msg_permission_call_needed">Phone call permission is needed</string>
+    <string name="msg_permission_call_denied">Phone call permission denied</string>
+    <string name="msg_permission_storage_needed">Storage permission is needed</string>
+    <string name="msg_permission_storage_denied">Storage permission denied</string>
     <string-array name="opt_add_picture">
         <item>Camera</item>
         <item>Gallery</item>
@@ -47,4 +52,5 @@
         <item>Email</item>
     </string-array>
 </resources>
+
 
