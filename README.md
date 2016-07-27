@@ -29,9 +29,31 @@ If all the requirements are met, the next window will be shown:
 
 The result is shown in the right canvas.
 
-Images of every process are saved in the folder where the image was selected. 
+Images of every process are saved in the folder where the image was selected.
 
-Plots and a log are saved in the folder where the application is executed.
+Next images will be generated:
+ * file_name_classified.jpg
+ * file_name_convexHull.jpg
+ * file_name_spotless.jpg
+
+Plots and a log for further analysis are saved in the folder where the application is executed.
+
+Next files will be created:
+ * Red_component_in_Foreground_histo.png
+ * Red_component_in_Foreground.png
+ * Green_component_in_Foreground_histo.png
+ * Green_component_in_Foreground.png
+ * Blue_component_in_Foreground_histo.png
+ * Blue_component_in_Foreground.png
+ * Red_component_in_Background_histo.png
+ * Red_component_in_Background.png
+ * Green_component_in_Background_histo.png
+ * Green_component_in_Background.png
+ * Blue_component_in_Background_histo.png
+ * Blue_component_in_Background.png
+ * scene_result.jpg
+ * scene_with_regions.jpg
+ * processing_log.txt
 
 ## License
 The MIT License
