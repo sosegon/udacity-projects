@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Portfoliapp</string>
+    <string name="lbl_movies">Popular Movies</string>
+    <string name="lbl_stock">Stock Hawk</string>
+    <string name="lbl_bigger">Build it bigger</string>
+    <string name="lbl_material">Make your app material</string>
+    <string name="lbl_ubi">Go ubiquitous</string>
+    <string name="lbl_capstone">Capstone</string>
+    <string name="msg_app">Here will be opened </string>
+</resources>
