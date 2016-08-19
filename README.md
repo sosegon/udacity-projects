@@ -1,4 +1,4 @@
-# Image Processing Project
+# Remove background
 Final project of Machine Learning Nanodegree program.
 
 It classifies the pixels in an image either as background or as foreground, based on defined spots.
