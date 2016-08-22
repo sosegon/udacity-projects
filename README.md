@@ -1,4 +1,4 @@
-# <img src=http://i1041.photobucket.com/albums/b414/sosegon/ic_launcher_3.png width=48></img> Inventory
+# <img src=http://i1041.photobucket.com/albums/b414/sosegon/ic_launcher_3.png width=48></img> Quito Tour Guide
 
 Android application with information about places to go in Quito.
 
