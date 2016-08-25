@@ -3,4 +3,17 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorTeamA1">#01579B</color>
+    <color name="colorTeamA2">#0288D1</color>
+    <color name="colorTeamA3">#29B6F6</color>
+    <color name="colorTeamA4">#4FC3F7</color>
+    <color name="colorTeamA5">#81D4FA</color>
+    <color name="colorTeamB1">#004D40</color>
+    <color name="colorTeamB2">#00796B</color>
+    <color name="colorTeamB3">#26A69A</color>
+    <color name="colorTeamB4">#4DB6AC</color>
+    <color name="colorTeamB5">#80CBC4</color>
+    <color name="lightText">@android:color/white</color>
+    <color name="darkText">@android:color/black</color>
+    <color name="darkBack">@android:color/black</color>
 </resources>

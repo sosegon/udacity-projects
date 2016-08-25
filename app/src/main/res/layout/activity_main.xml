@@ -7,138 +7,86 @@
     tools:context="com.keemsa.basketballscores.MainActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5"
-        android:orientation="horizontal">
+        style="@style/ll_teams">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            style="@style/ll_team_row" >
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="#01579B"
-                android:gravity="center"
-                android:text="Team A"
-                android:textColor="@android:color/white"
-                android:textSize="24sp" />
+                style="@style/txt_team_name"
+                android:text="@string/lbl_teamA"
+                android:background="@color/colorTeamA1"/>
 
             <TextView
+                style="@style/txt_score"
                 android:id="@+id/txt_score_a"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:background="#0288D1"
-                android:gravity="center"
-                android:text="0"
-                android:textColor="@android:color/black"
-                android:textSize="96sp"
-                android:textStyle="bold" />
+                android:text="@string/lbl_init_score"
+                android:background="@color/colorTeamA2"/>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                style="@style/ll_increase_buttons">
 
                 <Button
+                    style="@style/btn_increase"
                     android:id="@+id/btn_add_one_team_a"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#81D4FA"
-                    android:text="+1" />
+                    android:background="@color/colorTeamA3"
+                    android:text="@string/lbl_1" />
 
                 <Button
+                    style="@style/btn_increase"
                     android:id="@+id/btn_add_two_team_a"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#4FC3F7"
-                    android:text="+2" />
+                    android:background="@color/colorTeamA4"
+                    android:text="@string/lbl_2" />
 
                 <Button
+                    style="@style/btn_increase"
                     android:id="@+id/btn_add_three_team_a"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#29B6F6"
-                    android:text="+3" />
+                    android:background="@color/colorTeamA5"
+                    android:text="@string/lbl_3" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            style="@style/ll_team_row">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="#004D40"
-                android:gravity="center"
-                android:text="Team B"
-                android:textColor="@android:color/white"
-                android:textSize="24sp" />
+                style="@style/txt_team_name"
+                android:text="@string/lbl_teamB"
+                android:background="@color/colorTeamB1"/>
 
             <TextView
+                style="@style/txt_score"
                 android:id="@+id/txt_score_b"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
-                android:background="#00796B"
-                android:gravity="center"
-                android:text="0"
-                android:textColor="@android:color/black"
-                android:textSize="96sp"
-                android:textStyle="bold" />
+                android:text="@string/lbl_init_score"
+                android:background="@color/colorTeamB2" />
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                style="@style/ll_increase_buttons">
 
                 <Button
+                    style="@style/btn_increase"
                     android:id="@+id/btn_add_one_team_b"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#80CBC4"
-                    android:text="+1" />
+                    android:background="@color/colorTeamB5"
+                    android:text="@string/lbl_1" />
 
                 <Button
+                    style="@style/btn_increase"
                     android:id="@+id/btn_add_two_team_b"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#4DB6AC"
-                    android:text="+2" />
+                    android:background="@color/colorTeamB4"
+                    android:text="@string/lbl_2" />
 
                 <Button
+                    style="@style/btn_increase"
                     android:id="@+id/btn_add_three_team_b"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#26A69A"
-                    android:text="+3" />
+                    android:background="@color/colorTeamB3"
+                    android:text="@string/lbl_3" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@android:color/black"
+        style="@style/btn_reset"
         android:onClick="resetScores"
-        android:text="Reset"
-        android:textColor="@android:color/white"
-        android:textSize="32sp"
-        android:textStyle="bold" />
+        android:text="@string/lbl_reset"
+        />
 </LinearLayout>
