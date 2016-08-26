@@ -8,7 +8,7 @@
     tools:context="com.keemsa.sunshine.MainActivity">
 
     <fragment
-        android:name="com.keemsa.sunshine.MainFragment"
+        android:name="com.keemsa.sunshine.ForecastFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/frg_main"

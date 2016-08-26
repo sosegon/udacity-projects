@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainFragment extends Fragment {
+public class ForecastFragment extends Fragment {
 
-    public MainFragment() {
+    public ForecastFragment() {
         // Required empty public constructor
     }
 
@@ -33,7 +33,7 @@ public class MainFragment extends Fragment {
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_forecast, container, false);
 
         // The layout has to be inflated before searching for elements on it
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
