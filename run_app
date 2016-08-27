@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+##############################################################################
+##
+##  script to run app from terminal
+##
+##############################################################################
+
+./gradlew assembleDebug
+adb install -r app/build/outputs/apk/app-debug-unaligned.apk
+adb shell am start -n com.keemsa.sunshine/com.keemsa.sunshine.MainActivity
