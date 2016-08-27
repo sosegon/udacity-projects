@@ -57,7 +57,7 @@ public class ForecastFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.mit_refresh:
                 FetchWeatherTask task = new FetchWeatherTask();
-                task.execute(getString(R.string.weather_url + R.string.api_key));
+                task.execute("quito");
                 return true;
         }
 
