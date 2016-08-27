@@ -39,7 +39,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String> {
             return null;
         }
 
-        final String BASE_URL = "http://api.openweathermap.org/data/2.5/weather?";
+        final String BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
         final String QUERY_PARAM = "q";
         final String FORMAT_PARAM = "mode";
         final String UNITS_PARAM = "units";
