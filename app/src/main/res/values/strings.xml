@@ -3,6 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="lbl_refresh">Refresh</string>
     <string name="weather_url" translatable="false">http://api.openweathermap.org/data/2.5/weather?q=quito,ec&amp;cnt=7&amp;units=metric&amp;appid=</string>
     <string name="api_key" translatable="false">b1b15e88fa797225412429c1c50c122a1</string>
 </resources>
