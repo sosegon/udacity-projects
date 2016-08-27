@@ -175,7 +175,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
     @Override
     public void processWeatherData(String forecastJson) {
         try {
-            String[] weatherData = this.getWeatherDataFromJson(forecastJson, 3);
+            String[] weatherData = this.getWeatherDataFromJson(forecastJson, 7);
             List<String> forecastData = new ArrayList<String>(Arrays.asList(weatherData));
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecastData);
