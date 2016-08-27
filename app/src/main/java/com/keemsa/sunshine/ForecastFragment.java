@@ -1,5 +1,6 @@
 package com.keemsa.sunshine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -10,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -48,9 +50,17 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
         View view = inflater.inflate(R.layout.fragment_forecast, container, false);
 
         // The layout has to be inflated before searching for elements on it
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
         ListView lv = (ListView) view.findViewById(R.id.listview_forecast);
         lv.setAdapter(adapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, adapter.getItem(i));
+                startActivity(intent);
+            }
+        });
 
         return view;
     }
@@ -63,7 +73,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.mit_refresh:
                 FetchWeatherTask task = new FetchWeatherTask(this);
                 task.execute("quito");
@@ -76,7 +86,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
     /* The date/time conversion code is going to be moved outside the asynctask later,
         * so for convenience we're breaking it out into its own method now.
         */
-    private String getReadableDateString(long time){
+    private String getReadableDateString(long time) {
         // Because the API returns a unix timestamp (measured in seconds),
         // it must be converted to milliseconds in order to be converted to valid date.
         SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
@@ -98,7 +108,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
     /**
      * Take the String representing the complete forecast in JSON Format and
      * pull out the data we need to construct the Strings needed for the wireframes.
-     *
+     * <p/>
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
@@ -134,7 +144,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
         dayTime = new Time();
 
         String[] resultStrs = new String[numDays];
-        for(int i = 0; i < weatherArray.length(); i++) {
+        for (int i = 0; i < weatherArray.length(); i++) {
             // For now, using the format "Day, description, hi/low"
             String day;
             String description;
@@ -148,7 +158,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
             // "this saturday".
             long dateTime;
             // Cheating to convert this to UTC time, which is what we want anyhow
-            dateTime = dayTime.setJulianDay(julianStartDay+i);
+            dateTime = dayTime.setJulianDay(julianStartDay + i);
             day = getReadableDateString(dateTime);
 
             // description is in a child array called "weather", which is 1 element long.
@@ -181,8 +191,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecastData);
             ListView lv = (ListView) getView().findViewById(R.id.listview_forecast);
             lv.setAdapter(adapter);
-        }
-        catch (JSONException e){
+        } catch (JSONException e) {
             Log.e(LOG_TAG, "Error: Unable to parse JSON data.");
         }
     }
