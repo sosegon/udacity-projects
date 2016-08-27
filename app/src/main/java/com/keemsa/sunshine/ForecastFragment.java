@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements FetchWeatherTask.FetchWeatherTaskResponse {
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
@@ -65,7 +65,7 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.mit_refresh:
-                FetchWeatherTask task = new FetchWeatherTask();
+                FetchWeatherTask task = new FetchWeatherTask(this);
                 task.execute("quito");
                 return true;
         }
@@ -170,5 +170,20 @@ public class ForecastFragment extends Fragment {
         }
         return resultStrs;
 
+    }
+
+    @Override
+    public void processWeatherData(String forecastJson) {
+        try {
+            String[] weatherData = this.getWeatherDataFromJson(forecastJson, 3);
+            List<String> forecastData = new ArrayList<String>(Arrays.asList(weatherData));
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecastData);
+            ListView lv = (ListView) getView().findViewById(R.id.listview_forecast);
+            lv.setAdapter(adapter);
+        }
+        catch (JSONException e){
+            Log.e(LOG_TAG, "Error: Unable to parse JSON data.");
+        }
     }
 }

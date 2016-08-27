@@ -16,9 +16,20 @@ import java.net.URL;
  */
 public class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
-    private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+    public interface FetchWeatherTaskResponse{
+        void processWeatherData(String forecastJson);
+    }
 
-    public FetchWeatherTask() {
+    private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+    private FetchWeatherTaskResponse response;
+
+    public FetchWeatherTask(FetchWeatherTaskResponse response) {
+        this.response = response;
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+        response.processWeatherData(s);
     }
 
     @Override
