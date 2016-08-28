@@ -74,12 +74,16 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mit_refresh:
-                FetchWeatherTask task = new FetchWeatherTask(this);
-                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-                task.execute(pref.getString(getString(R.string.prf_key_location), getString(R.string.prf_default_location)));
+                updateWeather();
                 return true;
             case R.id.mit_settings:
                 Intent intent = new Intent(getContext(), SettingsActivity.class);
@@ -87,6 +91,12 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather(){
+        FetchWeatherTask task = new FetchWeatherTask(this);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        task.execute(pref.getString(getString(R.string.prf_key_location), getString(R.string.prf_default_location)));
     }
 
     /* The date/time conversion code is going to be moved outside the asynctask later,
