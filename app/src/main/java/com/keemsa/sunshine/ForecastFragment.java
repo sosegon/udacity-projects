@@ -78,6 +78,9 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
                 FetchWeatherTask task = new FetchWeatherTask(this);
                 task.execute("quito");
                 return true;
+            case R.id.mit_settings:
+                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
