@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="@string/prf_key_location"
+        android:title="@string/lbl_location"
+        android:defaultValue="@string/prf_default_location"
+        android:inputType="text"
+        android:singleLine="true"/>
+</PreferenceScreen>

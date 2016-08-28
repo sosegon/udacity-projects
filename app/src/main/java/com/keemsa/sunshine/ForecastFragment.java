@@ -1,7 +1,9 @@
 package com.keemsa.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
 import android.util.Log;
@@ -76,7 +78,8 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
         switch (item.getItemId()) {
             case R.id.mit_refresh:
                 FetchWeatherTask task = new FetchWeatherTask(this);
-                task.execute("quito");
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+                task.execute(pref.getString(getString(R.string.prf_key_location), getString(R.string.prf_default_location)));
                 return true;
             case R.id.mit_settings:
                 Intent intent = new Intent(getContext(), SettingsActivity.class);
