@@ -6,4 +6,11 @@
         android:defaultValue="@string/prf_default_location"
         android:inputType="text"
         android:singleLine="true"/>
+
+    <ListPreference
+        android:key="@string/prf_key_units"
+        android:title="@string/lbl_units"
+        android:entries="@array/prf_entries_units"
+        android:entryValues="@array/prf_values_units"
+        android:defaultValue="@string/prf_default_units"/>
 </PreferenceScreen>

@@ -103,6 +103,13 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
      * Prepare the weather high/lows for presentation.
      */
     private String formatHighLows(double high, double low) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String units = pref.getString(getString(R.string.prf_key_units), getString(R.string.prf_default_units));
+        if(units.equals("imperial")){
+            high = (9 * high / 5) + 32;
+            low = (9 * low / 5) + 32;
+        }
+
         // For presentation, assume the user doesn't care about tenths of a degree.
         long roundedHigh = Math.round(high);
         long roundedLow = Math.round(low);
