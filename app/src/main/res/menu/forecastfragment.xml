@@ -2,6 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/mit_refresh"
         android:title="@string/lbl_refresh"></item>
+    <item android:id="@+id/mit_location"
+        android:title="@string/lbl_map"></item>
     <item android:id="@+id/mit_settings"
         android:title="@string/lbl_settings"></item>
 </menu>

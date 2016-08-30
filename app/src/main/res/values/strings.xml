@@ -22,6 +22,8 @@
         <item>imperial</item>
     </string-array>
 
+    <string name="lbl_map">See on map</string>
+
     <string name="weather_url" translatable="false">http://api.openweathermap.org/data/2.5/forecast/daily?</string>
     <string name="api_key" translatable="false">22e87de1a93094df1aaa5225efd88348</string>
 </resources>

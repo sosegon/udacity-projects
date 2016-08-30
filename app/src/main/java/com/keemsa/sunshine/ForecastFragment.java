@@ -2,6 +2,7 @@ package com.keemsa.sunshine;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -78,9 +79,32 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
             case R.id.mit_settings:
                 Intent intent = new Intent(getContext(), SettingsActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.mit_location:
+                openPreferredLocationMap();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openPreferredLocationMap(){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String location = pref.getString(getString(R.string.prf_key_location), getString(R.string.prf_default_location));
+
+        Uri geolocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geolocation);
+
+        if(intent.resolveActivity(getContext().getPackageManager()) != null){
+            startActivity(intent);
+        }
+        else {
+            Log.d(LOG_TAG, "Could not call " + location + ", no receiving apps installed");
+        }
     }
 
     private void updateWeather(){
