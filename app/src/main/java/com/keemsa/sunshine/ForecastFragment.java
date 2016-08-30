@@ -30,7 +30,7 @@ import java.util.List;
 public class ForecastFragment extends Fragment implements FetchWeatherTask.FetchWeatherTaskResponse {
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
-
+    private ArrayAdapter<String> adapter;
     public ForecastFragment() {
         setHasOptionsMenu(true);
     }
@@ -43,7 +43,7 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
         View view = inflater.inflate(R.layout.fragment_forecast, container, false);
 
         // The layout has to be inflated before searching for elements on it
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, new ArrayList<String>());
+        adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, new ArrayList<String>());
         ListView lv = (ListView) view.findViewById(R.id.listview_forecast);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -225,9 +225,11 @@ public class ForecastFragment extends Fragment implements FetchWeatherTask.Fetch
             String[] weatherData = this.getWeatherDataFromJson(forecastJson, 7);
             List<String> forecastData = new ArrayList<String>(Arrays.asList(weatherData));
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecastData);
-            ListView lv = (ListView) getView().findViewById(R.id.listview_forecast);
-            lv.setAdapter(adapter);
+            adapter.clear();
+
+            for(String day : forecastData){
+                adapter.add(day);
+            }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error: Unable to parse JSON data.");
         }
