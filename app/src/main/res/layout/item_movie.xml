@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/frl_movie">
+
+    <ImageView
+        android:id="@+id/imv_movie_poster"
+        style="@style/imv_movie_poster" />
+
+</FrameLayout>
