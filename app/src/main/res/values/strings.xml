@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+
+    <string name="base_query_url">https://api.themoviedb.org/3/movie/</string>
+    <string name="base_img_url">http://image.tmdb.org/t/p/w185</string>
+
+    <string name="msg_no_connection">No connection available</string>
 </resources>

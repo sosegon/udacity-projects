@@ -15,6 +15,10 @@ public class Movie {
         this.rating = rating;
     }
 
+    public Movie(String title, String synopsis, String posterUrl, String releaseDate, String rating) {
+        this(title, synopsis, posterUrl, releaseDate, rating.equals("") ? 0 : Float.parseFloat(rating));
+    }
+
     public String getTitle() {
         return title;
     }
