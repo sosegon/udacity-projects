@@ -4,8 +4,8 @@
     style="@style/frl_movies"
     tools:context=".CatalogFragment">
 
-    <ListView
-        android:id="@+id/lv_movies"
-        style="@style/lv_movies" />
+    <GridView
+        android:id="@+id/gv_movies"
+        style="@style/gv_movies" />
 
 </FrameLayout>

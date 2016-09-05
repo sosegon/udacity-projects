@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import com.keemsa.popularmovies.model.Movie;
@@ -45,8 +45,8 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         movieAdapter = new MovieAdapter(getContext(), 0, new ArrayList<Movie>());
 
         // Attach adapter to view
-        ListView listView = (ListView) view.findViewById(R.id.lv_movies);
-        listView.setAdapter(movieAdapter);
+        GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
+        gridView.setAdapter(movieAdapter);
 
         return view;
     }

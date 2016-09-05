@@ -29,23 +29,24 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <style name="lv_movies">
+    <style name="gv_movies">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:numColumns">auto_fit</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <!-- item_movie.xml -->
     <style name="frl_movie">
-        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">@dimen/poster_height</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="imv_movie_poster">
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:scaleType">centerCrop</item>
     </style>
 
 </resources>
