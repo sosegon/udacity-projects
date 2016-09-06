@@ -2,6 +2,7 @@ package com.keemsa.popularmovies;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -47,6 +49,16 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         // Attach adapter to view
         GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
         gridView.setAdapter(movieAdapter);
+
+        // Set listener to start activity with detailed info about movie
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getContext(), MovieDetailsActivity.class);
+                intent.putExtra("movie", movieAdapter.getItem(i));
+                startActivity(intent);
+            }
+        });
 
         return view;
     }

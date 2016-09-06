@@ -5,4 +5,15 @@
 
     <dimen name="poster_height">277dp</dimen>
     <dimen name="poster_width">185dp</dimen>
+
+    <dimen name="txt_title_details">96dp</dimen>
+    <dimen name="lbl_size_1">32sp</dimen>
+    <dimen name="lbl_size_2">24sp</dimen>
+    <dimen name="lbl_size_3">16sp</dimen>
+    <dimen name="lbl_size_4">12sp</dimen>
+
+    <dimen name="padding_1">16dp</dimen>
+    <dimen name="padding_2">8dp</dimen>
+    <dimen name="padding_3">4dp</dimen>
+    <dimen name="padding_4">2dp</dimen>
 </resources>
