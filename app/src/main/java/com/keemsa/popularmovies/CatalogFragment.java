@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.keemsa.popularmovies.model.Movie;
@@ -39,6 +40,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private final String LOG_TAG = CatalogFragment.class.getSimpleName();
     private MovieAdapter movieAdapter;
     private ArrayList<Movie> movieList;
+    private ProgressBar prg_load;
 
     public CatalogFragment() {
         setHasOptionsMenu(true);
@@ -49,6 +51,9 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
                              Bundle savedInstanceState) {
         // Inflate the layout
         View view = inflater.inflate(R.layout.fragment_catalog, container, false);
+
+        prg_load = (ProgressBar) view.findViewById(R.id.prg_load);
+        setProgressBarVisibility(View.GONE);
 
         movieList = new ArrayList<Movie>();
 
@@ -138,8 +143,14 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
                 .build()
                 .toString();
         MoviesAsyncTask task = new MoviesAsyncTask(this);
-        Log.i(LOG_TAG, url);
         task.execute(url);
+    }
+
+    @Override
+    public void setProgressBarVisibility(int value) {
+        if(prg_load != null) {
+            prg_load.setVisibility(value);
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.keemsa.popularmovies;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
 
     public interface MoviesAsyncTaskReceiver {
         void processJSON(String json);
+        void setProgressBarVisibility(int value);
     }
 
     private final String LOG_TAG = MoviesAsyncTask.class.getSimpleName();
@@ -24,6 +26,11 @@ public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
 
     public MoviesAsyncTask(MoviesAsyncTaskReceiver receiver) {
         this.receiver = receiver;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        receiver.setProgressBarVisibility(View.VISIBLE);
     }
 
     @Override
@@ -38,6 +45,7 @@ public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
             return;
         }
 
+        receiver.setProgressBarVisibility(View.GONE);
         receiver.processJSON(s);
     }
 

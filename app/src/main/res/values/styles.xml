@@ -41,6 +41,12 @@
         <item name="android:gravity">center</item>
     </style>
 
+
+    <style name="prg_load" parent="wrap_wrap">
+        <item name="android:indeterminate">false</item>
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
     <!-- item_movie.xml -->
     <style name="frl_movie">
         <item name="android:layout_height">@dimen/poster_height</item>
