@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     private final String LOG_TAG = CatalogFragment.class.getSimpleName();
     private MovieAdapter movieAdapter;
+    private ArrayList<Movie> movieList;
 
     public CatalogFragment() {
         // Required empty public constructor
@@ -43,8 +45,10 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         // Inflate the layout
         View view = inflater.inflate(R.layout.fragment_catalog, container, false);
 
+        movieList = new ArrayList<Movie>();
+
         // Create adapter
-        movieAdapter = new MovieAdapter(getContext(), 0, new ArrayList<Movie>());
+        movieAdapter = new MovieAdapter(getContext(), 0, movieList);
 
         // Attach adapter to view
         GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
@@ -64,9 +68,29 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(savedInstanceState == null || !savedInstanceState.containsKey("movieList")){
+            fetchMovieCatalog();
+        }
+        else{
+            movieList = savedInstanceState.getParcelableArrayList("movieList");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movieList", movieList);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
+        fetchMovieCatalog();
+    }
 
+    private void fetchMovieCatalog(){
         // Verify network connection to fetch movies
         ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
@@ -97,11 +121,11 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         }
 
         try {
-            List<Movie> movies = processMovies(json);
+            movieList = (ArrayList)processMovies(json);
             if (movieAdapter != null) {
                 movieAdapter.clear();
 
-                for (Movie movie : movies) {
+                for (Movie movie : movieList) {
                     movieAdapter.add(movie);
                 }
             }
