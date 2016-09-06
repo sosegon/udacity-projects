@@ -9,7 +9,6 @@
     </style>
 
     <!-- common -->
-
     <style name="match_match">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -23,7 +22,7 @@
     <style name="divider">
         <item name="android:layout_height">@dimen/padding_4</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:background">@color/colorDivider</item>
     </style>
 
     <!-- activity_main.xml -->
@@ -64,6 +63,8 @@
         <item name="android:textSize">@dimen/lbl_size_1</item>
         <item name="android:paddingLeft">@dimen/padding_1</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
     </style>
 
     <style name="imv_movie_poster_details">
@@ -81,6 +82,7 @@
         <item name="android:textSize">@dimen/lbl_size_2</item>
         <item name="android:paddingTop">@dimen/padding_1</item>
         <item name="android:paddingLeft">@dimen/padding_1</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 
     <style name="txt_score_details" parent="wrap_wrap">
@@ -89,6 +91,7 @@
         <item name="android:textSize">@dimen/lbl_size_3</item>
         <item name="android:paddingTop">@dimen/padding_1</item>
         <item name="android:paddingLeft">@dimen/padding_1</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 
     <style name="txt_desc_details">
@@ -97,6 +100,7 @@
         <item name="android:layout_below">@id/imv_movie_poster_details</item>
         <item name="android:textSize">@dimen/lbl_size_4</item>
         <item name="android:padding">@dimen/padding_1</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 
 </resources>
