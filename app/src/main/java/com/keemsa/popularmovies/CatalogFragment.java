@@ -3,14 +3,19 @@ package com.keemsa.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,7 +41,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private ArrayList<Movie> movieList;
 
     public CatalogFragment() {
-        // Required empty public constructor
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -90,6 +95,26 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         fetchMovieCatalog();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // inflate menu
+        inflater.inflate(R.menu.catalog_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.mit_settings:
+                Intent intent = new Intent(getContext(), SettingsActivity.class);
+                startActivity(intent);
+                break;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void fetchMovieCatalog(){
         // Verify network connection to fetch movies
         ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -105,12 +130,15 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private void updateMovieCatalog() {
         // Construct uri
         String baseUrl = getString(R.string.base_query_url);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String sortBy = pref.getString(getString(R.string.prf_key_sort), getString(R.string.prf_default_sort));
         String url = Uri.parse(baseUrl).buildUpon()
-                .appendPath("popular")
+                .appendPath(sortBy)
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
                 .build()
                 .toString();
         MoviesAsyncTask task = new MoviesAsyncTask(this);
+        Log.i(LOG_TAG, url);
         task.execute(url);
     }
 
