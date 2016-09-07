@@ -5,6 +5,7 @@
     <string name="base_img_url">http://image.tmdb.org/t/p/w185</string>
 
     <string name="msg_no_connection">No connection available</string>
+    <string name="msg_server_error">Server error, cannot fetch data</string>
 
     <string name="lbl_settings">Settings</string>
 

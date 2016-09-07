@@ -17,7 +17,12 @@ public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
 
     public interface MoviesAsyncTaskReceiver {
         void processJSON(String json);
+
         void setProgressBarVisibility(int value);
+
+        void setCatalogMessageVisibility(int value);
+
+        void setCatalogMessageText(int value);
     }
 
     private final String LOG_TAG = MoviesAsyncTask.class.getSimpleName();
@@ -41,7 +46,8 @@ public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String s) {
         if (response != 200) {
-            // TODO add code to handle invalid response from server
+            receiver.setCatalogMessageText(1);
+            receiver.setCatalogMessageVisibility(View.VISIBLE);
             return;
         }
 

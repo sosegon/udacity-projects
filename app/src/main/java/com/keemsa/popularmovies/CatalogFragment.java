@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.keemsa.popularmovies.model.Movie;
 
@@ -41,6 +41,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private MovieAdapter movieAdapter;
     private ArrayList<Movie> movieList;
     private ProgressBar prg_load;
+    private TextView txt_catalog_message;
 
     public CatalogFragment() {
         setHasOptionsMenu(true);
@@ -54,6 +55,9 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
         prg_load = (ProgressBar) view.findViewById(R.id.prg_load);
         setProgressBarVisibility(View.GONE);
+
+        txt_catalog_message = (TextView) view.findViewById(R.id.txt_catalog_msg);
+        setCatalogMessageVisibility(View.GONE);
 
         movieList = new ArrayList<Movie>();
 
@@ -80,10 +84,10 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState == null || !savedInstanceState.containsKey("movieList")){
+        setCatalogMessageVisibility(View.GONE);
+        if (savedInstanceState == null || !savedInstanceState.containsKey("movieList")) {
             fetchMovieCatalog();
-        }
-        else{
+        } else {
             movieList = savedInstanceState.getParcelableArrayList("movieList");
         }
     }
@@ -109,7 +113,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.mit_settings:
                 Intent intent = new Intent(getContext(), SettingsActivity.class);
                 startActivity(intent);
@@ -120,7 +124,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         return super.onOptionsItemSelected(item);
     }
 
-    private void fetchMovieCatalog(){
+    private void fetchMovieCatalog() {
         // Verify network connection to fetch movies
         ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
@@ -128,7 +132,8 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         if (networkInfo != null && networkInfo.isConnected()) {
             updateMovieCatalog();
         } else {
-            Toast.makeText(getContext(), R.string.msg_no_connection, Toast.LENGTH_LONG).show();
+            setCatalogMessageText(getString(R.string.msg_no_connection));
+            setCatalogMessageVisibility(View.VISIBLE);
         }
     }
 
@@ -148,8 +153,32 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     @Override
     public void setProgressBarVisibility(int value) {
-        if(prg_load != null) {
+        if (prg_load != null) {
             prg_load.setVisibility(value);
+        }
+    }
+
+    @Override
+    public void setCatalogMessageVisibility(int value) {
+        if (txt_catalog_message != null) {
+            txt_catalog_message.setVisibility(value);
+        }
+    }
+
+    @Override
+    public void setCatalogMessageText(int value) {
+        switch (value) {
+            case 0:
+                setCatalogMessageText(getString(R.string.msg_no_connection));
+                break;
+            case 1:
+                setCatalogMessageText(getString(R.string.msg_server_error));
+        }
+    }
+
+    public void setCatalogMessageText(String value) {
+        if (txt_catalog_message != null) {
+            txt_catalog_message.setText(value);
         }
     }
 
@@ -160,7 +189,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         }
 
         try {
-            movieList = (ArrayList)processMovies(json);
+            movieList = (ArrayList) processMovies(json);
             if (movieAdapter != null) {
                 movieAdapter.clear();
 
