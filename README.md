@@ -19,6 +19,7 @@ Tap on the apk file to start the installation.
 - Tap on "SETTINGS" to open the window and set the kind of query.
 
 <img src=http://i1041.photobucket.com/albums/b414/sosegon/popular_movies.png width="200"></img>
+<img src=http://i1041.photobucket.com/albums/b414/sosegon/popular_movies_details.jpg width="200"></img>
 <img src=http://i1041.photobucket.com/albums/b414/sosegon/popular_movies_settings.png width="200"></img>
 
 ## License
