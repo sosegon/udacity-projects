@@ -62,6 +62,7 @@ public class NewPatientActivity extends AppCompatActivity {
                     Toast.makeText(NewPatientActivity.this, "Patient with ID: " + patient.getId() + " already exists", Toast.LENGTH_LONG).show();
                     return;
                 }
+
                 ContentResolver resolver = getContentResolver();
 
                 ContentValues patientValues = new ContentValues();
@@ -77,7 +78,7 @@ public class NewPatientActivity extends AppCompatActivity {
                 resolver.insert(ToddContract.PatientEntry.CONTENT_URI, patientValues);
 
                 Intent output = new Intent();
-                setResult(12, output);
+                setResult(MainFragment.PATIENT_ADDED_OK, output);
                 finish();
             }
         });

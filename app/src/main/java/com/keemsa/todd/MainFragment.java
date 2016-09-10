@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.keemsa.todd.data.Patient;
 import com.keemsa.todd.data.ToddContract;
@@ -29,6 +30,8 @@ public class MainFragment extends Fragment implements PatientAsyncTask.PatientAs
         // Required empty public constructor
     }
 
+    public static final int PATIENT_ADD_REQUEST = 1984;
+    public static final int PATIENT_ADDED_OK = 1985;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,7 +45,7 @@ public class MainFragment extends Fragment implements PatientAsyncTask.PatientAs
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), NewPatientActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, PATIENT_ADD_REQUEST);
             }
         });
 
@@ -60,6 +63,14 @@ public class MainFragment extends Fragment implements PatientAsyncTask.PatientAs
         task.execute(getContext());
 
         super.onStart();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == PATIENT_ADD_REQUEST && resultCode == PATIENT_ADDED_OK){
+            Toast.makeText(getContext(), "New patient added", Toast.LENGTH_SHORT).show();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
