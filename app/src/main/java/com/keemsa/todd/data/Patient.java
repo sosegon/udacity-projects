@@ -48,15 +48,14 @@ public class Patient {
         }
         if(hallucinogenicDrugs == 1)
             likelihood += 25;
-        // Fix calcAge function
-        //if(calcAge() <= 15)
-        //    likelihood += 25;
+        if(calcAge() <= 15)
+            likelihood += 25;
 
         this.toddLikelihood = likelihood;
     }
 
     private int calcAge(){
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-M-D");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
         Calendar current = Calendar.getInstance();
         Calendar birth = Calendar.getInstance();
 
@@ -65,13 +64,16 @@ public class Patient {
             Date birthD = format.parse(this.birthDate);
             birth.setTime(birthD);
             age = current.get(Calendar.YEAR) - birth.get(Calendar.YEAR);
+            int monthDifference = current.get(Calendar.MONTH) - birth.get(Calendar.MONTH);
+            if(monthDifference > 0){
+                age += 1;
+            }
         }
         catch (ParseException e){
-
+            new ParseException("Not possible to calculate age:", 0);
         }
 
         return age;
-
     }
 
     public String getId() {
