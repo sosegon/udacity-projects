@@ -67,12 +67,12 @@ public class ToddProvider extends ContentProvider {
             case PATIENT:
                 cursor = mOpenHelper.getReadableDatabase().query(
                         ToddContract.PatientEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
                         null,
                         null,
-                        sortOrder
+                        null,
+                        null,
+                        null,
+                        null
                 );
                 break;
             case PATIENT_ID:
