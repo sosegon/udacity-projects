@@ -94,7 +94,8 @@ public class TestDb extends AndroidTestCase {
         assertTrue(id2 == -1);
 
         // Query the database for the recent record
-        Cursor cursor = db.query(ToddContract.PatientEntry.TABLE_NAME,
+        Cursor cursor = db.query(
+                ToddContract.PatientEntry.TABLE_NAME,
                 null,
                 ToddContract.PatientEntry._ID + "=" + "1719873281",
                 null,

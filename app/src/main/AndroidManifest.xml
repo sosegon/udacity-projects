@@ -15,6 +15,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name=".data.ToddProvider"
+            android:authorities="com.keemsa.todd" />
     </application>
 
 </manifest>
