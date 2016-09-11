@@ -1,9 +1,18 @@
 <resources>
-    <string name="app_name">Todd</string>
+    <string name="app_name">Todd\'s Syndrome</string>
+    <string name="title_activity_new_patient">Add patient</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_new_patient">NewPatientActivity</string>
+    <string name="lbl_add_patient">Add patient</string>
+    <string name="lbl_previous_patients">Previous patients</string>
+    <string name="lbl_id">Id</string>
+    <string name="lbl_first_name">First name</string>
+    <string name="lbl_last_name">Last name</string>
+    <string name="lbl_sex">Sex</string>
+    <string name="lbl_birth_date">Birth date</string>
+    <string name="lbl_migraines">Migraines</string>
+    <string name="lbl_hallucinogenic_drugs">Hallucinogenic drugs</string>
+    <string name="lbl_insert_patient">Insert patient</string>
+    <string name="lbl_todd_likelihood">Todd\'s syndrome likelihood:</string>
 
     <string-array name="opt_sex">
         <item>male</item>

@@ -1,31 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   style="@style/rl_item_container">
 
     <TextView
         android:id="@+id/ipt_first_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:text="-"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        style="@style/itm_first_name" />
 
     <TextView
         android:id="@+id/ipt_last_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        style="@style/itm_last_name" />
 
     <TextView
-        android:text="-"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/ipl_todd_likelihood"
+        android:text="@string/lbl_todd_likelihood"
+        style="@style/itm_lbl_todd" />
 
     <TextView
         android:id="@+id/ipt_todd_likelihood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        style="@style/itm_todd" />
 
-</LinearLayout>
+</RelativeLayout>
