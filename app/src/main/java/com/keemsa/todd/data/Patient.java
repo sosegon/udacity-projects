@@ -13,6 +13,9 @@ public class Patient {
     private String id, firstName, lastName, sex, birthDate;
     private int migraines, hallucinogenicDrugs, toddLikelihood;
 
+    public Patient() {
+    }
+
     public Patient(String id, String firstName, String lastName, String sex, String birthDate, int migraines, int hallucinogenicDrugs) {
         this.id = id;
         this.firstName = firstName;
@@ -39,37 +42,36 @@ public class Patient {
         this.toddLikelihood = toddLikelihood;
     }
 
-    private void calcToddLikelihood(){
+    public void calcToddLikelihood() {
         int likelihood = 0;
-        if(sex.equals("male"))
+        if (sex.equals("male"))
             likelihood += 25;
-        if(migraines == 1){
+        if (migraines == 1) {
             likelihood += 25;
         }
-        if(hallucinogenicDrugs == 1)
+        if (hallucinogenicDrugs == 1)
             likelihood += 25;
-        if(calcAge() <= 15)
+        if (calcAge() <= 15)
             likelihood += 25;
 
         this.toddLikelihood = likelihood;
     }
 
-    private int calcAge(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+    private int calcAge() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Calendar current = Calendar.getInstance();
         Calendar birth = Calendar.getInstance();
 
         int age = 0;
-        try{
+        try {
             Date birthD = format.parse(this.birthDate);
             birth.setTime(birthD);
             age = current.get(Calendar.YEAR) - birth.get(Calendar.YEAR);
             int monthDifference = current.get(Calendar.MONTH) - birth.get(Calendar.MONTH);
-            if(monthDifference > 0){
+            if (monthDifference > 0) {
                 age += 1;
             }
-        }
-        catch (ParseException e){
+        } catch (ParseException e) {
             new ParseException("Not possible to calculate age:", 0);
         }
 
@@ -120,12 +122,20 @@ public class Patient {
         return migraines;
     }
 
+    public String getMigrainesAsString() {
+        return migraines == 0 ? "no" : "yes";
+    }
+
     public void setMigraines(int migraines) {
         this.migraines = migraines;
     }
 
     public int getHallucinogenicDrugs() {
         return hallucinogenicDrugs;
+    }
+
+    public String getHallucinogenicDrugsAsString() {
+        return hallucinogenicDrugs == 0 ? "no" : "yes";
     }
 
     public void setHallucinogenicDrugs(int hallucinogenicDrugs) {

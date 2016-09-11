@@ -67,8 +67,8 @@ public class MainFragment extends Fragment implements PatientAsyncTask.PatientAs
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == PATIENT_ADD_REQUEST && resultCode == PATIENT_ADDED_OK){
-            Toast.makeText(getContext(), "New patient added", Toast.LENGTH_SHORT).show();
+        if (requestCode == PATIENT_ADD_REQUEST && resultCode == PATIENT_ADDED_OK) {
+            Toast.makeText(getContext(), getString(R.string.msg_patient_added), Toast.LENGTH_SHORT).show();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -76,8 +76,8 @@ public class MainFragment extends Fragment implements PatientAsyncTask.PatientAs
     @Override
     public void processCursor(Cursor cursor) {
         List<Patient> patients = new ArrayList<Patient>();
-        if(cursor.moveToFirst()){
-            while(!cursor.isAfterLast()){
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex(ToddContract.PatientEntry._ID));
                 String firstName = cursor.getString(cursor.getColumnIndex(ToddContract.PatientEntry.COLUMN_FIRST_NAME));
                 String lastName = cursor.getString(cursor.getColumnIndex(ToddContract.PatientEntry.COLUMN_LAST_NAME));
@@ -94,11 +94,11 @@ public class MainFragment extends Fragment implements PatientAsyncTask.PatientAs
             }
         }
 
-        if(adapter != null){
+        if (adapter != null) {
             adapter.clear();
 
-            for(Patient patient : patients){
-                adapter.add(patient);
+            for (int i = patients.size() - 1; i >= 0; i--) {
+                adapter.add(patients.get(i));
             }
         }
     }

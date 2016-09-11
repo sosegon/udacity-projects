@@ -35,7 +35,7 @@ public class PatientAdapter extends ArrayAdapter<Patient> {
 
         ipt_first_name.setText(patient.getFirstName());
         ipt_last_name.setText(patient.getLastName());
-        ipt_todd_likelihood.setText(String.valueOf(patient.getToddLikelihood()));
+        ipt_todd_likelihood.setText(String.valueOf(patient.getToddLikelihood()) + "%");
 
         return convertView;
     }
