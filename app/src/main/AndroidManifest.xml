@@ -23,6 +23,9 @@
         <activity android:name=".SettingsActivity"
             android:label="@string/lbl_settings"
             android:parentActivityName=".MainActivity"/>
+        <provider
+            android:authorities="com.keemsa.sunshine"
+            android:name=".data.WeatherProvider"/>
     </application>
 
 </manifest>
