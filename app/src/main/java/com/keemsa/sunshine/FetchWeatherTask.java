@@ -173,6 +173,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             int columnIndex = cursor.getColumnIndex(WeatherContract.LocationEntry._ID);
             return cursor.getLong(columnIndex);
         }
+        cursor.close();
         return -1;
     }
 
