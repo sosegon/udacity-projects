@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
-        android:key="@string/prf_key_location"
+        android:key="@string/prf_location_key"
         android:title="@string/lbl_location"
-        android:defaultValue="@string/prf_default_location"
+        android:defaultValue="@string/prf_location_default"
         android:inputType="text"
         android:singleLine="true"/>
 
     <ListPreference
-        android:key="@string/prf_key_units"
+        android:key="@string/prf_units_key"
         android:title="@string/lbl_units"
         android:entries="@array/prf_entries_units"
         android:entryValues="@array/prf_values_units"
-        android:defaultValue="@string/prf_default_units"/>
+        android:defaultValue="@string/prf_units_default"/>
 </PreferenceScreen>
