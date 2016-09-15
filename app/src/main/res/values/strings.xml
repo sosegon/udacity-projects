@@ -13,15 +13,11 @@
 
     <string name="lbl_units">Units</string>
     <string name="prf_key_units" translatable="false">units</string>
-    <string name="prf_default_units" translatable="false">metric</string>
-    <string-array name="prf_entries_units">
-        <item>metric</item>
-        <item>imperial</item>
-    </string-array>
-    <string-array name="prf_values_units">
-        <item>metric</item>
-        <item>imperial</item>
-    </string-array>
+    <string name="prf_default_units" translatable="false">@string/prf_units_metric</string>
+    <string name="prf_units_metric" translatable="false">metric</string>
+    <string name="prf_units_imperial" translatable="false">imperial</string>
+    <string name="prf_units_lbl_metric">Metric</string>
+    <string name="prf_units_lbl_imperial">Imperial</string>
 
     <string name="lbl_map">See on map</string>
 

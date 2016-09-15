@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="prf_entries_units">
+        <item>@string/prf_units_lbl_metric</item>
+        <item>@string/prf_units_lbl_imperial</item>
+    </string-array>
+    <string-array name="prf_values_units">
+        <item>@string/prf_units_metric</item>
+        <item>@string/prf_units_imperial</item>
+    </string-array>
+</resources>
