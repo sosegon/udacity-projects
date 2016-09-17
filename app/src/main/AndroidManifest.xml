@@ -25,7 +25,9 @@
             android:parentActivityName=".MainActivity"/>
         <provider
             android:authorities="com.keemsa.sunshine"
-            android:name=".data.WeatherProvider"/>
+            android:name=".data.WeatherProvider"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
