@@ -24,7 +24,7 @@ import com.keemsa.sunshine.data.WeatherContract;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private TextView txt_forecast;
     private String sForecast;
@@ -72,7 +72,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Intent intent = getActivity().getIntent();
 
-        if(intent == null){
+        if (intent == null) {
             return null;
         }
         return new CursorLoader(
@@ -87,19 +87,19 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if(data.moveToFirst()){
+        if (data.moveToFirst()) {
             String sDate = Utility.formatDate(data.getLong(COL_DATE));
             String sDesc = data.getString(COL_SHORT_DESC);
 
             boolean isMetric = Utility.isMetric(getActivity());
 
-            String sHigh = Utility.formatTemperature(data.getDouble(COL_MAX_TEMP), isMetric);
-            String sLow = Utility.formatTemperature(data.getDouble(COL_MIN_TEMP), isMetric);
+            String sHigh = Utility.formatTemperature(getContext(), data.getDouble(COL_MAX_TEMP), isMetric);
+            String sLow = Utility.formatTemperature(getContext(), data.getDouble(COL_MIN_TEMP), isMetric);
 
             sForecast = String.format("%s - %s - %s/%s", sDate, sDesc, sLow, sHigh);
             txt_forecast.setText(sForecast);
 
-            if(mShareActionProvider != null){
+            if (mShareActionProvider != null) {
                 mShareActionProvider.setShareIntent(createShareForecastIntent());
             }
         }
@@ -119,7 +119,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
-        if(sForecast != null && mShareActionProvider != null){
+        if (sForecast != null && mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent());
         }
     }

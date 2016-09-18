@@ -33,6 +33,7 @@ public class ForecastAdapter extends CursorAdapter {
             lowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
         }
     }
+
     private ViewHolder holder;
 
     private final int VIEW_TYPE_TODAY = 0;
@@ -77,7 +78,7 @@ public class ForecastAdapter extends CursorAdapter {
      */
     private String formatHighLows(double high, double low) {
         boolean isMetric = Utility.isMetric(mContext);
-        String highLowStr = Utility.formatTemperature(high, isMetric) + "/" + Utility.formatTemperature(low, isMetric);
+        String highLowStr = Utility.formatTemperature(mContext, high, isMetric) + "/" + Utility.formatTemperature(mContext, low, isMetric);
         return highLowStr;
     }
 
@@ -126,10 +127,10 @@ public class ForecastAdapter extends CursorAdapter {
 
         // Read high temperature from cursor
         double high = cursor.getDouble(COL_WEATHER_MAX_TEMP);
-        holder.highTempView.setText(Utility.formatTemperature(high, isMetric));
+        holder.highTempView.setText(Utility.formatTemperature(mContext, high, isMetric));
 
         double low = cursor.getDouble(COL_WEATHER_MIN_TEMP);
-        holder.lowTempView.setText(Utility.formatTemperature(low, isMetric));
+        holder.lowTempView.setText(Utility.formatTemperature(mContext, low, isMetric));
 
         long date = cursor.getLong(COL_WEATHER_DATE);
         holder.dateView.setText(Utility.getFriendlyDayString(context, date));
