@@ -15,6 +15,25 @@ import com.keemsa.sunshine.data.WeatherContract;
  * Created by sebastian on 9/15/16.
  */
 public class ForecastAdapter extends CursorAdapter {
+    /**
+     * Cache of the children views for a forecast list item.
+     */
+    public static class ViewHolder {
+        public final ImageView iconView;
+        public final TextView dateView;
+        public final TextView descriptionView;
+        public final TextView highTempView;
+        public final TextView lowTempView;
+
+        public ViewHolder(View view) {
+            iconView = (ImageView) view.findViewById(R.id.list_item_icon);
+            dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
+            descriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
+            highTempView = (TextView) view.findViewById(R.id.list_item_high_textview);
+            lowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
+        }
+    }
+    private ViewHolder holder;
 
     private final int VIEW_TYPE_TODAY = 0;
     private final int VIEW_TYPE_FUTURE_DAY = 1;
@@ -85,7 +104,7 @@ public class ForecastAdapter extends CursorAdapter {
         int layoutId = viewType == 0 ? R.layout.list_item_forecast_today : R.layout.list_item_forecast;
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
-
+        holder = new ViewHolder(view);
         return view;
     }
 
@@ -100,28 +119,23 @@ public class ForecastAdapter extends CursorAdapter {
         // Read weather icon ID from cursor
         int weatherId = cursor.getInt(COL_WEATHER_ID);
         // Use placeholder image for now
-        ImageView iconView = (ImageView) view.findViewById(R.id.list_item_icon);
-        iconView.setImageResource(R.mipmap.ic_launcher);
+        holder.iconView.setImageResource(R.mipmap.ic_launcher);
 
         // Read user preference for metric or imperial temperature units
         boolean isMetric = Utility.isMetric(context);
 
         // Read high temperature from cursor
         double high = cursor.getDouble(COL_WEATHER_MAX_TEMP);
-        TextView highView = (TextView) view.findViewById(R.id.list_item_high_textview);
-        highView.setText(Utility.formatTemperature(high, isMetric));
+        holder.highTempView.setText(Utility.formatTemperature(high, isMetric));
 
         double low = cursor.getDouble(COL_WEATHER_MIN_TEMP);
-        TextView lowView = (TextView) view.findViewById(R.id.list_item_low_textview);
-        lowView.setText(Utility.formatTemperature(low, isMetric));
+        holder.lowTempView.setText(Utility.formatTemperature(low, isMetric));
 
         long date = cursor.getLong(COL_WEATHER_DATE);
-        TextView dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
-        dateView.setText(Utility.getFriendlyDayString(context, date));
+        holder.dateView.setText(Utility.getFriendlyDayString(context, date));
 
         String desc = cursor.getString(COL_WEATHER_DESC);
-        TextView descView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
-        descView.setText(desc);
+        holder.descriptionView.setText(desc);
     }
 
     @Override
