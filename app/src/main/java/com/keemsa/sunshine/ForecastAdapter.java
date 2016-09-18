@@ -16,6 +16,9 @@ import com.keemsa.sunshine.data.WeatherContract;
  */
 public class ForecastAdapter extends CursorAdapter {
 
+    private final int VIEW_TYPE_TODAY = 0;
+    private final int VIEW_TYPE_FUTURE_DAY = 1;
+
     static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
@@ -78,7 +81,10 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_forecast, parent, false);
+        int viewType = getItemViewType(cursor.getPosition());
+        int layoutId = viewType == 0 ? R.layout.list_item_forecast_today : R.layout.list_item_forecast;
+
+        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
 
         return view;
     }
@@ -116,5 +122,15 @@ public class ForecastAdapter extends CursorAdapter {
         String desc = cursor.getString(COL_WEATHER_DESC);
         TextView descView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
         descView.setText(desc);
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 }
