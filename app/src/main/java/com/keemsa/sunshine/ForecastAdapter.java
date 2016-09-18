@@ -113,7 +113,7 @@ public class ForecastAdapter extends CursorAdapter {
 
         double low = cursor.getDouble(COL_WEATHER_MIN_TEMP);
         TextView lowView = (TextView) view.findViewById(R.id.list_item_low_textview);
-        highView.setText(Utility.formatTemperature(low, isMetric));
+        lowView.setText(Utility.formatTemperature(low, isMetric));
 
         long date = cursor.getLong(COL_WEATHER_DATE);
         TextView dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
