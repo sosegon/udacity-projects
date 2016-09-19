@@ -52,7 +52,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
             WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
             WeatherContract.WeatherEntry.COLUMN_DEGREES,
-            WeatherContract.WeatherEntry.COLUMN_PRESSURE
+            WeatherContract.WeatherEntry.COLUMN_PRESSURE,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID
+
     };
 
     private static final int
@@ -64,7 +66,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             COL_HUMIDITY = 5,
             COL_WIND_SPEED = 6,
             COL_DEGREES = 7,
-            COL_PRESSURE = 8;
+            COL_PRESSURE = 8,
+            COL_WEATHER_CONDITION_ID = 9;
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -115,8 +118,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            int weatherId = data.getInt(COL_WEATHER_ID);
-            imv_detail_icon.setImageResource(R.mipmap.ic_launcher);
+            int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);
+            imv_detail_icon.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
 
             long date = data.getLong(COL_DATE);
             String friendlyDateText = Utility.getDayName(getContext(), date);

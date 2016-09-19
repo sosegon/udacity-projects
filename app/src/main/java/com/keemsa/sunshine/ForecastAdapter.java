@@ -114,13 +114,15 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // our view is pretty simple here --- just a text view
-        // we'll keep the UI functional with a simple (and slow!) binding.
 
-        // Read weather icon ID from cursor
-        int weatherId = cursor.getInt(COL_WEATHER_ID);
-        // Use placeholder image for now
-        holder.iconView.setImageResource(R.mipmap.ic_launcher);
+        int weatherId = cursor.getInt(COL_WEATHER_CONDITION_ID);
+        int viewType = getItemViewType(cursor.getPosition());
+        if (viewType == 0){
+            holder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+        }
+        else{
+            holder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
+        }
 
         // Read user preference for metric or imperial temperature units
         boolean isMetric = Utility.isMetric(context);
