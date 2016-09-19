@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.keemsa.sunshine.data.WeatherContract;
@@ -26,7 +27,16 @@ import com.keemsa.sunshine.data.WeatherContract;
  */
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private TextView txt_forecast;
+    private TextView
+            txt_detail_day,
+            txt_detail_date,
+            txt_detail_max_temp,
+            txt_detail_min_temp,
+            txt_detail_humidity,
+            txt_detail_wind,
+            txt_detail_pressure,
+            txt_detail_forecast;
+    private ImageView imv_detail_icon;
     private String sForecast;
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
@@ -38,14 +48,23 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
-            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
+            WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherContract.WeatherEntry.COLUMN_DEGREES,
+            WeatherContract.WeatherEntry.COLUMN_PRESSURE
     };
 
-    private static final int COL_WEATHER_ID = 0;
-    private static final int COL_DATE = 1;
-    private static final int COL_SHORT_DESC = 2;
-    private static final int COL_MIN_TEMP = 3;
-    private static final int COL_MAX_TEMP = 4;
+    private static final int
+            COL_WEATHER_ID = 0,
+            COL_DATE = 1,
+            COL_SHORT_DESC = 2,
+            COL_MIN_TEMP = 3,
+            COL_MAX_TEMP = 4,
+            COL_HUMIDITY = 5,
+            COL_WIND_SPEED = 6,
+            COL_DEGREES = 7,
+            COL_PRESSURE = 8;
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -57,7 +76,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        txt_forecast = (TextView) view.findViewById(R.id.txt_forecast);
+        txt_detail_day = (TextView) view.findViewById(R.id.txt_detail_day);
+        txt_detail_date = (TextView) view.findViewById(R.id.txt_detail_date);
+        txt_detail_max_temp = (TextView) view.findViewById(R.id.txt_detail_max_temp);
+        txt_detail_min_temp = (TextView) view.findViewById(R.id.txt_detail_min_temp);
+        txt_detail_humidity = (TextView) view.findViewById(R.id.txt_detail_humidity);
+        txt_detail_wind = (TextView) view.findViewById(R.id.txt_detail_wind);
+        txt_detail_pressure = (TextView) view.findViewById(R.id.txt_detail_pressure);
+        txt_detail_forecast = (TextView) view.findViewById(R.id.txt_detail_forecast);
+        imv_detail_icon = (ImageView) view.findViewById(R.id.imv_detail_icon);
 
         return view;
     }
@@ -88,16 +115,43 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.moveToFirst()) {
-            String sDate = Utility.formatDate(data.getLong(COL_DATE));
-            String sDesc = data.getString(COL_SHORT_DESC);
+            int weatherId = data.getInt(COL_WEATHER_ID);
+            imv_detail_icon.setImageResource(R.mipmap.ic_launcher);
+
+            long date = data.getLong(COL_DATE);
+            String friendlyDateText = Utility.getDayName(getContext(), date);
+            String dateText = Utility.getFormattedMonthDay(getContext(), date);
+            txt_detail_date.setText(friendlyDateText);
+            txt_detail_day.setText(dateText);
+
+            // Read description from cursor and update view
+            String description = data.getString(COL_SHORT_DESC);
+            txt_detail_forecast.setText(description);
 
             boolean isMetric = Utility.isMetric(getActivity());
 
-            String sHigh = Utility.formatTemperature(getContext(), data.getDouble(COL_MAX_TEMP), isMetric);
-            String sLow = Utility.formatTemperature(getContext(), data.getDouble(COL_MIN_TEMP), isMetric);
+            String sDate = Utility.formatDate(data.getLong(COL_DATE));
 
-            sForecast = String.format("%s - %s - %s/%s", sDate, sDesc, sLow, sHigh);
-            txt_forecast.setText(sForecast);
+            String sHigh = Utility.formatTemperature(getContext(), data.getDouble(COL_MAX_TEMP), isMetric);
+            txt_detail_max_temp.setText(sHigh);
+
+            String sLow = Utility.formatTemperature(getContext(), data.getDouble(COL_MIN_TEMP), isMetric);
+            txt_detail_min_temp.setText(sLow);
+
+            double humidity = data.getDouble(COL_HUMIDITY);
+            txt_detail_humidity.setText(getString(R.string.format_humidity, humidity));
+
+            double wind = data.getDouble(COL_WIND_SPEED);
+            double degrees = data.getDouble(COL_DEGREES);
+            String direction = Utility.getFormattedWind(getContext(), (float) wind, (float) degrees);
+            txt_detail_wind.setText(direction);
+
+            double pressure = data.getDouble(COL_PRESSURE);
+            txt_detail_pressure.setText(getString(R.string.format_pressure, pressure));
+
+            String sDesc = data.getString(COL_SHORT_DESC);
+            txt_detail_forecast.setText(sDesc);
+
 
             if (mShareActionProvider != null) {
                 mShareActionProvider.setShareIntent(createShareForecastIntent());
@@ -143,3 +197,5 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         return shareIntent;
     }
 }
+
+
