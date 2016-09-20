@@ -3,6 +3,7 @@ package com.keemsa.sunshine;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,6 +39,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             txt_detail_forecast;
     private ImageView imv_detail_icon;
     private String sForecast;
+    private Uri mUri;
+    static final String DETAIL_URI = "URI";
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
     private ShareActionProvider mShareActionProvider;
@@ -76,6 +79,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mUri = arguments.getParcelable(DetailFragment.DETAIL_URI);
+        }
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
@@ -100,14 +109,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Intent intent = getActivity().getIntent();
 
-        if (intent == null || intent.getData() == null) {
+        if (mUri == null) {
             return null;
         }
         return new CursorLoader(
                 getContext(),
-                intent.getData(),
+                mUri,
                 FORECAST_COLUMNS,
                 null,
                 null,
@@ -190,6 +198,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void onLocationChanged( String newLocation ) {
+        // replace the uri, since the location has changed
+        Uri uri = mUri;
+        if (null != uri) {
+            long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
+            Uri updatedUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(newLocation, date);
+            mUri = updatedUri;
+            getLoaderManager().restartLoader(WEATHER_WITH_LOCATION_AND_DATE_LOADER, null, this);
+        }
     }
 
     private Intent createShareForecastIntent() {

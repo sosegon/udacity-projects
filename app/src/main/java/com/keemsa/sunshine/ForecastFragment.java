@@ -28,8 +28,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private String mLocation;
     private ForecastAdapter adapter;
+    private Callback mCallback;
 
     private static final int WEATHER_LOADER_ID = 1;
+
+    public interface Callback{
+        public void onItemSelected(Uri dateUri);
+    }
 
     public ForecastFragment() {
         setHasOptionsMenu(true);
@@ -50,20 +55,20 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // Init loader
         getLoaderManager().initLoader(WEATHER_LOADER_ID, null, this);
 
-        // Add listener to detailed view
-        final String locationSetting = Utility.getPreferredLocation(getContext());
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor cursor = (Cursor) lv.getItemAtPosition(i);
-                Intent intent = new Intent(getContext(), DetailActivity.class);
-                intent.setData(
-                        WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                locationSetting,
-                                cursor.getLong(ForecastAdapter.COL_WEATHER_DATE)
-                        )
-                );
-                startActivity(intent);
+                if(cursor != null){
+                    String locationSetting = Utility.getPreferredLocation(getContext());
+                    ((Callback) getContext())
+                            .onItemSelected(
+                                    WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                            locationSetting,
+                                            cursor.getLong(ForecastAdapter.COL_WEATHER_DATE)
+                                    )
+                            );
+                }
             }
         });
 
