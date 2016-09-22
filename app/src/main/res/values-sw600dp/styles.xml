@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="lv_forecast">
+        <item name="android:choiceMode">singleChoice</item>
+    </style>
+
+</resources>
