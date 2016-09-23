@@ -8,7 +8,7 @@ Android Ice Cream Sandwich (v14) or higher.
 
 ## Installation
 
-Download the apk from [here](https://www.dropbox.com/s/4v9ec97rrvra99t/popular_movies.apk?dl=0) to your Android device.
+Download the apk from [here](https://github.com/sosegon/popular-movies/raw/master/app/build/outputs/apk/app-debug-unaligned.apk) to your Android device.
 
 Make sure your device allows to install applications from external sources.
 
