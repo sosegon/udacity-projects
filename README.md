@@ -8,7 +8,7 @@ Android Gingerbread (v10) or higher.
 
 ## Installation
 
-Download the apk from [here](https://www.dropbox.com/s/g7lxc9nhbfw79si/basketball_scores.apk?dl=0) to your Android device.
+Download the apk from [here](https://github.com/sosegon/basketball-scores/raw/master/app/build/outputs/apk/app-debug.apk) to your Android device.
 
 Make sure your device allows to install applications from external sources.
 
