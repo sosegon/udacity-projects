@@ -8,7 +8,7 @@ Android Ice Cream Sandwich (v14) or higher.
 
 ## Installation
 
-Download the apk from [here](https://www.dropbox.com/s/xpkw0gi8kecmwpf/book_listing.apk?dl=0) to your Android device.
+Download the apk from [here](https://github.com/sosegon/book-listing/raw/master/app/build/outputs/apk/app-release-unaligned.apk) to your Android device.
 
 Make sure your device allows to install applications from external sources.
 
