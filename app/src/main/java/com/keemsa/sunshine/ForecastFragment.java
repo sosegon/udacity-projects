@@ -23,7 +23,7 @@ import android.widget.ListView;
 
 import com.keemsa.sunshine.data.WeatherContract;
 
-public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private String mLocation;
@@ -32,16 +32,17 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private final String POSITION_ITEM_SELECTED = "position_item_selected";
     private int item_position;
     private ListView lv;
+    private boolean useTodayLayout;
 
     private static final int WEATHER_LOADER_ID = 1;
 
-    public interface Callback{
+    public interface Callback {
         void onItemSelected(Uri dateUri);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if(item_position != ListView.INVALID_POSITION){
+        if (item_position != ListView.INVALID_POSITION) {
             outState.putInt(POSITION_ITEM_SELECTED, item_position);
         }
         super.onSaveInstanceState(outState);
@@ -70,7 +71,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor cursor = (Cursor) lv.getItemAtPosition(i);
-                if(cursor != null){
+                if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getContext());
                     ((Callback) getContext())
                             .onItemSelected(
@@ -84,7 +85,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(POSITION_ITEM_SELECTED)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(POSITION_ITEM_SELECTED)) {
             item_position = savedInstanceState.getInt(POSITION_ITEM_SELECTED);
         }
 
@@ -94,7 +95,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         return view;
     }
 
-    public void onLocationChanged(){
+    public void onLocationChanged() {
         updateWeather();
         getLoaderManager().restartLoader(WEATHER_LOADER_ID, null, this);
     }
@@ -122,7 +123,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         adapter.swapCursor(data);
-        if(item_position != ListView.INVALID_POSITION) {
+        if (item_position != ListView.INVALID_POSITION) {
             lv.smoothScrollToPosition(item_position);
         }
     }
@@ -143,7 +144,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         super.onResume();
 
         String location = Utility.getPreferredLocation(getContext());
-        if(location != null && !mLocation.equals(location)){
+        if (location != null && !mLocation.equals(location)) {
             onLocationChanged();
             mLocation = location;
         }
@@ -189,5 +190,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         FetchWeatherTask task = new FetchWeatherTask(this.getContext());
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         task.execute(pref.getString(getString(R.string.prf_location_key), getString(R.string.prf_location_default)));
+    }
+
+    public void setUseTodayLayout(boolean value) {
+        useTodayLayout = value;
+        if (adapter != null) {
+            adapter.setUseTodayLayout(useTodayLayout);
+        }
     }
 }
