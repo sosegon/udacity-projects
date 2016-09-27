@@ -23,8 +23,12 @@
     <style name="SettingsTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
     </style>
 
+    <!-- List Item Forecast -->
+    <style name="list_text">
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
     <style name="lv_forecast">
 
     </style>
-
 </resources>
