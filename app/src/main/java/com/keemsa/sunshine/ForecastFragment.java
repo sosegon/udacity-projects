@@ -29,11 +29,22 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private String mLocation;
     private ForecastAdapter adapter;
     private Callback mCallback;
+    private final String POSITION_ITEM_SELECTED = "position_item_selected";
+    private int item_position;
+    private ListView lv;
 
     private static final int WEATHER_LOADER_ID = 1;
 
     public interface Callback{
-        public void onItemSelected(Uri dateUri);
+        void onItemSelected(Uri dateUri);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(item_position != ListView.INVALID_POSITION){
+            outState.putInt(POSITION_ITEM_SELECTED, item_position);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     public ForecastFragment() {
@@ -49,7 +60,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         // The layout has to be inflated before searching for elements on it
         adapter = new ForecastAdapter(getContext(), null, 0);
-        final ListView lv = (ListView) view.findViewById(R.id.listview_forecast);
+        lv = (ListView) view.findViewById(R.id.listview_forecast);
         lv.setAdapter(adapter);
 
         // Init loader
@@ -69,8 +80,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                                     )
                             );
                 }
+                item_position = i;
             }
         });
+
+        if(savedInstanceState != null && savedInstanceState.containsKey(POSITION_ITEM_SELECTED)) {
+            item_position = savedInstanceState.getInt(POSITION_ITEM_SELECTED);
+        }
 
         // set mLocation
         mLocation = Utility.getPreferredLocation(getContext());
@@ -106,6 +122,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         adapter.swapCursor(data);
+        if(item_position != ListView.INVALID_POSITION) {
+            lv.smoothScrollToPosition(item_position);
+        }
     }
 
     @Override
