@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.keemsa.sunshine.data.WeatherContract;
+import com.keemsa.sunshine.service.SunshineService;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -187,9 +188,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void updateWeather() {
-        FetchWeatherTask task = new FetchWeatherTask(this.getContext());
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        task.execute(pref.getString(getString(R.string.prf_location_key), getString(R.string.prf_location_default)));
+        Intent intent = new Intent(getContext(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getContext()));
+        getContext().startService(intent);
     }
 
     public void setUseTodayLayout(boolean value) {
