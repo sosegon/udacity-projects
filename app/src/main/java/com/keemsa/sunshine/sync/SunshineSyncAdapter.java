@@ -272,6 +272,10 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                         cVVector.toArray(new ContentValues[cVVector.size()])
                 );
 
+                getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
+                        WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
+                        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay - 1))});
+
                 notifyWeather();
             }
 
