@@ -1,11 +1,9 @@
 package com.keemsa.sunshine;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -170,20 +168,27 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void openPreferredLocationMap() {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String location = pref.getString(getString(R.string.prf_location_key), getString(R.string.prf_location_default));
+        // Using the URI scheme for showing a location found on a map.  This super-handy
+        // intent can is detailed in the "Common Intents" page of Android's developer site:
+        // http://developer.android.com/guide/components/intents-common.html#Maps
+        if ( null != adapter ) {
+            Cursor c = adapter.getCursor();
+            if ( null != c ) {
+                c.moveToPosition(0);
+                String posLat = c.getString(adapter.COL_COORD_LAT);
+                String posLong = c.getString(adapter.COL_COORD_LONG);
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
 
-        Uri geolocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", location)
-                .build();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geolocation);
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                }
+            }
 
-        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(LOG_TAG, "Could not call " + location + ", no receiving apps installed");
         }
     }
 
