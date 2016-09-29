@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.keemsa.sunshine.sync.SunshineSyncAdapter;
+
 public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
     private String mLocation;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
         ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
         forecastFragment.setUseTodayLayout(!mTwoPane);
+
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
