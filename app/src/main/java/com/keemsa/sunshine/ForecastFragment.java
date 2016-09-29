@@ -1,8 +1,5 @@
 package com.keemsa.sunshine;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -25,7 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.keemsa.sunshine.data.WeatherContract;
-import com.keemsa.sunshine.service.SunshineService;
+import com.keemsa.sunshine.sync.SunshineSyncAdapter;
 
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -191,12 +188,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     private void updateWeather() {
-        Intent alarmIntent = new Intent(getContext(), SunshineService.AlarmReceiver.class);
-        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getContext()));
-
-        PendingIntent pi = PendingIntent.getBroadcast(getContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager am = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+//        Intent alarmIntent = new Intent(getContext(), SunshineService.AlarmReceiver.class);
+//        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getContext()));
+//
+//        PendingIntent pi = PendingIntent.getBroadcast(getContext(), 0, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+//        AlarmManager am = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+//        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+        SunshineSyncAdapter.syncImmediately(getContext());
     }
 
     public void setUseTodayLayout(boolean value) {
