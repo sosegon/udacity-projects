@@ -143,10 +143,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             String sDate = Utility.formatDate(data.getLong(COL_DATE));
 
-            String sHigh = Utility.formatTemperature(getContext(), data.getDouble(COL_MAX_TEMP), isMetric);
+            String sHigh = Utility.formatTemperature(getContext(), data.getDouble(COL_MAX_TEMP));
             txt_detail_max_temp.setText(sHigh);
 
-            String sLow = Utility.formatTemperature(getContext(), data.getDouble(COL_MIN_TEMP), isMetric);
+            String sLow = Utility.formatTemperature(getContext(), data.getDouble(COL_MIN_TEMP));
             txt_detail_min_temp.setText(sLow);
 
             double humidity = data.getDouble(COL_HUMIDITY);
