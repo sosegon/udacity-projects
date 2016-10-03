@@ -9,6 +9,7 @@ import android.os.Parcelable;
 public class Movie implements Parcelable {
     private String title, posterUrl, synopsis, releaseDate;
     private float rating;
+    private long id;
 
     public Movie(String title, String synopsis, String posterUrl, String releaseDate, float rating) {
         this.posterUrl = posterUrl;
@@ -28,6 +29,7 @@ public class Movie implements Parcelable {
         title = in.readString();
         synopsis = in.readString();
         rating = in.readFloat();
+        id = in.readLong();
     }
 
     public int year() {
@@ -51,6 +53,7 @@ public class Movie implements Parcelable {
         parcel.writeString(title);
         parcel.writeString(synopsis);
         parcel.writeFloat(rating);
+        parcel.writeLong(id);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
@@ -103,5 +106,13 @@ public class Movie implements Parcelable {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
