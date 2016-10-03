@@ -21,8 +21,13 @@
         <activity
             android:name=".MovieDetailsActivity"
             android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".SettingsActivity"
+        <activity
+            android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"></activity>
+
+        <provider
+            android:name="com.keemsa.popularmovies.provider.MovieProvider"
+            android:authorities="com.keemsa.popularmovies" />
     </application>
 
 </manifest>
