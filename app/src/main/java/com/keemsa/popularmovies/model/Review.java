@@ -6,12 +6,14 @@ package com.keemsa.popularmovies.model;
 public class Review {
 
     private String id, author, content, url;
+    private long movieId;
 
-    public Review(String id, String author, String content, String url) {
+    public Review(String id, String author, String content, String url, long movieId) {
         this.id = id;
         this.author = author;
         this.content = content;
         this.url = url;
+        this.movieId = movieId;
     }
 
     public String getId() {
@@ -44,5 +46,13 @@ public class Review {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public long getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(long movieId) {
+        this.movieId = movieId;
     }
 }
