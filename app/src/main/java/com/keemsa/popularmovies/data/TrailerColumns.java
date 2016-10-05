@@ -12,7 +12,7 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
  * Created by sebastian on 10/4/16.
  */
 public interface TrailerColumns {
-    @DataType(INTEGER)
+    @DataType(TEXT)
     @PrimaryKey
     String _ID = "_id";
 
