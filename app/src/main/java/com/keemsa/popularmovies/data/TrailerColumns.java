@@ -24,6 +24,14 @@ public interface TrailerColumns {
     @NotNull
     String KEY = "key";
 
+    @DataType(TEXT)
+    @NotNull
+    String NAME = "name";
+
+    @DataType(TEXT)
+    @NotNull
+    String TYPE = "type";
+
     @DataType(INTEGER)
     @References(table = MovieDatabase.MOVIE, column = MovieColumns._ID)
     String MOVIE_ID = "movie_id";

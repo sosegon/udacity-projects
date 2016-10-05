@@ -5,13 +5,15 @@ package com.keemsa.popularmovies.model;
  */
 public class Trailer {
 
-    private String id, site, key;
+    private String id, site, key, name, type;
     private long movieId;
 
-    public Trailer(String id, String site, String key, long movieId) {
+    public Trailer(String id, String site, String key, String name, String type, long movieId) {
         this.id = id;
         this.site = site;
         this.key = key;
+        this.name = name;
+        this.type = type;
         this.movieId = movieId;
     }
 
@@ -45,5 +47,21 @@ public class Trailer {
 
     public void setMovieId(long movieId) {
         this.movieId = movieId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

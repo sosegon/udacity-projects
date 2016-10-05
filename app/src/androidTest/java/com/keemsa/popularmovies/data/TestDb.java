@@ -1,9 +1,9 @@
 package com.keemsa.popularmovies.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import com.keemsa.popularmovies.provider.MovieDatabase;
 
@@ -76,6 +76,8 @@ public class TestDb extends AndroidTestCase {
         trailer_columns.add(TrailerColumns._ID);
         trailer_columns.add(TrailerColumns.KEY);
         trailer_columns.add(TrailerColumns.SITE);
+        trailer_columns.add(TrailerColumns.NAME);
+        trailer_columns.add(TrailerColumns.TYPE);
         trailer_columns.add(TrailerColumns.MOVIE_ID);
 
         HashSet<String> review_columns = new HashSet<String>();
