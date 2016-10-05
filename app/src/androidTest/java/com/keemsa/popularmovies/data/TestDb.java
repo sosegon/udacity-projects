@@ -17,7 +17,7 @@ public class TestDb extends AndroidTestCase {
     public static final String LOG_TAG = TestDb.class.getSimpleName();
 
     void deleteDatabase() {
-        mContext.deleteDatabase(MovieDatabase.class.getSimpleName());
+        mContext.deleteDatabase(MovieDatabase.getInstance(mContext).getDatabaseName());
     }
 
     public void setUp() {
@@ -104,5 +104,138 @@ public class TestDb extends AndroidTestCase {
         }
 
         db.close();
+    }
+
+    public void testMovieTable() {
+        setUp();
+
+        SQLiteDatabase db = MovieDatabase.getInstance(mContext).getWritableDatabase();
+        ContentValues contentMovie = TestUtilities.createMovieValues();
+
+        // Insert ContentValues in db
+        long id = db.insert(com.keemsa.popularmovies.data.MovieDatabase.MOVIE, null, contentMovie);
+
+        assertTrue(id != -1); // Successfully inserted
+
+        Cursor c = db.query(
+                com.keemsa.popularmovies.data.MovieDatabase.MOVIE, // Table
+                null, // columns
+                MovieColumns._ID + " = ?", // selection
+                new String[]{contentMovie.get(MovieColumns._ID).toString()}, // selection args
+                null, // groupBy
+                null, // having
+                null, // orderBy
+                null // limit
+        );
+
+        TestUtilities.validateCursor("", c, contentMovie);
+
+        assertFalse("Error: more than one record returned from movie query", c.moveToNext());
+
+        c.close();
+        db.close();
+    }
+
+    public void testFavMovieTable() {
+        setUp();
+
+        SQLiteDatabase db = MovieDatabase.getInstance(mContext).getWritableDatabase();
+        ContentValues contentMovie = TestUtilities.createMovieValues();
+
+        // Insert ContentValues in db
+        long id = db.insert(com.keemsa.popularmovies.data.MovieDatabase.FAV_MOVIE, null, contentMovie);
+
+        assertTrue(id != -1); // Successfully inserted
+
+        Cursor c = db.query(
+                com.keemsa.popularmovies.data.MovieDatabase.FAV_MOVIE, // Table
+                null, // columns
+                FavMovieColumns._ID + " = ?", // selection
+                new String[]{contentMovie.get(FavMovieColumns._ID).toString()}, // selection args
+                null, // groupBy
+                null, // having
+                null, // orderBy
+                null // limit
+        );
+
+        TestUtilities.validateCursor("", c, contentMovie);
+
+        assertFalse("Error: more than one record returned from movie query", c.moveToNext());
+
+        c.close();
+        db.close();
+    }
+
+    public void testTrailerTable() {
+        setUp();
+
+        // Insert movie to make sure there is a row with the foreign key indicated by the trailer
+        long id = insertMovie();
+        assertTrue(id != -1);
+
+        SQLiteDatabase db = MovieDatabase.getInstance(mContext).getWritableDatabase();
+        // Insert ContentValues in db
+        ContentValues contentTrailer = TestUtilities.createTrailerValues();
+        id = db.insert(com.keemsa.popularmovies.data.MovieDatabase.TRAILER, null, contentTrailer);
+
+        assertTrue(id != -1); // Successfully inserted
+        Cursor c = db.query(
+                com.keemsa.popularmovies.data.MovieDatabase.TRAILER, // Table
+                null, // columns
+                TrailerColumns._ID + " = ? and " + TrailerColumns.MOVIE_ID + " = ?", // selection
+                new String[]{contentTrailer.getAsString(TrailerColumns._ID), contentTrailer.getAsString(TrailerColumns.MOVIE_ID)}, // selection args
+                null, // groupBy
+                null, // having
+                null, // orderBy
+                null // limit
+        );
+
+        TestUtilities.validateCursor("", c, contentTrailer);
+
+        assertFalse("Error: more than one record returned from movie query", c.moveToNext());
+
+        c.close();
+        db.close();
+    }
+
+    public void testReviewTable() {
+        setUp();
+
+        // Insert movie to make sure there is a row with the foreign key indicated by the trailer
+        long id = insertMovie();
+        assertTrue(id != -1);
+
+        SQLiteDatabase db = MovieDatabase.getInstance(mContext).getWritableDatabase();
+        // Insert ContentValues in db
+        ContentValues contentReview = TestUtilities.createReviewValues();
+        id = db.insert(com.keemsa.popularmovies.data.MovieDatabase.REVIEW, null, contentReview);
+
+        assertTrue(id != -1); // Successfully inserted
+
+        Cursor c = db.query(
+                com.keemsa.popularmovies.data.MovieDatabase.REVIEW, // Table
+                null, // columns
+                ReviewColumns._ID + " = ? and " + ReviewColumns.MOVIE_ID + " = ?", // selection
+                new String[]{contentReview.get(ReviewColumns._ID).toString(), contentReview.get(ReviewColumns.MOVIE_ID).toString()}, // selection args
+                null, // groupBy
+                null, // having
+                null, // orderBy
+                null // limit
+        );
+
+        TestUtilities.validateCursor("", c, contentReview);
+
+        assertFalse("Error: more than one record returned from movie query", c.moveToNext());
+
+        c.close();
+        db.close();
+    }
+
+    public long insertMovie() {
+        SQLiteDatabase db = MovieDatabase.getInstance(mContext).getWritableDatabase();
+        ContentValues movieValues = TestUtilities.createMovieValues();
+        long id = db.insert(com.keemsa.popularmovies.data.MovieDatabase.MOVIE, null, movieValues);
+        db.close();
+        return id;
     }
 }

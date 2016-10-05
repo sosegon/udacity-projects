@@ -1,0 +1,73 @@
+package com.keemsa.popularmovies.data;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.test.AndroidTestCase;
+
+import com.keemsa.popularmovies.Utility;
+
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Created by sebastian on 10/4/16.
+ */
+public class TestUtilities extends AndroidTestCase {
+
+    static ContentValues createMovieValues() {
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(MovieColumns._ID, 333484);
+        movieValues.put(MovieColumns.TITLE, "The Magnificent Seven");
+        movieValues.put(MovieColumns.SYNOPSIS, "A big screen remake of John Sturges' classic western The Magnificent Seven, itself a remake of Akira Kurosawa's Seven Samurai. Seven gun men in the old west gradually come together to help a poor village against savage thieves.");
+        movieValues.put(MovieColumns.POSTER_URL, "z6BP8yLwck8mN9dtdYKkZ4XGa3D.jpg");
+        movieValues.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-09-14"));
+        movieValues.put(MovieColumns.RATING, 4.7);
+
+        return movieValues;
+    }
+
+    static ContentValues createTrailerValues() {
+        ContentValues trailerValues = new ContentValues();
+        trailerValues.put(TrailerColumns._ID, "5797609fc3a36865ae0021cd");
+        trailerValues.put(TrailerColumns.KEY, "q-RBA0xoaWU");
+        trailerValues.put(TrailerColumns.SITE, "YouTube");
+        trailerValues.put(TrailerColumns.NAME, "Official Trailer");
+        trailerValues.put(TrailerColumns.TYPE, "Trailer");
+        trailerValues.put(TrailerColumns.MOVIE_ID, 333484L);
+
+        return trailerValues;
+    }
+
+    static ContentValues createReviewValues() {
+        ContentValues reviewValues = new ContentValues();
+        reviewValues.put(ReviewColumns._ID, "57e8d5e9c3a3687c180059c9");
+        reviewValues.put(ReviewColumns.AUTHOR, "Frank Ochieng");
+        reviewValues.put(ReviewColumns.CONTENT, "The western genre has gradually been making its way back into the cinematic fold. Recent dusty trail ditties such as David McKenzie's modern-day _Hell or High Water_ or Quentin Tarantino's _The Hateful Eight_ have proven to be recent saddle-tested gems that enthusiastically put cowpoke enthusiasts in movie theater seats. Furthermore, what would Hollywood do if it did not predictably invite yet another remake of a classic film into the moviegoers' mindset? Hence, director Antoine Fuqua takes a challenging stab at generating interest in his latest workman-like western shoot 'em up in the millennium-made version of **The Magnificent Seven**. \\r\\n\\r\\nNaturally, Fuqua's chaotic and calculating gun-toting actioner is an updated remake of director John Sturges's 1960 film that starred late iconic box office big stars such as Yul Brynner, Steve McQueen, Charles Bronson and Eli Wallach. Of course in return Sturges's borrowed his artistic gun-for-hire gumption from legendary Japanese auteur Akiro Kurosawa's vintage and influential _Seven Samurai_. Fuqua, whose gritty urban police drama _Training Day_ secured a Best Actor Oscar for his **The Magnificent Seven** leading man in two-time Academy Award winner Denzel Washington, takes on the retelling of his particular _Seven_ with feisty fury. One would not necessary anoint Fuqua's outlaw tale as a superior successor to Sturges's borrowed blueprint from Kurosawa. However, Fuqua's array of blazing bullets from his bunch of rag tag bad boys has its own distinctive sense of decorative dare and destruction that feels authentic.\\r\\n\\r\\nScreenwriters Nic Pizzolatto (\\\"True Detective\\\")and Richard Wenk deliver an unapologetic script that calls for high body counts, old-fashioned showdowns and a wild west waywardness that swaggers courtesy of Fuqua's corrosive crew. The popcorn entertainment in **The Magnificent Seven** is strictly in guilty pleasure territory so there is no need to tighten up your holsters for all you little buckaroos that are eager to wallow in Fuqua's cutthroat corral of gunslingers.   \\r\\n\\r\\nMustached bounty hunter Sam Chisolm (Washington) is the all-dressed-in-black avenger whose mission is to provide protection for the town of Rose Creek, New Mexico. In his ambitious bid to save the jeopardized Rose Creek he must assembled a group of skilled gunmen able to stand up to the diabolical powers-that-be that look to foster the on-going havoc that prevails. \\r\\n\\r\\nSpecifically, Rose Creek is under the dastardly control of the diabolical Bartholomew Bogue (Peter Sarsgaard) that rules the town with an iron fist. The opening scene demonstrates how nefarious Bogue is at heart because he has no qualms about seizing land from its vulnerable owners or quieting down his critics with intimidating force. Basically, Bogue and his hideous henchmen are not to be reckoned with at all--unless you are willing to match wicked-minded wits with the raw and rough Chisolm and his gun-wielding renegades.\\r\\n\\r\\nRose Creek resident Emma Cullen (Haley Bennett, \\\"Music in Lyrics\\\", \\\"The Girl on the Train\\\") steps up to the plate in her effort to confront the nasty Bogue the only best way she knows how--hiring the capable and crafty collection of the Seven to contain this intimidating menace.\\r\\n\\r\\nJoining Chisolm in his bloody quest to rescue Rose Creek from Bogue's disturbing clutches are explosives expert gambler Josh Farraday (Chris Pratt), and conflicted sharpshooter Goodnight Robicheaux (Ethan Hawke reuniting with his \\\"Training Day\\\" director and co-star Fuqua and Washington). The rest of the tag-a-longs include the outlandishly bearded Jack Horne (Vincent D'Onofrio from TV's \\\"Law & Order: Criminal Intent\\\"), Billy Rocks (Byung-hun Lee), Vasquez (Manuel Garcia-Rulfo) and Red Harvest (Martin Seinsmeier). Together, the anti-heroes known as the Magnificent Seven hope to meet the expectations of Emma's (and the town's) cause and eradicate the villainous Bogue by any means necessary.    \\r\\n\\r\\n**The Magnificent Seven** certainly does not have any pretensions about posing as a conscious-minded, revisionist western as it definitely does not have the prolific pedigree such as Clint Eastwood's _Unforgiven_ for instance. Nevertheless, the film does have a devilish impishness as its main function is to echo an exaggerated rustic feel to its throwback acknowledgement when westerns of yesteryear were just plain frivolous and furious without any particular rhyme or reason.\\r\\n\\r\\nSure, the characters have really no inside depth beyond their taste for roughshod recklessness and wild tumbleweed theatrics. This is not necessarily a bad thing to consider in Fuqua's **The Magnificent Seven** because the name of the game is serving up an escapist need for its giddy-up rush for the senses. Indeed, Washington and company will not make anybody forget the aforementioned Brynner and his squad from nearly six decades ago. Still, this particular _Seven_ has its own kind of favorable punch to savor. \\r\\n\\r\\nThe notable names in _Seven_ do rise to the occasion within the context of this otherwise basic story of the wannabe borderline good guys versus the bombastic bad guys. Washington's Chisolm is solidly smooth as charismatic as the leader of the pack. Pratt's Farraday is a charming hoot as the roguish gambling cad. Hawke's Goodnight does a decent job portraying the talented gun handler simply trying to get his groove back due to his shaken confidence from a prior incident (yes, the catchy movie moniker of Goodnight Robicheaux is a keeper to say the least). And D'Onofrio's amusing Horne is deliciously irreverent. The always adventurous Sarsgaard comes to life as the vile wonder whose presence inspires the Seven to tap into vengeance mode. \\r\\n\\r\\nAt the end of the roundup it is quite clear that **The Magnificent Seven** wants to lasso its penchant for resembling a showy Hollywood western even if it is at the expense of lifting its rowdy roots from the likes of its highly regarded predecessors from golden cinema's treasured past.    \\r\\n\\r\\n**The Magnificent Seven** (2016)\\r\\n\\r\\nSony Pictures\\r\\n\\r\\n2 hrs. 12 mins.\\r\\n\\r\\nStarring: Denzel Washington, Chris Pratt, Ethan Hawke, Peter Sarsgaard, Haley Bennett, Vincent D'Onofrio, Byung-hun Lee, Maunel Garcia Rulfo, Martin Sensmeier\\r\\n\\r\\nDirected by: Antoine Fuqua\\r\\n\\r\\nMPAA Rating: PG-13\\r\\n\\r\\nGenre: Western\\/Drama\\/Action and Adventure\\r\\n\\r\\nCritic's rating: ** 1\\/2 stars (out of 4 stars)\\r\\n\\r\\n(c) **Frank Ochieng** 2016\",\n");
+        reviewValues.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57e8d5e9c3a3687c180059c9");
+        reviewValues.put(ReviewColumns.MOVIE_ID, 333484L);
+
+        return reviewValues;
+    }
+
+    static void validateCursor(String error, Cursor cursor, ContentValues expectedValues) {
+        assertTrue("Empty cursor returned. " + error, cursor.moveToFirst());
+        validateCurrentRecord(error, cursor, expectedValues);
+        cursor.close();
+    }
+
+    static void validateCurrentRecord(String error, Cursor cursor, ContentValues expectedValues) {
+        Set<Map.Entry<String, Object>> valuesInRecord = expectedValues.valueSet();
+
+        for (Map.Entry<String, Object> value : valuesInRecord) {
+            String columnName = value.getKey();
+            int columnIndex = cursor.getColumnIndex(columnName);
+            assertFalse("Column " + columnName + " not found" + error, columnIndex == -1);
+
+            String expectedValue = value.getValue().toString();
+            String actualValue = cursor.getString(columnIndex);
+            assertEquals(
+                    "Value " + actualValue + " did not match expected value " + expectedValue + ". " + error,
+                    expectedValue, actualValue);
+        }
+    }
+}
