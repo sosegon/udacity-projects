@@ -38,7 +38,7 @@ public final class MovieProvider {
         @ContentUri(
                 path = Path.MOVIES,
                 type = "vnd.android.cursor.dir/movie",
-                defaultSort = MovieColums.RATING + " ASC"
+                defaultSort = MovieColumns.RATING + " ASC"
         )
         public static final Uri CONTENT_URI = builderUri(Path.MOVIES);
 
@@ -46,7 +46,7 @@ public final class MovieProvider {
                 path = Path.MOVIES + "/#",
                 name = "MOVIE_ID",
                 type = "vnd.android.cursor.item/movie",
-                whereColumn = MovieColums._ID,
+                whereColumn = MovieColumns._ID,
                 pathSegment = 1
         )
         public static Uri withId(long id) {
@@ -55,7 +55,7 @@ public final class MovieProvider {
 
         @NotifyInsert(paths = Path.MOVIES)
         public static Uri[] onInsert(ContentValues values) {
-            final long movieId = values.getAsLong(MovieColums._ID);
+            final long movieId = values.getAsLong(MovieColumns._ID);
             return new Uri[]{withId(movieId)};
         }
     }
