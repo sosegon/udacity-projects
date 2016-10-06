@@ -1,5 +1,6 @@
 package com.keemsa.popularmovies.data;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
 
@@ -21,7 +22,7 @@ public final class MovieProvider {
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     interface Path {
-        String MOVIES = "movies";
+        String MOVIE = "movie";
     }
 
     private static Uri builderUri(String... paths) {
@@ -34,26 +35,30 @@ public final class MovieProvider {
 
 
     @TableEndpoint(table = MovieDatabase.MOVIE)
-    public static class Movies {
+    public static class Movie {
+        public static final String CONTENT_DIR_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + AUTHORITY + "/" + Path.MOVIE;
+
         @ContentUri(
-                path = Path.MOVIES,
-                type = "vnd.android.cursor.dir/movie",
-                defaultSort = MovieColumns.RATING + " ASC"
+                path = Path.MOVIE,
+                type = CONTENT_DIR_TYPE,
+                defaultSort = MovieColumns._ID + " ASC"
         )
-        public static final Uri CONTENT_URI = builderUri(Path.MOVIES);
+        public static final Uri CONTENT_URI = builderUri(Path.MOVIE);
+
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + AUTHORITY + "/" + Path.MOVIE;
 
         @InexactContentUri(
-                path = Path.MOVIES + "/#",
+                path = Path.MOVIE + "/#",
                 name = "MOVIE_ID",
-                type = "vnd.android.cursor.item/movie",
+                type = CONTENT_ITEM_TYPE,
                 whereColumn = MovieColumns._ID,
                 pathSegment = 1
         )
         public static Uri withId(long id) {
-            return builderUri(Path.MOVIES, String.valueOf(id));
+            return builderUri(Path.MOVIE, String.valueOf(id));
         }
 
-        @NotifyInsert(paths = Path.MOVIES)
+        @NotifyInsert(paths = Path.MOVIE)
         public static Uri[] onInsert(ContentValues values) {
             final long movieId = values.getAsLong(MovieColumns._ID);
             return new Uri[]{withId(movieId)};
