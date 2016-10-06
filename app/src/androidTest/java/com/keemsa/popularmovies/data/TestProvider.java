@@ -75,6 +75,10 @@ public class TestProvider extends AndroidTestCase {
         type = mContext.getContentResolver().getType(MovieProvider.Movie.withId(123));
         assertEquals("Error: Type for " + MovieProvider.Movie.withId(123) + "/# is wrong", MovieProvider.Movie.CONTENT_ITEM_TYPE, type);
 
+        // content://com.keemsa.popularmovies/trailer
+        type = mContext.getContentResolver().getType(MovieProvider.Trailer.ALL);
+        assertEquals("Error: Type for " + MovieProvider.Trailer.ALL + " is wrong", MovieProvider.Trailer.CONTENT_DIR_TYPE, type);
+
         // content://com.keemsa.popularmovies/movie/#/trailer
         type = mContext.getContentResolver().getType(MovieProvider.Trailer.ofMovie(123));
         assertEquals("Error: Type for " + MovieProvider.Trailer.ofMovie(123) + " is wrong", MovieProvider.Trailer.CONTENT_DIR_TYPE, type);
@@ -82,6 +86,10 @@ public class TestProvider extends AndroidTestCase {
         // content://com.keemsa.popularmovies/trailer/*
         type = mContext.getContentResolver().getType(MovieProvider.Trailer.withId("wexc"));
         assertEquals("Error: Type for " + MovieProvider.Trailer.withId("wexc") + " is wrong", MovieProvider.Trailer.CONTENT_ITEM_TYPE, type);
+
+        // content://com.keemsa.popularmovies/review
+        type = mContext.getContentResolver().getType(MovieProvider.Review.ALL);
+        assertEquals("Error: Type for " + MovieProvider.Review.ALL + " is wrong", MovieProvider.Review.CONTENT_DIR_TYPE, type);
 
         // content://com.keemsa.popularmovies/movie/#/review
         type = mContext.getContentResolver().getType(MovieProvider.Review.ofMovie(123));

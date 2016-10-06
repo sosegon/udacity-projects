@@ -91,6 +91,13 @@ public final class MovieProvider {
         public static Uri withId(String id) {
             return builderUri(Path.TRAILER, id);
         }
+
+        @ContentUri(
+                path = Path.TRAILER,
+                type = CONTENT_DIR_TYPE
+        )
+        public static final Uri ALL = builderUri(Path.TRAILER);
+
     }
 
     @TableEndpoint(table = MovieDatabase.REVIEW)
@@ -119,5 +126,11 @@ public final class MovieProvider {
         public static Uri withId(String id) {
             return builderUri(Path.REVIEW, id);
         }
+
+        @ContentUri(
+                path = Path.REVIEW,
+                type = CONTENT_DIR_TYPE
+        )
+        public static final Uri ALL = builderUri(Path.REVIEW);
     }
 }
