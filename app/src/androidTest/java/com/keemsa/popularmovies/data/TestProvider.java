@@ -18,13 +18,13 @@ public class TestProvider extends AndroidTestCase {
 
     public void deleteAllRecordsFromProvider() {
         mContext.getContentResolver().delete(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 null
         );
 
         Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 null,
                 null,
@@ -68,12 +68,28 @@ public class TestProvider extends AndroidTestCase {
 
     public void testGetType() {
         // content://com.keemsa.popularmovies/movie
-        String type = mContext.getContentResolver().getType(MovieProvider.Movie.CONTENT_URI);
-        assertEquals("Error: Type for " + MovieProvider.Movie.CONTENT_URI + " is wrong", MovieProvider.Movie.CONTENT_DIR_TYPE, type);
+        String type = mContext.getContentResolver().getType(MovieProvider.Movie.ALL);
+        assertEquals("Error: Type for " + MovieProvider.Movie.ALL + " is wrong", MovieProvider.Movie.CONTENT_DIR_TYPE, type);
 
         // content://com.keemsa.popularmovies/movie/#
-        type = mContext.getContentResolver().getType(MovieProvider.Movie.CONTENT_URI.buildUpon().appendPath("123").build());
-        assertEquals("Error: Type for " + MovieProvider.Movie.CONTENT_URI.toString() + "/# is wrong", MovieProvider.Movie.CONTENT_ITEM_TYPE, type);
+        type = mContext.getContentResolver().getType(MovieProvider.Movie.withId(123));
+        assertEquals("Error: Type for " + MovieProvider.Movie.withId(123) + "/# is wrong", MovieProvider.Movie.CONTENT_ITEM_TYPE, type);
+
+        // content://com.keemsa.popularmovies/movie/#/trailer
+        type = mContext.getContentResolver().getType(MovieProvider.Trailer.ofMovie(123));
+        assertEquals("Error: Type for " + MovieProvider.Trailer.ofMovie(123) + " is wrong", MovieProvider.Trailer.CONTENT_DIR_TYPE, type);
+
+        // content://com.keemsa.popularmovies/trailer/*
+        type = mContext.getContentResolver().getType(MovieProvider.Trailer.withId("wexc"));
+        assertEquals("Error: Type for " + MovieProvider.Trailer.withId("wexc") + " is wrong", MovieProvider.Trailer.CONTENT_ITEM_TYPE, type);
+
+        // content://com.keemsa.popularmovies/movie/#/review
+        type = mContext.getContentResolver().getType(MovieProvider.Review.ofMovie(123));
+        assertEquals("Error: Type for " + MovieProvider.Review.ofMovie(123) + " is wrong", MovieProvider.Review.CONTENT_DIR_TYPE, type);
+
+        // content://com.keemsa.popularmovies/review/*
+        type = mContext.getContentResolver().getType(MovieProvider.Review.withId("wexc"));
+        assertEquals("Error: Type for " + MovieProvider.Review.withId("wexc") + " is wrong", MovieProvider.Review.CONTENT_ITEM_TYPE, type);
     }
 
     public void testBasicMovieQuery() {
@@ -82,12 +98,12 @@ public class TestProvider extends AndroidTestCase {
         ContentValues movieValue = TestUtilities.createMovieValues();
 
         mContext.getContentResolver().insert(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 movieValue
         );
 
         Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 null,
                 null,
@@ -105,12 +121,12 @@ public class TestProvider extends AndroidTestCase {
         ContentValues[] movieValues = TestUtilities.createArrayMovieValues();
 
         mContext.getContentResolver().bulkInsert(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 movieValues
         );
 
         Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 null,
                 null,
@@ -134,7 +150,7 @@ public class TestProvider extends AndroidTestCase {
 
         ContentValues movieValue = TestUtilities.createMovieValues();
         Uri movieUri = mContext.getContentResolver().insert(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 movieValue
         );
 
@@ -145,7 +161,7 @@ public class TestProvider extends AndroidTestCase {
         updatedMovieValue.put(MovieColumns.RATING, 9.99);
 
         Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 null,
                 null,
@@ -156,7 +172,7 @@ public class TestProvider extends AndroidTestCase {
         c.registerContentObserver(tco); // the provider has to notify the content observer about the changes
 
         int count = mContext.getContentResolver().update(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 updatedMovieValue,
                 MovieColumns._ID + "= ?",
                 new String[]{movieValue.getAsString(MovieColumns._ID)}
@@ -170,7 +186,7 @@ public class TestProvider extends AndroidTestCase {
         c.close();
 
         c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 MovieColumns._ID + "= ?",
                 new String[]{movieValue.getAsString(MovieColumns._ID)},
@@ -187,10 +203,10 @@ public class TestProvider extends AndroidTestCase {
 
         // Register an observer for the insert
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-        mContext.getContentResolver().registerContentObserver(MovieProvider.Movie.CONTENT_URI, true, tco);
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Movie.ALL, true, tco);
 
         Uri movieUri = mContext.getContentResolver().insert(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 movieValues
         );
 
@@ -204,7 +220,7 @@ public class TestProvider extends AndroidTestCase {
 
         // Record has been inserted. Now, check it.
         Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 MovieColumns._ID + "= ?",
                 new String[]{movieValues.getAsString(MovieColumns._ID)},
@@ -219,7 +235,7 @@ public class TestProvider extends AndroidTestCase {
 
         // Register an observer for deletion
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-        mContext.getContentResolver().registerContentObserver(MovieProvider.Movie.CONTENT_URI, true, tco);
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Movie.ALL, true, tco);
 
         deleteAllRecordsFromProvider();
 
@@ -235,10 +251,10 @@ public class TestProvider extends AndroidTestCase {
 
         // Register an observer for bulk insert
         TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
-        mContext.getContentResolver().registerContentObserver(MovieProvider.Movie.CONTENT_URI, true, tco);
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Movie.ALL, true, tco);
 
         int count = mContext.getContentResolver().bulkInsert(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 movieValues
         );
 
@@ -249,7 +265,7 @@ public class TestProvider extends AndroidTestCase {
 
         // Movies has been inserted, now check them
         Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.CONTENT_URI,
+                MovieProvider.Movie.ALL,
                 null,
                 null,
                 null,
