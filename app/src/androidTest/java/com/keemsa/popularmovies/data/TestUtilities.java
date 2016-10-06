@@ -1,10 +1,16 @@
 package com.keemsa.popularmovies.data;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
 import com.keemsa.popularmovies.Utility;
+import com.keemsa.popularmovies.utils.PollingCheck;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +30,34 @@ public class TestUtilities extends AndroidTestCase {
         movieValues.put(MovieColumns.RATING, 4.7);
 
         return movieValues;
+    }
+
+    static ContentValues[] createArrayMovieValues() {
+        ContentValues movieValues1 = new ContentValues();
+        movieValues1.put(MovieColumns._ID, 333484);
+        movieValues1.put(MovieColumns.TITLE, "The Magnificent Seven");
+        movieValues1.put(MovieColumns.SYNOPSIS, "A big screen remake of John Sturges' classic western The Magnificent Seven, itself a remake of Akira Kurosawa's Seven Samurai. Seven gun men in the old west gradually come together to help a poor village against savage thieves.");
+        movieValues1.put(MovieColumns.POSTER_URL, "z6BP8yLwck8mN9dtdYKkZ4XGa3D.jpg");
+        movieValues1.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-09-14"));
+        movieValues1.put(MovieColumns.RATING, 4.7);
+
+        ContentValues movieValues2 = new ContentValues();
+        movieValues2.put(MovieColumns._ID, 271110);
+        movieValues2.put(MovieColumns.TITLE, "Captain America: Civil War");
+        movieValues2.put(MovieColumns.SYNOPSIS, "Following the events of Age of Ultron, the collective governments of the world pass an act designed to regulate all superhuman activity. This polarizes opinion amongst the Avengers, causing two factions to side with Iron Man or Captain America, which causes an epic battle between former allies.");
+        movieValues2.put(MovieColumns.POSTER_URL, "5N20rQURev5CNDcMjHVUZhpoCNC.jpg");
+        movieValues2.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-04-27"));
+        movieValues2.put(MovieColumns.RATING, 6.77);
+
+        ContentValues movieValues3 = new ContentValues();
+        movieValues3.put(MovieColumns._ID, 278924);
+        movieValues3.put(MovieColumns.TITLE, "Mechanic: Resurrection");
+        movieValues3.put(MovieColumns.SYNOPSIS, "Arthur Bishop thought he had put his murderous past behind him when his most formidable foe kidnaps the love of his life. Now he is forced to travel the globe to complete three impossible assassinations, and do what he does best, make them look like accidents.");
+        movieValues3.put(MovieColumns.POSTER_URL, "tgfRDJs5PFW20Aoh1orEzuxW8cN.jpg");
+        movieValues3.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-08-25"));
+        movieValues3.put(MovieColumns.RATING, 4.34);
+
+        return new ContentValues[]{movieValues2, movieValues3, movieValues1}; // ASC orderBy ID
     }
 
     static ContentValues createTrailerValues() {
@@ -49,12 +83,16 @@ public class TestUtilities extends AndroidTestCase {
         return reviewValues;
     }
 
+    // The next method comes from
+    // https://github.com/udacity/Sunshine-Version-2/blob/sunshine_master/app/src/androidTest/java/com/example/android/sunshine/app/data/TestUtilities.java#L27
     static void validateCursor(String error, Cursor cursor, ContentValues expectedValues) {
         assertTrue("Empty cursor returned. " + error, cursor.moveToFirst());
         validateCurrentRecord(error, cursor, expectedValues);
         cursor.close();
     }
 
+    // The next method comes from
+    // https://github.com/udacity/Sunshine-Version-2/blob/sunshine_master/app/src/androidTest/java/com/example/android/sunshine/app/data/TestUtilities.java#L33
     static void validateCurrentRecord(String error, Cursor cursor, ContentValues expectedValues) {
         Set<Map.Entry<String, Object>> valuesInRecord = expectedValues.valueSet();
 
@@ -69,5 +107,63 @@ public class TestUtilities extends AndroidTestCase {
                     "Value " + actualValue + " did not match expected value " + expectedValue + ". " + error,
                     expectedValue, actualValue);
         }
+    }
+
+    static void validateUriType(Context mContext, String error, Uri uri, String expectedUriType) {
+        String type = mContext.getContentResolver().getType(uri);
+        assertEquals(
+                "Type " + type + " did not match expected type " + expectedUriType + ". " + error,
+                expectedUriType,
+                type
+        );
+    }
+
+    // The next class comes from
+    // https://github.com/udacity/Sunshine-Version-2/blob/sunshine_master/app/src/androidTest/java/com/example/android/sunshine/app/data/TestUtilities.java#L107
+    static class TestContentObserver extends ContentObserver {
+        final HandlerThread mHT;
+        boolean mContentChanged;
+
+        static TestContentObserver getTestContentObserver() {
+            HandlerThread ht = new HandlerThread("ContentObserverThread");
+            ht.start();
+            return new TestContentObserver(ht);
+        }
+
+        private TestContentObserver(HandlerThread ht) {
+            super(new Handler(ht.getLooper()));
+            mHT = ht;
+        }
+
+        // On earlier versions of Android, this onChange method is called
+        @Override
+        public void onChange(boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            mContentChanged = true;
+        }
+
+        public void waitForNotificationOrFail() {
+            // Note: The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
+            // It's useful to look at the Android CTS source for ideas on how to test your Android
+            // applications.  The reason that PollingCheck works is that, by default, the JUnit
+            // testing framework is not running on the main Android application thread.
+            new PollingCheck(5000) {
+                @Override
+                protected boolean check() {
+                    return mContentChanged;
+                }
+            }.run();
+            mHT.quit();
+        }
+    }
+
+    // This method comes from
+    // https://github.com/udacity/Sunshine-Version-2/blob/sunshine_master/app/src/androidTest/java/com/example/android/sunshine/app/data/TestUtilities.java#L148
+    static TestContentObserver getTestContentObserver() {
+        return TestContentObserver.getTestContentObserver();
     }
 }
