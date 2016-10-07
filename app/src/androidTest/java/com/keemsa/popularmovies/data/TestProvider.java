@@ -31,7 +31,41 @@ public class TestProvider extends AndroidTestCase {
                 null
         );
 
-        assertTrue("Error: Provider has some previous records", c.getCount() == 0);
+        assertTrue("Error: Movie table has some previous records", c.getCount() == 0);
+        c.close();
+
+        mContext.getContentResolver().delete(
+                MovieProvider.Trailer.ALL,
+                null,
+                null
+        );
+
+        c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertTrue("Error: Trailer table has some previous records", c.getCount() == 0);
+        c.close();
+
+        mContext.getContentResolver().delete(
+                MovieProvider.Review.ALL,
+                null,
+                null
+        );
+
+        c = mContext.getContentResolver().query(
+                MovieProvider.Review.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertTrue("Error: Review table has some previous records", c.getCount() == 0);
         c.close();
     }
 
@@ -100,7 +134,7 @@ public class TestProvider extends AndroidTestCase {
         assertEquals("Error: Type for " + MovieProvider.Review.withId("wexc") + " is wrong", MovieProvider.Review.CONTENT_ITEM_TYPE, type);
     }
 
-    public void testBasicMovieQuery() {
+    public void testQueryMovie() {
         setupProvider();
 
         ContentValues movieValue = TestUtilities.createMovieValues();
@@ -121,36 +155,6 @@ public class TestProvider extends AndroidTestCase {
         assertTrue(c.getCount() != 0);
 
         TestUtilities.validateCursor("", c, movieValue);
-    }
-
-    public void testMultipleMovieQuery() {
-        setupProvider();
-
-        ContentValues[] movieValues = TestUtilities.createArrayMovieValues();
-
-        mContext.getContentResolver().bulkInsert(
-                MovieProvider.Movie.ALL,
-                movieValues
-        );
-
-        Cursor c = mContext.getContentResolver().query(
-                MovieProvider.Movie.ALL,
-                null,
-                null,
-                null,
-                MovieColumns._ID + " ASC"
-        );
-
-        assertTrue(c.getCount() != 0);
-
-        c.moveToFirst();
-
-        for (ContentValues movieValue : movieValues) {
-            TestUtilities.validateCurrentRecord("", c, movieValue);
-            c.moveToNext();
-        }
-
-        c.close();
     }
 
     public void testUpdateMovie() {
@@ -252,7 +256,7 @@ public class TestProvider extends AndroidTestCase {
         mContext.getContentResolver().unregisterContentObserver(tco);
     }
 
-    public void testBulkInsert() {
+    public void testBulkInsertMovie() {
         setupProvider();
 
         ContentValues[] movieValues = TestUtilities.createArrayMovieValues();
@@ -271,7 +275,7 @@ public class TestProvider extends AndroidTestCase {
         tco.waitForNotificationOrFail();
         mContext.getContentResolver().unregisterContentObserver(tco);
 
-        // Movies has been inserted, now check them
+        // Movies have been inserted, now check them
         Cursor c = mContext.getContentResolver().query(
                 MovieProvider.Movie.ALL,
                 null,
@@ -290,6 +294,354 @@ public class TestProvider extends AndroidTestCase {
         }
 
         c.close();
+    }
+
+    public void testQueryTrailer() {
+        setupProvider();
+        long movieId = insertMovie();
+
+        ContentValues trailerValue = TestUtilities.createTrailerValues();
+
+        mContext.getContentResolver().insert(
+                MovieProvider.Trailer.ALL,
+                trailerValue
+        );
+
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertTrue(c.getCount() != 0);
+
+        TestUtilities.validateCursor("", c, trailerValue);
+    }
+
+    public void testUpdateTrailer() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues trailerValue = TestUtilities.createTrailerValues();
+
+        Uri trailerUri = mContext.getContentResolver().insert(
+                MovieProvider.Trailer.ALL,
+                trailerValue
+        );
+
+        long trailerRowId = ContentUris.parseId(trailerUri);
+        assertTrue(trailerRowId != -1);
+
+        ContentValues updatedTrailerValue = new ContentValues(trailerValue);
+        updatedTrailerValue.put(TrailerColumns.NAME, "Unofficial Trailer");
+
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        c.registerContentObserver(tco); // the provider has to notify the content observer about the changes
+
+        int count = mContext.getContentResolver().update(
+                MovieProvider.Trailer.ALL,
+                updatedTrailerValue,
+                TrailerColumns._ID + " = ?",
+                new String[]{String.valueOf(trailerValue.getAsString(TrailerColumns._ID))}
+        );
+
+        assertTrue(count == 1);
+
+        // Test to make sure our observer is called.  If not, throw an assertion.
+        tco.waitForNotificationOrFail();
+        c.unregisterContentObserver(tco);
+        c.close();
+
+        c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ALL,
+                null,
+                TrailerColumns._ID + "= ?",
+                new String[]{trailerValue.getAsString(TrailerColumns._ID)},
+                null
+        );
+
+        TestUtilities.validateCursor("", c, updatedTrailerValue);
+    }
+
+    public void testInsertTrailer() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues trailerValues = TestUtilities.createTrailerValues();
+
+        // Register an observer for the insert
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Trailer.ALL, true, tco);
+
+        Uri trailerUri = mContext.getContentResolver().insert(
+                MovieProvider.Trailer.ALL,
+                trailerValues
+        );
+
+        // Test to make sure the observer is called. If not, throw an assertion.
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+
+        long trailerRowId = ContentUris.parseId(trailerUri);
+
+        assertTrue(trailerRowId != -1);
+
+        // Record has been inserted. Now, check it.
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ALL,
+                null,
+                TrailerColumns._ID + " = ?",
+                new String[]{trailerValues.getAsString(TrailerColumns._ID)},
+                null
+        );
+
+        TestUtilities.validateCursor("", c, trailerValues);
+    }
+
+    public void testDeleteTrailer() {
+        testInsertTrailer();
+
+        // Register an observer for deletion
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Trailer.ALL, true, tco);
+
+        deleteAllRecordsFromProvider();
+
+        // Test to make sure our observer is calles. If not, throw an assertion.
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+    }
+
+    public void testBulkInsertTrailer() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues[] trailerValues = TestUtilities.createArrayTrailerValues();
+
+        // Register an observer for bulk insert
+        TestUtilities.TestContentObserver tco = TestUtilities.TestContentObserver.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Trailer.ALL, true, tco);
+
+        int count = mContext.getContentResolver().bulkInsert(
+                MovieProvider.Trailer.ALL,
+                trailerValues
+        );
+
+        assertTrue(count == 2);
+
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+
+        // Trailers have been inserted, now check them
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ALL,
+                null,
+                null,
+                null,
+                TrailerColumns._ID + " ASC"
+        );
+
+        assertTrue(c.getCount() != 0);
+
+        c.moveToFirst();
+
+        for (ContentValues trailerValue : trailerValues) {
+            TestUtilities.validateCurrentRecord("", c, trailerValue);
+            c.moveToNext();
+        }
+
+        c.close();
+    }
+
+    public void testQueryReview() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues reviewValue = TestUtilities.createReviewValues();
+
+        mContext.getContentResolver().insert(
+                MovieProvider.Review.ALL,
+                reviewValue
+        );
+
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Review.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+
+        assertTrue(c.getCount() != 0);
+
+        TestUtilities.validateCursor("", c, reviewValue);
+    }
+
+    public void testUpdateReview() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues reviewValue = TestUtilities.createReviewValues();
+
+        Uri reviewUri = mContext.getContentResolver().insert(
+                MovieProvider.Review.ALL,
+                reviewValue
+        );
+
+        long reviewRowId = ContentUris.parseId(reviewUri);
+        assertTrue(reviewRowId != -1);
+
+        ContentValues updatedReviewValue = new ContentValues(reviewValue);
+        updatedReviewValue.put(ReviewColumns.CONTENT, "Something else");
+
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Review.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        c.registerContentObserver(tco); // the provider has to notify the content observer about the changes
+
+        int count = mContext.getContentResolver().update(
+                MovieProvider.Review.ALL,
+                updatedReviewValue,
+                ReviewColumns._ID + " = ?",
+                new String[]{String.valueOf(reviewValue.getAsString(ReviewColumns._ID))}
+        );
+
+        assertTrue(count == 1);
+
+        // Test to make sure our observer is called.  If not, throw an assertion.
+        tco.waitForNotificationOrFail();
+        c.unregisterContentObserver(tco);
+        c.close();
+
+        c = mContext.getContentResolver().query(
+                MovieProvider.Review.ALL,
+                null,
+                ReviewColumns._ID + " = ?",
+                new String[]{reviewValue.getAsString(ReviewColumns._ID)},
+                null
+        );
+
+        TestUtilities.validateCursor("", c, updatedReviewValue);
+    }
+
+    public void testInsertReview() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues reviewValues = TestUtilities.createReviewValues();
+
+        // Register an observer for the insert
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Review.ALL, true, tco);
+
+        Uri reviewUri = mContext.getContentResolver().insert(
+                MovieProvider.Review.ALL,
+                reviewValues
+        );
+
+        // Test to make sure the observer is called. If not, throw an assertion.
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+
+        long reviewRowId = ContentUris.parseId(reviewUri);
+
+        assertTrue(reviewRowId != -1);
+
+        // Record has been inserted. Now, check it.
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Review.ALL,
+                null,
+                ReviewColumns._ID + " = ?",
+                new String[]{reviewValues.getAsString(ReviewColumns._ID)},
+                null
+        );
+
+        TestUtilities.validateCursor("", c, reviewValues);
+    }
+
+    public void testDeleteReview() {
+        testInsertTrailer();
+
+        // Register an observer for deletion
+        TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Review.ALL, true, tco);
+
+        deleteAllRecordsFromProvider();
+
+        // Test to make sure our observer is calles. If not, throw an assertion.
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+    }
+
+    public void testBulkInsertReview() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues[] reviewValues = TestUtilities.createArrayReviewValues();
+
+        // Register an observer for bulk insert
+        TestUtilities.TestContentObserver tco = TestUtilities.TestContentObserver.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieProvider.Review.ALL, true, tco);
+
+        int count = mContext.getContentResolver().bulkInsert(
+                MovieProvider.Review.ALL,
+                reviewValues
+        );
+
+        assertTrue(count == 2);
+
+        tco.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(tco);
+
+        // Trailers have been inserted, now check them
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Review.ALL,
+                null,
+                null,
+                null,
+                ReviewColumns._ID + " ASC"
+        );
+
+        assertTrue(c.getCount() != 0);
+
+        c.moveToFirst();
+
+        for (ContentValues reviewValue : reviewValues) {
+            TestUtilities.validateCurrentRecord("", c, reviewValue);
+            c.moveToNext();
+        }
+
+        c.close();
+    }
+
+    public long insertMovie() {
+        ContentValues movieValue = TestUtilities.createMovieValues();
+        Uri movieUri = mContext.getContentResolver().insert(
+                MovieProvider.Movie.ALL,
+                movieValue
+        );
+
+        long movieRowId = ContentUris.parseId(movieUri);
+
+        assertTrue(movieRowId != -1);
+
+        return movieRowId;
     }
 
     private void setupProvider() {
