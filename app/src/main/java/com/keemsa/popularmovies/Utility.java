@@ -21,11 +21,17 @@ public class Utility {
         try {
             Date argDate = format.parse(date);
             return argDate.getTime();
-        }
-        catch (ParseException e ){
+        } catch (ParseException e) {
             Log.e(LOG_TAG, "Error while converting date to milliseconds");
         }
 
         return -1;
+    }
+
+    public static String formatPosterUrl(String posterUrl) {
+        if (posterUrl.charAt(0) == '/') {
+            return posterUrl.substring(1);
+        }
+        return posterUrl;
     }
 }
