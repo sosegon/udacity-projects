@@ -1,9 +1,11 @@
 package com.keemsa.popularmovies;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -11,6 +13,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,11 +23,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.data.MovieColumns;
+import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
 
 import org.json.JSONArray;
@@ -30,12 +36,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesAsyncTaskReceiver {
+public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesAsyncTaskReceiver, LoaderManager.LoaderCallbacks<Cursor> {
 
     private final String LOG_TAG = CatalogFragment.class.getSimpleName();
     private MovieAdapter movieAdapter;
@@ -43,8 +49,38 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private ProgressBar prg_load;
     private TextView txt_catalog_message;
 
+    private static final int CATALOG_LOADER_ID = 1;
+
     public CatalogFragment() {
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(
+                getContext(),
+                MovieProvider.Movie.ALL,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        movieAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        movieAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(CATALOG_LOADER_ID, null, this);
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -59,24 +95,22 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         txt_catalog_message = (TextView) view.findViewById(R.id.txt_catalog_msg);
         setCatalogMessageVisibility(View.GONE);
 
-        movieList = new ArrayList<Movie>();
-
         // Create adapter
-        movieAdapter = new MovieAdapter(getContext(), 0, movieList);
+        movieAdapter = new MovieAdapter(getContext(), null, 0);
 
         // Attach adapter to view
         GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
         gridView.setAdapter(movieAdapter);
 
         // Set listener to start activity with detailed info about movie
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getContext(), MovieDetailsActivity.class);
-                intent.putExtra("movie", movieAdapter.getItem(i));
-                startActivity(intent);
-            }
-        });
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Intent intent = new Intent(getContext(), MovieDetailsActivity.class);
+//                intent.putExtra("movie", movieAdapter.getItem(i));
+//                startActivity(intent);
+//            }
+//        });
 
         return view;
     }
@@ -101,7 +135,6 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     @Override
     public void onStart() {
         super.onStart();
-        fetchMovieCatalog();
     }
 
     @Override
@@ -189,36 +222,44 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         }
 
         try {
-            movieList = (ArrayList) processMovies(json);
-            if (movieAdapter != null) {
-                movieAdapter.clear();
-
-                for (Movie movie : movieList) {
-                    movieAdapter.add(movie);
-                }
+            getContext().getContentResolver().delete(MovieProvider.Movie.ALL, null, null);
+            Vector<ContentValues> cvMovies = processMovies(json);
+            if (cvMovies.size() > 0) {
+                ContentValues[] cvArray = new ContentValues[cvMovies.size()];
+                cvMovies.toArray(cvArray);
+                getContext().getContentResolver().bulkInsert(MovieProvider.Movie.ALL, cvArray);
             }
+
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error parsing json");
         }
     }
 
-    private List<Movie> processMovies(String json) throws JSONException {
+    private Vector<ContentValues> processMovies(String json) throws JSONException {
         JSONObject dataJson = new JSONObject(json);
         JSONArray moviesJson = dataJson.getJSONArray("results");
-        List<Movie> movies = new ArrayList<Movie>();
+        Vector<ContentValues> cvVector = new Vector<>(moviesJson.length());
 
         for (int i = 0; i < moviesJson.length(); i++) {
             JSONObject currentMovie = moviesJson.getJSONObject(i);
             String title = currentMovie.optString("original_title"),
                     synopsis = currentMovie.optString("overview"),
-                    posterUrl = currentMovie.optString("poster_path"),
+                    posterUrl = Utility.formatPosterUrl(currentMovie.optString("poster_path")),
                     releaseDate = currentMovie.optString("release_date"),
-                    rating = currentMovie.optString("vote_average");
+                    rating = currentMovie.optString("vote_average"),
+                    _id = currentMovie.optString("id");
 
-            Movie movie = new Movie(title, synopsis, posterUrl, releaseDate, rating);
-            movies.add(movie);
+            ContentValues cvMovie = new ContentValues();
+            cvMovie.put(MovieColumns.TITLE, title);
+            cvMovie.put(MovieColumns.SYNOPSIS, synopsis);
+            cvMovie.put(MovieColumns.POSTER_URL, posterUrl);
+            cvMovie.put(MovieColumns.RELEASE_DATE, releaseDate);
+            cvMovie.put(MovieColumns.RATING, rating);
+            cvMovie.put(MovieColumns._ID, _id);
+
+            cvVector.add(cvMovie);
         }
 
-        return movies;
+        return cvVector;
     }
 }
