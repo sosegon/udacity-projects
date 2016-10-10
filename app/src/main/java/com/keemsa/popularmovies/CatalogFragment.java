@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -51,6 +52,14 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     private static final int CATALOG_LOADER_ID = 1;
 
+    private final String[] MOVIE_COLUMNS = {
+            MovieColumns._ID,
+            MovieColumns.POSTER_URL
+    };
+
+    private final int MOVIE_ID = 0;
+    private final int MOVIE_POSTER_URL = 1;
+
     public CatalogFragment() {
         setHasOptionsMenu(true);
     }
@@ -60,7 +69,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         return new CursorLoader(
                 getContext(),
                 MovieProvider.Movie.ALL,
-                null,
+                MOVIE_COLUMNS,
                 null,
                 null,
                 null
@@ -103,14 +112,18 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         gridView.setAdapter(movieAdapter);
 
         // Set listener to start activity with detailed info about movie
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent intent = new Intent(getContext(), MovieDetailsActivity.class);
-//                intent.putExtra("movie", movieAdapter.getItem(i));
-//                startActivity(intent);
-//            }
-//        });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Cursor c = (Cursor) adapterView.getItemAtPosition(i);
+                if (c != null) {
+                    Intent intent = new Intent(getContext(), MovieDetailsActivity.class);
+
+                    intent.setData(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
+                    startActivity(intent);
+                }
+            }
+        });
 
         return view;
     }
