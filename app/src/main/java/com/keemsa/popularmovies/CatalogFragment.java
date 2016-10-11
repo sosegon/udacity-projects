@@ -18,9 +18,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -61,7 +58,6 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private final int MOVIE_POSTER_URL = 1;
 
     public CatalogFragment() {
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -148,26 +144,6 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     @Override
     public void onStart() {
         super.onStart();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // inflate menu
-        inflater.inflate(R.menu.catalog_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            case R.id.mit_settings:
-                Intent intent = new Intent(getContext(), SettingsActivity.class);
-                startActivity(intent);
-                break;
-
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void fetchMovieCatalog() {
