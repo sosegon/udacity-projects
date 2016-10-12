@@ -10,15 +10,30 @@ public class MainActivity extends AppCompatActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
+    private String mQueryBy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.frl_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
                     .commit();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String queryBy = Utility.getPreferredQueryBy(this);
+
+        if (queryBy != null && queryBy.equals(mQueryBy)) {
+            CatalogFragment cf = (CatalogFragment) getSupportFragmentManager().findFragmentByTag(CATALOG_FRAGMENT_TAG);
+            if (cf != null) {
+                cf.onQueryByChanged();
+            }
+            mQueryBy = queryBy;
         }
     }
 

@@ -1,5 +1,8 @@
 package com.keemsa.popularmovies;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.text.ParseException;
@@ -33,5 +36,12 @@ public class Utility {
             return posterUrl.substring(1);
         }
         return posterUrl;
+    }
+
+    public static String getPreferredQueryBy(Context context) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String queryBy = pref.getString(context.getString(R.string.prf_key_sort), context.getString(R.string.prf_default_sort));
+
+        return queryBy;
     }
 }

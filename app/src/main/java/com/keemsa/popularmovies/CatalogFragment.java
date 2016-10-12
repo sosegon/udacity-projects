@@ -146,6 +146,11 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         super.onStart();
     }
 
+    public void onQueryByChanged() {
+        updateMovieCatalog();
+        getLoaderManager().restartLoader(CATALOG_LOADER_ID, null, this);
+    }
+
     private void fetchMovieCatalog() {
         // Verify network connection to fetch movies
         ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -163,9 +168,9 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         // Construct uri
         String baseUrl = getString(R.string.base_query_url);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String sortBy = pref.getString(getString(R.string.prf_key_sort), getString(R.string.prf_default_sort));
+        String queryBy = Utility.getPreferredQueryBy(getContext());
         String url = Uri.parse(baseUrl).buildUpon()
-                .appendPath(sortBy)
+                .appendPath(queryBy)
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
                 .build()
                 .toString();
