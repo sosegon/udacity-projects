@@ -8,10 +8,18 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String CATALOG_FRAGMENT_TAG = "CFTAG";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.frl_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     @Override

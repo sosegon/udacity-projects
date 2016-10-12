@@ -2,10 +2,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/match_match"
-    tools:context="com.keemsa.popularmovies.MainActivity">
-
-    <fragment
-        android:id="@+id/frg_catalog"
-        android:name="com.keemsa.popularmovies.CatalogFragment"
-        style="@style/match_match" />
-</FrameLayout>
+    android:id="@+id/frl_container"
+    tools:context="com.keemsa.popularmovies.MainActivity" />
