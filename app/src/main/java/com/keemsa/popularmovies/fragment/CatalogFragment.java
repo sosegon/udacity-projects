@@ -1,4 +1,4 @@
-package com.keemsa.popularmovies;
+package com.keemsa.popularmovies.fragment;
 
 
 import android.content.ContentValues;
@@ -25,9 +25,14 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.BuildConfig;
+import com.keemsa.popularmovies.MovieDetailsActivity;
+import com.keemsa.popularmovies.R;
+import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
+import com.keemsa.popularmovies.net.MoviesAsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;

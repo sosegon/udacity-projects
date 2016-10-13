@@ -1,4 +1,4 @@
-package com.keemsa.popularmovies;
+package com.keemsa.popularmovies.fragment;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
+import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.squareup.picasso.Picasso;
 

@@ -1,4 +1,4 @@
-package com.keemsa.popularmovies;
+package com.keemsa.popularmovies.fragment;
 
 
 import android.content.Intent;
@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.R;
+import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.squareup.picasso.Picasso;
 
