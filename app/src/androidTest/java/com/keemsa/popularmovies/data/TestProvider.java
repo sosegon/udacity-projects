@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
+import java.util.ArrayList;
+
 /**
  * Created by sebastian on 10/5/16.
  */
@@ -298,7 +300,7 @@ public class TestProvider extends AndroidTestCase {
 
     public void testQueryTrailer() {
         setupProvider();
-        long movieId = insertMovie();
+        insertMovie();
 
         ContentValues trailerValue = TestUtilities.createTrailerValues();
 
@@ -318,6 +320,41 @@ public class TestProvider extends AndroidTestCase {
         assertTrue(c.getCount() != 0);
 
         TestUtilities.validateCursor("", c, trailerValue);
+    }
+
+    public void testQueryTrailerByMovieId() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues[] trailerValues = TestUtilities.createArrayTrailerValues();
+
+        mContext.getContentResolver().bulkInsert(
+                MovieProvider.Trailer.ALL,
+                trailerValues
+        );
+
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Trailer.ofMovie(333484),
+                null,
+                null,
+                null,
+                TrailerColumns._ID + " ASC"
+        );
+
+        ArrayList<ContentValues> trailersOfMovie = new ArrayList<>();
+        for (ContentValues value : trailerValues) {
+            if ((int) value.get(TrailerColumns.MOVIE_ID) == 333484) {
+                trailersOfMovie.add(value);
+            }
+        }
+
+        assertTrue(c.getCount() != 0);
+
+        c.moveToFirst();
+        for (ContentValues value : trailersOfMovie) {
+            TestUtilities.validateCurrentRecord("", c, value);
+            c.moveToNext();
+        }
     }
 
     public void testUpdateTrailer() {
@@ -437,7 +474,7 @@ public class TestProvider extends AndroidTestCase {
                 trailerValues
         );
 
-        assertTrue(count == 2);
+        assertTrue(count > 0);
 
         tco.waitForNotificationOrFail();
         mContext.getContentResolver().unregisterContentObserver(tco);
@@ -485,6 +522,41 @@ public class TestProvider extends AndroidTestCase {
         assertTrue(c.getCount() != 0);
 
         TestUtilities.validateCursor("", c, reviewValue);
+    }
+
+    public void testQueryReviewByMovieId() {
+        setupProvider();
+        insertMovie();
+
+        ContentValues[] reviewValues = TestUtilities.createArrayReviewValues();
+
+        mContext.getContentResolver().bulkInsert(
+                MovieProvider.Review.ALL,
+                reviewValues
+        );
+
+        Cursor c = mContext.getContentResolver().query(
+                MovieProvider.Review.ofMovie(333484),
+                null,
+                null,
+                null,
+                ReviewColumns._ID + " ASC"
+        );
+
+        ArrayList<ContentValues> reviewsOfMovie = new ArrayList<>();
+        for (ContentValues value : reviewValues) {
+            if ((int) value.get(ReviewColumns.MOVIE_ID) == 333484) {
+                reviewsOfMovie.add(value);
+            }
+        }
+
+        assertTrue(c.getCount() != 0);
+
+        c.moveToFirst();
+        for (ContentValues value : reviewsOfMovie) {
+            TestUtilities.validateCurrentRecord("", c, value);
+            c.moveToNext();
+        }
     }
 
     public void testUpdateReview() {
@@ -604,7 +676,7 @@ public class TestProvider extends AndroidTestCase {
                 reviewValues
         );
 
-        assertTrue(count == 2);
+        assertTrue(count > 0);
 
         tco.waitForNotificationOrFail();
         mContext.getContentResolver().unregisterContentObserver(tco);

@@ -12,6 +12,8 @@ import android.test.AndroidTestCase;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.utils.PollingCheck;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,14 +91,46 @@ public class TestUtilities extends AndroidTestCase {
         trailerValues2.put(TrailerColumns.TYPE, "Teaser");
         trailerValues2.put(TrailerColumns.MOVIE_ID, 333484);
 
-        return new ContentValues[]{trailerValues2, trailerValues1}; // ASC orderBy ID
+        ContentValues trailerValues3 = new ContentValues();
+        trailerValues3.put(TrailerColumns._ID, "5794ccaa9251414236001173");
+        trailerValues3.put(TrailerColumns.KEY, "43NWzay3W4s");
+        trailerValues3.put(TrailerColumns.SITE, "YouTube");
+        trailerValues3.put(TrailerColumns.NAME, "Official Trailer #1");
+        trailerValues3.put(TrailerColumns.TYPE, "Trailer");
+        trailerValues3.put(TrailerColumns.MOVIE_ID, 271110);
+
+        ContentValues trailerValues4 = new ContentValues();
+        trailerValues4.put(TrailerColumns._ID, "5738f0ac92514166fe000fb6");
+        trailerValues4.put(TrailerColumns.KEY, "dKrVegVI0Us");
+        trailerValues4.put(TrailerColumns.SITE, "YouTube");
+        trailerValues4.put(TrailerColumns.NAME, "Official Trailer 2");
+        trailerValues4.put(TrailerColumns.TYPE, "Trailer");
+        trailerValues4.put(TrailerColumns.MOVIE_ID, 271110);
+
+        ContentValues trailerValues5 = new ContentValues();
+        trailerValues5.put(TrailerColumns._ID, "5794f51392514179d2004179");
+        trailerValues5.put(TrailerColumns.KEY, "QF903RaKLvs");
+        trailerValues5.put(TrailerColumns.SITE, "YouTube");
+        trailerValues5.put(TrailerColumns.NAME, "Official Trailer");
+        trailerValues5.put(TrailerColumns.TYPE, "Trailer");
+        trailerValues5.put(TrailerColumns.MOVIE_ID, 278924);
+
+        ContentValues values[] = {trailerValues1, trailerValues2, trailerValues3, trailerValues4, trailerValues5};
+        Arrays.sort(values, new Comparator<ContentValues>() {
+            @Override
+            public int compare(ContentValues contentValues, ContentValues t1) {
+                return contentValues.getAsString(TrailerColumns._ID).compareTo(t1.getAsString(TrailerColumns._ID));
+            }
+        });
+
+        return values; // ASC orderBy ID
     }
 
     static ContentValues createReviewValues() {
         ContentValues reviewValues = new ContentValues();
         reviewValues.put(ReviewColumns._ID, "57e8d5e9c3a3687c180059c9");
         reviewValues.put(ReviewColumns.AUTHOR, "Frank Ochieng");
-        reviewValues.put(ReviewColumns.CONTENT, "The western genre has gradually been making its way back into the cinematic fold. Recent dusty trail ditties such as David McKenzie's modern-day _Hell or High Water_ or Quentin Tarantino's _The Hateful Eight_ have proven to be recent saddle-tested gems that enthusiastically put cowpoke enthusiasts in movie theater seats. Furthermore, what would Hollywood do if it did not predictably invite yet another remake of a classic film into the moviegoers' mindset? Hence, director Antoine Fuqua takes a challenging stab at generating interest in his latest workman-like western shoot 'em up in the millennium-made version of **The Magnificent Seven**. \\r\\n\\r\\nNaturally, Fuqua's chaotic and calculating gun-toting actioner is an updated remake of director John Sturges's 1960 film that starred late iconic box office big stars such as Yul Brynner, Steve McQueen, Charles Bronson and Eli Wallach. Of course in return Sturges's borrowed his artistic gun-for-hire gumption from legendary Japanese auteur Akiro Kurosawa's vintage and influential _Seven Samurai_. Fuqua, whose gritty urban police drama _Training Day_ secured a Best Actor Oscar for his **The Magnificent Seven** leading man in two-time Academy Award winner Denzel Washington, takes on the retelling of his particular _Seven_ with feisty fury. One would not necessary anoint Fuqua's outlaw tale as a superior successor to Sturges's borrowed blueprint from Kurosawa. However, Fuqua's array of blazing bullets from his bunch of rag tag bad boys has its own distinctive sense of decorative dare and destruction that feels authentic.\\r\\n\\r\\nScreenwriters Nic Pizzolatto (\\\"True Detective\\\")and Richard Wenk deliver an unapologetic script that calls for high body counts, old-fashioned showdowns and a wild west waywardness that swaggers courtesy of Fuqua's corrosive crew. The popcorn entertainment in **The Magnificent Seven** is strictly in guilty pleasure territory so there is no need to tighten up your holsters for all you little buckaroos that are eager to wallow in Fuqua's cutthroat corral of gunslingers.   \\r\\n\\r\\nMustached bounty hunter Sam Chisolm (Washington) is the all-dressed-in-black avenger whose mission is to provide protection for the town of Rose Creek, New Mexico. In his ambitious bid to save the jeopardized Rose Creek he must assembled a group of skilled gunmen able to stand up to the diabolical powers-that-be that look to foster the on-going havoc that prevails. \\r\\n\\r\\nSpecifically, Rose Creek is under the dastardly control of the diabolical Bartholomew Bogue (Peter Sarsgaard) that rules the town with an iron fist. The opening scene demonstrates how nefarious Bogue is at heart because he has no qualms about seizing land from its vulnerable owners or quieting down his critics with intimidating force. Basically, Bogue and his hideous henchmen are not to be reckoned with at all--unless you are willing to match wicked-minded wits with the raw and rough Chisolm and his gun-wielding renegades.\\r\\n\\r\\nRose Creek resident Emma Cullen (Haley Bennett, \\\"Music in Lyrics\\\", \\\"The Girl on the Train\\\") steps up to the plate in her effort to confront the nasty Bogue the only best way she knows how--hiring the capable and crafty collection of the Seven to contain this intimidating menace.\\r\\n\\r\\nJoining Chisolm in his bloody quest to rescue Rose Creek from Bogue's disturbing clutches are explosives expert gambler Josh Farraday (Chris Pratt), and conflicted sharpshooter Goodnight Robicheaux (Ethan Hawke reuniting with his \\\"Training Day\\\" director and co-star Fuqua and Washington). The rest of the tag-a-longs include the outlandishly bearded Jack Horne (Vincent D'Onofrio from TV's \\\"Law & Order: Criminal Intent\\\"), Billy Rocks (Byung-hun Lee), Vasquez (Manuel Garcia-Rulfo) and Red Harvest (Martin Seinsmeier). Together, the anti-heroes known as the Magnificent Seven hope to meet the expectations of Emma's (and the town's) cause and eradicate the villainous Bogue by any means necessary.    \\r\\n\\r\\n**The Magnificent Seven** certainly does not have any pretensions about posing as a conscious-minded, revisionist western as it definitely does not have the prolific pedigree such as Clint Eastwood's _Unforgiven_ for instance. Nevertheless, the film does have a devilish impishness as its main function is to echo an exaggerated rustic feel to its throwback acknowledgement when westerns of yesteryear were just plain frivolous and furious without any particular rhyme or reason.\\r\\n\\r\\nSure, the characters have really no inside depth beyond their taste for roughshod recklessness and wild tumbleweed theatrics. This is not necessarily a bad thing to consider in Fuqua's **The Magnificent Seven** because the name of the game is serving up an escapist need for its giddy-up rush for the senses. Indeed, Washington and company will not make anybody forget the aforementioned Brynner and his squad from nearly six decades ago. Still, this particular _Seven_ has its own kind of favorable punch to savor. \\r\\n\\r\\nThe notable names in _Seven_ do rise to the occasion within the context of this otherwise basic story of the wannabe borderline good guys versus the bombastic bad guys. Washington's Chisolm is solidly smooth as charismatic as the leader of the pack. Pratt's Farraday is a charming hoot as the roguish gambling cad. Hawke's Goodnight does a decent job portraying the talented gun handler simply trying to get his groove back due to his shaken confidence from a prior incident (yes, the catchy movie moniker of Goodnight Robicheaux is a keeper to say the least). And D'Onofrio's amusing Horne is deliciously irreverent. The always adventurous Sarsgaard comes to life as the vile wonder whose presence inspires the Seven to tap into vengeance mode. \\r\\n\\r\\nAt the end of the roundup it is quite clear that **The Magnificent Seven** wants to lasso its penchant for resembling a showy Hollywood western even if it is at the expense of lifting its rowdy roots from the likes of its highly regarded predecessors from golden cinema's treasured past.    \\r\\n\\r\\n**The Magnificent Seven** (2016)\\r\\n\\r\\nSony Pictures\\r\\n\\r\\n2 hrs. 12 mins.\\r\\n\\r\\nStarring: Denzel Washington, Chris Pratt, Ethan Hawke, Peter Sarsgaard, Haley Bennett, Vincent D'Onofrio, Byung-hun Lee, Maunel Garcia Rulfo, Martin Sensmeier\\r\\n\\r\\nDirected by: Antoine Fuqua\\r\\n\\r\\nMPAA Rating: PG-13\\r\\n\\r\\nGenre: Western\\/Drama\\/Action and Adventure\\r\\n\\r\\nCritic's rating: ** 1\\/2 stars (out of 4 stars)\\r\\n\\r\\n(c) **Frank Ochieng** 2016");
+        reviewValues.put(ReviewColumns.CONTENT, "Some review here");
         reviewValues.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57e8d5e9c3a3687c180059c9");
         reviewValues.put(ReviewColumns.MOVIE_ID, 333484);
 
@@ -107,18 +141,54 @@ public class TestUtilities extends AndroidTestCase {
         ContentValues reviewValues1 = new ContentValues();
         reviewValues1.put(ReviewColumns._ID, "57e8d5e9c3a3687c180059c9");
         reviewValues1.put(ReviewColumns.AUTHOR, "Frank Ochieng");
-        reviewValues1.put(ReviewColumns.CONTENT, "The western genre has gradually been making its way back into the cinematic fold. Recent dusty trail ditties such as David McKenzie's modern-day _Hell or High Water_ or Quentin Tarantino's _The Hateful Eight_ have proven to be recent saddle-tested gems that enthusiastically put cowpoke enthusiasts in movie theater seats. Furthermore, what would Hollywood do if it did not predictably invite yet another remake of a classic film into the moviegoers' mindset? Hence, director Antoine Fuqua takes a challenging stab at generating interest in his latest workman-like western shoot 'em up in the millennium-made version of **The Magnificent Seven**. \\r\\n\\r\\nNaturally, Fuqua's chaotic and calculating gun-toting actioner is an updated remake of director John Sturges's 1960 film that starred late iconic box office big stars such as Yul Brynner, Steve McQueen, Charles Bronson and Eli Wallach. Of course in return Sturges's borrowed his artistic gun-for-hire gumption from legendary Japanese auteur Akiro Kurosawa's vintage and influential _Seven Samurai_. Fuqua, whose gritty urban police drama _Training Day_ secured a Best Actor Oscar for his **The Magnificent Seven** leading man in two-time Academy Award winner Denzel Washington, takes on the retelling of his particular _Seven_ with feisty fury. One would not necessary anoint Fuqua's outlaw tale as a superior successor to Sturges's borrowed blueprint from Kurosawa. However, Fuqua's array of blazing bullets from his bunch of rag tag bad boys has its own distinctive sense of decorative dare and destruction that feels authentic.\\r\\n\\r\\nScreenwriters Nic Pizzolatto (\\\"True Detective\\\")and Richard Wenk deliver an unapologetic script that calls for high body counts, old-fashioned showdowns and a wild west waywardness that swaggers courtesy of Fuqua's corrosive crew. The popcorn entertainment in **The Magnificent Seven** is strictly in guilty pleasure territory so there is no need to tighten up your holsters for all you little buckaroos that are eager to wallow in Fuqua's cutthroat corral of gunslingers.   \\r\\n\\r\\nMustached bounty hunter Sam Chisolm (Washington) is the all-dressed-in-black avenger whose mission is to provide protection for the town of Rose Creek, New Mexico. In his ambitious bid to save the jeopardized Rose Creek he must assembled a group of skilled gunmen able to stand up to the diabolical powers-that-be that look to foster the on-going havoc that prevails. \\r\\n\\r\\nSpecifically, Rose Creek is under the dastardly control of the diabolical Bartholomew Bogue (Peter Sarsgaard) that rules the town with an iron fist. The opening scene demonstrates how nefarious Bogue is at heart because he has no qualms about seizing land from its vulnerable owners or quieting down his critics with intimidating force. Basically, Bogue and his hideous henchmen are not to be reckoned with at all--unless you are willing to match wicked-minded wits with the raw and rough Chisolm and his gun-wielding renegades.\\r\\n\\r\\nRose Creek resident Emma Cullen (Haley Bennett, \\\"Music in Lyrics\\\", \\\"The Girl on the Train\\\") steps up to the plate in her effort to confront the nasty Bogue the only best way she knows how--hiring the capable and crafty collection of the Seven to contain this intimidating menace.\\r\\n\\r\\nJoining Chisolm in his bloody quest to rescue Rose Creek from Bogue's disturbing clutches are explosives expert gambler Josh Farraday (Chris Pratt), and conflicted sharpshooter Goodnight Robicheaux (Ethan Hawke reuniting with his \\\"Training Day\\\" director and co-star Fuqua and Washington). The rest of the tag-a-longs include the outlandishly bearded Jack Horne (Vincent D'Onofrio from TV's \\\"Law & Order: Criminal Intent\\\"), Billy Rocks (Byung-hun Lee), Vasquez (Manuel Garcia-Rulfo) and Red Harvest (Martin Seinsmeier). Together, the anti-heroes known as the Magnificent Seven hope to meet the expectations of Emma's (and the town's) cause and eradicate the villainous Bogue by any means necessary.    \\r\\n\\r\\n**The Magnificent Seven** certainly does not have any pretensions about posing as a conscious-minded, revisionist western as it definitely does not have the prolific pedigree such as Clint Eastwood's _Unforgiven_ for instance. Nevertheless, the film does have a devilish impishness as its main function is to echo an exaggerated rustic feel to its throwback acknowledgement when westerns of yesteryear were just plain frivolous and furious without any particular rhyme or reason.\\r\\n\\r\\nSure, the characters have really no inside depth beyond their taste for roughshod recklessness and wild tumbleweed theatrics. This is not necessarily a bad thing to consider in Fuqua's **The Magnificent Seven** because the name of the game is serving up an escapist need for its giddy-up rush for the senses. Indeed, Washington and company will not make anybody forget the aforementioned Brynner and his squad from nearly six decades ago. Still, this particular _Seven_ has its own kind of favorable punch to savor. \\r\\n\\r\\nThe notable names in _Seven_ do rise to the occasion within the context of this otherwise basic story of the wannabe borderline good guys versus the bombastic bad guys. Washington's Chisolm is solidly smooth as charismatic as the leader of the pack. Pratt's Farraday is a charming hoot as the roguish gambling cad. Hawke's Goodnight does a decent job portraying the talented gun handler simply trying to get his groove back due to his shaken confidence from a prior incident (yes, the catchy movie moniker of Goodnight Robicheaux is a keeper to say the least). And D'Onofrio's amusing Horne is deliciously irreverent. The always adventurous Sarsgaard comes to life as the vile wonder whose presence inspires the Seven to tap into vengeance mode. \\r\\n\\r\\nAt the end of the roundup it is quite clear that **The Magnificent Seven** wants to lasso its penchant for resembling a showy Hollywood western even if it is at the expense of lifting its rowdy roots from the likes of its highly regarded predecessors from golden cinema's treasured past.    \\r\\n\\r\\n**The Magnificent Seven** (2016)\\r\\n\\r\\nSony Pictures\\r\\n\\r\\n2 hrs. 12 mins.\\r\\n\\r\\nStarring: Denzel Washington, Chris Pratt, Ethan Hawke, Peter Sarsgaard, Haley Bennett, Vincent D'Onofrio, Byung-hun Lee, Maunel Garcia Rulfo, Martin Sensmeier\\r\\n\\r\\nDirected by: Antoine Fuqua\\r\\n\\r\\nMPAA Rating: PG-13\\r\\n\\r\\nGenre: Western\\/Drama\\/Action and Adventure\\r\\n\\r\\nCritic's rating: ** 1\\/2 stars (out of 4 stars)\\r\\n\\r\\n(c) **Frank Ochieng** 2016");
+        reviewValues1.put(ReviewColumns.CONTENT, "Some review 1 here");
         reviewValues1.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57e8d5e9c3a3687c180059c9");
         reviewValues1.put(ReviewColumns.MOVIE_ID, 333484);
 
         ContentValues reviewValues2 = new ContentValues();
         reviewValues2.put(ReviewColumns._ID, "57eb62e9c3a36836f10021c8");
         reviewValues2.put(ReviewColumns.AUTHOR, "Sebastian Brownlow");
-        reviewValues2.put(ReviewColumns.CONTENT, "In 1879, degenerate industrialist Bartholomew Bogue (Peter Sarsgaard) blockades the mining town of Rose Creek, and butchers a gathering of local people drove by Matthew Cullen (Matt Bomer) when they endeavor to confront him. Matthew's better half, Emma Cullen (Haley Bennett), and her companion, Teddy Q (Luke Grimes), ride to the closest town looking for somebody who can help them and happen upon abundance seeker Sam Chisolm (Denzel Washington), who at first decays their proposition until he learns of Bogue's contribution. \\r\\n\\r\\nChisolm embarks to enlist a gathering of gunslingers who can help him, beginning with card shark Josh Faraday (Chris Pratt).Watch and download \\\"The Megneficent Seven\\\" here _**movies watch free**_ They are later joined by sharpshooter Goodnight Robicheaux (Ethan Hawke), blade employing professional killer Billy Rocks (Byung-hun Lee), gifted tracker Jack Horne, Comanche warrior Red Harvest and famous Mexican criminal Vasquez (Manuel Garcia-Rulfo). \\r\\n\\r\\nTouching base in Rose Creek, the seven take part in a gunfight with Bogue's implementer McCann (Cam Gigandet) and his men and push them away with a notice to allow Rose Creek to sit unbothered. Construing that Bogue and his strengths will return in seven days, the seven and Cullen train the sportspeople to guard their home and become attached to them. Watch and download \\\"The Megneficent Seven\\\" here **movies watch free** Robicheaux, frequented by the abhorrences of the Civil War and dreading the unavoidable executing he will be a piece of, forsakes the gathering and is supplanted by Cullen. \\r\\n\\r\\nBogue touches base with his strengths and assaults the city, however the desperados are trapped by the townspeople, prompting a shootout amid which Robicheaux rejoins the gathering, McCann is murdered by Vasquez, and Horne is executed by Bogue's Comanche professional killer Denali (Jonathan Joss), who is later slaughtered by Red Harvest. Watch and download \\\"The Megneficent Seven\\\" here _movies watch free_. Bogue then divulges his mystery weapon, a Gatling firearm, with which he executes various innocents. Acknowledging they're outgunned, the seven push the townspeople away and mount their last stand. \\r\\n\\r\\nRobicheaux and Rocks are killed by a second round of gunfire as Faraday penances himself to demolish the Gatling firearm and whatever is left of Bogue's men, riding up to them in a last charge and afterward exploding a stick of explosive right beside the weapon. Bogue escapes into town, where he is faced by Chisolm, who incapacitates and wounds Bogue. Watch and download \\\"The Megneficent Seven\\\" here <a href=\\\"https:\\/\\/internetmovies4free.blogspot.com\\/\\\">movies watch free<\\/a>. As Chisolm is choking Bogue, he uncovers that Bogue and his men assaulted and killed his mom and sister amid an attack quite a long while prior, in which he himself survived being hanged. Bogue is then lethally shot by Cullen while going after a shrouded weapon in his boot. \\r\\n\\r\\nIn the fallout, Faraday, Robicheaux, Rocks and Horne are covered around the local area and respected by the general population of Rose Creek as saints, while Chisolm, Vasquez and Red Harvest ride off, with Cullen commenting that their gallantry made them legends. Watch and download \\\"The Megneficent Seven\\\" here _movies watch free_.");
+        reviewValues2.put(ReviewColumns.CONTENT, "Some review 2 here");
         reviewValues2.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57eb62e9c3a36836f10021c8");
         reviewValues2.put(ReviewColumns.MOVIE_ID, 333484);
 
-        return new ContentValues[]{reviewValues1, reviewValues2}; // ASC orderBy ID
+        ContentValues reviewValues3 = new ContentValues();
+        reviewValues3.put(ReviewColumns._ID, "572d7bc1c3a3680fdb001d69");
+        reviewValues3.put(ReviewColumns.AUTHOR, "Frank Ochieng");
+        reviewValues3.put(ReviewColumns.CONTENT, "Some review 3 here");
+        reviewValues3.put(ReviewColumns.URL, "https://www.themoviedb.org/review/572d7bc1c3a3680fdb001d69");
+        reviewValues3.put(ReviewColumns.MOVIE_ID, 271110);
+
+        ContentValues reviewValues4 = new ContentValues();
+        reviewValues4.put(ReviewColumns._ID, "57acf05cc3a36820750001c8");
+        reviewValues4.put(ReviewColumns.AUTHOR, "Austin Singleton");
+        reviewValues4.put(ReviewColumns.CONTENT, "Some review 4 here");
+        reviewValues4.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57acf05cc3a36820750001c8");
+        reviewValues4.put(ReviewColumns.MOVIE_ID, 271110);
+
+        ContentValues reviewValues5 = new ContentValues();
+        reviewValues5.put(ReviewColumns._ID, "57f40f319251417fe300171a");
+        reviewValues5.put(ReviewColumns.AUTHOR, "Reno");
+        reviewValues5.put(ReviewColumns.CONTENT, "Some review 5 here");
+        reviewValues5.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57f40f319251417fe300171a");
+        reviewValues5.put(ReviewColumns.MOVIE_ID, 271110);
+
+        ContentValues reviewValues6 = new ContentValues();
+        reviewValues6.put(ReviewColumns._ID, "57c3994b925141532a002173");
+        reviewValues6.put(ReviewColumns.AUTHOR, "Frank Ochieng");
+        reviewValues6.put(ReviewColumns.CONTENT, "Some review 6 here");
+        reviewValues6.put(ReviewColumns.URL, "https://www.themoviedb.org/review/57c3994b925141532a002173");
+        reviewValues6.put(ReviewColumns.MOVIE_ID, 278924);
+
+        ContentValues values[] = {reviewValues1, reviewValues2, reviewValues3, reviewValues4, reviewValues5, reviewValues6};
+        Arrays.sort(values, new Comparator<ContentValues>() {
+            @Override
+            public int compare(ContentValues contentValues, ContentValues t1) {
+                return contentValues.getAsString(ReviewColumns._ID).compareTo(t1.getAsString(ReviewColumns._ID));
+            }
+        });
+
+        return values; // ASC orderBy ID
     }
 
     // The next method comes from

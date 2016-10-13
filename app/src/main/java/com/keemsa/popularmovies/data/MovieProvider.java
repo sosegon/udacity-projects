@@ -75,7 +75,7 @@ public final class MovieProvider {
                 name = "OF_MOVIE",
                 type = CONTENT_DIR_TYPE,
                 whereColumn = TrailerColumns.MOVIE_ID,
-                pathSegment = 2
+                pathSegment = 1
         )
         public static Uri ofMovie(long movie_id) {
             return builderUri(Path.MOVIE, String.valueOf(movie_id), Path.TRAILER);
@@ -110,7 +110,7 @@ public final class MovieProvider {
                 name = "OF_MOVIE",
                 type = CONTENT_DIR_TYPE,
                 whereColumn = ReviewColumns.MOVIE_ID,
-                pathSegment = 2
+                pathSegment = 1
         )
         public static Uri ofMovie(long movie_id) {
             return builderUri(Path.MOVIE, String.valueOf(movie_id), Path.REVIEW);
