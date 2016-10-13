@@ -29,6 +29,7 @@ public interface ReviewColumns {
     String URL = "URL";
 
     @DataType(INTEGER)
+    @NotNull
     @References(table = MovieDatabase.MOVIE, column = MovieColumns._ID)
     String MOVIE_ID = "movie_id";
 }

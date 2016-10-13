@@ -33,6 +33,7 @@ public interface TrailerColumns {
     String TYPE = "type";
 
     @DataType(INTEGER)
+    @NotNull
     @References(table = MovieDatabase.MOVIE, column = MovieColumns._ID)
     String MOVIE_ID = "movie_id";
 }
