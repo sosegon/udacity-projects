@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/frg_movie_details"
-        android:name="com.keemsa.popularmovies.MovieDetailsFragment"
+        android:name="com.keemsa.popularmovies.fragment.MovieDetailsFragment"
         style="@style/match_match"></fragment>
 
 
