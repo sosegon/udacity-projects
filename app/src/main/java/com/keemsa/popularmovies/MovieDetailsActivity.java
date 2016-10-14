@@ -1,13 +1,33 @@
 package com.keemsa.popularmovies;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTabHost;
 
-public class MovieDetailsActivity extends AppCompatActivity {
+import com.keemsa.popularmovies.fragment.MovieDetailsFragment;
+import com.keemsa.popularmovies.fragment.MovieReviewsFragment;
+
+public class MovieDetailsActivity extends FragmentActivity {
+
+    private FragmentTabHost mtabHost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_movie_details);
+        mtabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mtabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+
+        mtabHost.addTab(
+                mtabHost.newTabSpec("details").setIndicator(getString(R.string.lbl_details), null),
+                MovieDetailsFragment.class, null
+        );
+
+        mtabHost.addTab(
+                mtabHost.newTabSpec("reviews").setIndicator(getString(R.string.lbl_reviews), null),
+                MovieReviewsFragment.class, null
+        );
+
     }
 }
