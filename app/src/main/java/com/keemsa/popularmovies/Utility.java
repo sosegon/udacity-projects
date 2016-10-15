@@ -2,6 +2,7 @@ package com.keemsa.popularmovies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -43,5 +44,15 @@ public class Utility {
         String queryBy = pref.getString(context.getString(R.string.prf_key_sort), context.getString(R.string.prf_default_sort));
 
         return queryBy;
+    }
+
+    public static Uri createTrailerUri(String site, String key) {
+        if (site.toLowerCase().equals("youtube")) {
+            return Uri.parse("http://www.youtube.com").buildUpon()
+                    .appendPath("watch")
+                    .appendQueryParameter("v", key).build();
+        }
+
+        return null;
     }
 }

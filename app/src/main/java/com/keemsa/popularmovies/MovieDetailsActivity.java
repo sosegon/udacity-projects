@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTabHost;
 
 import com.keemsa.popularmovies.fragment.MovieDetailsFragment;
 import com.keemsa.popularmovies.fragment.MovieReviewsFragment;
+import com.keemsa.popularmovies.fragment.MovieTrailersFragment;
 
 public class MovieDetailsActivity extends FragmentActivity {
 
@@ -27,6 +28,11 @@ public class MovieDetailsActivity extends FragmentActivity {
         mtabHost.addTab(
                 mtabHost.newTabSpec("reviews").setIndicator(getString(R.string.lbl_reviews), null),
                 MovieReviewsFragment.class, null
+        );
+
+        mtabHost.addTab(
+                mtabHost.newTabSpec("trailers").setIndicator(getString(R.string.lbl_trailers), null),
+                MovieTrailersFragment.class, null
         );
 
     }
