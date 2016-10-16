@@ -73,10 +73,14 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(i);
                 if (c != null) {
-                    Uri trailerUrl = Utility.createTrailerUri(c.getString(TRAILER_SITE), c.getString(TRAILER_KEY));
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(trailerUrl);
-                    startActivity(intent);
+                    String site = c.getString(TRAILER_SITE);
+                    String key = c.getString(TRAILER_KEY);
+                    if (site != null && key != null) {
+                        Uri trailerUrl = Utility.createTrailerUri(c.getString(TRAILER_SITE), c.getString(TRAILER_KEY));
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(trailerUrl);
+                        startActivity(intent);
+                    }
                 }
 
             }
