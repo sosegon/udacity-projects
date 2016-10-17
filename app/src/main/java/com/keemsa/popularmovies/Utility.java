@@ -52,6 +52,10 @@ public class Utility {
                     .appendPath("watch")
                     .appendQueryParameter("v", key).build();
         }
+        else if (site.toLowerCase().equals("vimeo")) {
+            return Uri.parse("http://www.vimeo.com").buildUpon()
+                    .appendPath(key).build();
+        }
 
         return null;
     }
