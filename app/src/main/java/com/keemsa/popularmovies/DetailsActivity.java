@@ -9,5 +9,11 @@ public class DetailsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        /* TODO: I don't add the fragment programatically
+           I simply added the fragment in the xml file as oppose
+           to what was done in Sunshine app.
+           Is there any disadvantage related to this approach
+         */
     }
 }

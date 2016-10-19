@@ -43,6 +43,7 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
     private ReviewPagerAdapter<ReviewFragment> reviewAdapter;
     private ViewPager pgr_reviews;
 
+    private Uri mMovieUri;
     private long mMovieId;
     private int mFetchFromServerCount = 0;
 
@@ -60,6 +61,11 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (args != null) {
+            mMovieUri = args.getParcelable(DetailsFragment.MOVIE_URI);
+        }
+
         View view = inflater.inflate(R.layout.fragment_movie_reviews, container, false);
 
         /* TODO: Find a better solution to handle ReviewFragments
@@ -92,6 +98,23 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This happens in tablets
+        if (mMovieUri != null) {
+            long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
+            Uri reviewUri = MovieProvider.Review.ofMovie(movieId);
+            mMovieId = movieId;
+
+            return new CursorLoader(
+                    getActivity(),
+                    reviewUri,
+                    REVIEW_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        // This happens in phones
         Intent intent = getActivity().getIntent();
         if (intent == null) {
             return null;
@@ -100,7 +123,6 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
         long movieId = Long.parseLong(intent.getData().getLastPathSegment());
         Uri reviewUri = MovieProvider.Review.ofMovie(movieId);
         mMovieId = movieId;
-        Log.e("", "Uri is: " + reviewUri.toString());
         return new CursorLoader(
                 getActivity(),
                 reviewUri,

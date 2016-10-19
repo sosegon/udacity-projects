@@ -1,28 +1,37 @@
 package com.keemsa.popularmovies;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.keemsa.popularmovies.fragment.CatalogFragment;
+import com.keemsa.popularmovies.fragment.DetailsFragment;
 
-public class CatalogActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity implements CatalogFragment.Callback {
 
     private final String LOG_TAG = CatalogActivity.class.getSimpleName();
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
+    private final String DETAILS_FRAGMENT_TAG = "DFTAG";
     private String mQueryBy;
+    private boolean mTwoPane = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.frl_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
-                    .commit();
-        }
+
+        /*
+           No need to add the DetailsFragment if the container is present.
+           That is because the fragments within DetailsFragment fetch data
+           either from the server or the content provider. In any case, they
+           need a Uri to get the data. That Uri can only be provided
+           when the movies have been loaded in CatalogFragment.
+         */
+
+        mTwoPane = findViewById(R.id.frl_details_container) != null;
     }
 
     @Override
@@ -56,5 +65,48 @@ public class CatalogActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean hasSinglePane() {
+        return !mTwoPane;
+    }
+
+    @Override
+    public void onEnableDetailsFragment(Uri movieUri) {
+        Bundle args = new Bundle();
+        args.putParcelable(DetailsFragment.MOVIE_URI, movieUri);
+
+        /*
+           The Bundle is passed to DetailsFragment, but since
+           it's just a container for other fragments, it passes
+           the bundle to them
+         */
+        DetailsFragment frg = new DetailsFragment();
+        frg.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frl_details_container, frg)
+                .commit();
+    }
+
+    @Override
+    public void onItemSelected(Uri movieUri) {
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailsFragment.MOVIE_URI, movieUri);
+
+            DetailsFragment frg = new DetailsFragment();
+            frg.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frl_details_container, frg, DETAILS_FRAGMENT_TAG)
+                    .commit();
+
+        } else {
+            Intent intent = new Intent(this, DetailsActivity.class)
+                    .setData(movieUri);
+            startActivity(intent);
+        }
     }
 }

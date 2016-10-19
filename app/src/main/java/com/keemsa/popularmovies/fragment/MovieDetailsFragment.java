@@ -45,6 +45,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private ImageView imv_movie_poster_details;
 
+    private Uri mMovieUri;
     private Movie mMovie;
     private final int MOVIE_DETAIL_LOADER = 0;
     private final String[] MOVIE_COLUMNS = {
@@ -66,6 +67,19 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This happens in tablets
+        if (mMovieUri != null) {
+            return new CursorLoader(
+                    getActivity(),
+                    mMovieUri,
+                    MOVIE_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        // This happens in phones
         Intent intent = getActivity().getIntent();
 
         if (intent == null) {
@@ -84,7 +98,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (!data.moveToFirst()) {
+        if (data == null || !data.moveToFirst()) {
             return;
         }
 
@@ -125,6 +139,11 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (args != null) {
+            mMovieUri = args.getParcelable(DetailsFragment.MOVIE_URI);
+        }
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_movie_details, container, false);
 

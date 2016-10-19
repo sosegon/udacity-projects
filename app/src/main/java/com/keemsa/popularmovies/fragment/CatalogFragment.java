@@ -3,13 +3,14 @@ package com.keemsa.popularmovies.fragment;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -26,7 +27,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.keemsa.popularmovies.BuildConfig;
-import com.keemsa.popularmovies.DetailsActivity;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -61,6 +61,15 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     private final int MOVIE_ID = 0;
     private final int MOVIE_POSTER_URL = 1;
+    private final int MOVIES_LOADED = 1;
+
+    public interface Callback {
+        void onItemSelected(Uri movieUri);
+
+        void onEnableDetailsFragment(Uri movieUri);
+
+        boolean hasSinglePane();
+    }
 
     public CatalogFragment() {
     }
@@ -78,8 +87,32 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
         movieAdapter.swapCursor(data);
+
+        if (!((Callback) getActivity()).hasSinglePane()) {
+            /*
+               In two panes, DetailsFragment has to be added once the movies
+               are loaded, therefore a Uri can be passed to it, which in turns
+               passes it to its children fragment, so they can perform the
+               corresponding queries and display the information
+               Solution according to http://stackoverflow.com/a/12421522/1065981
+             */
+            Handler handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    if (msg.what == MOVIES_LOADED) {
+                        if (data.moveToFirst()) {
+                            Uri movieUri = MovieProvider.Movie.withId(data.getLong(MOVIE_ID));
+                            ((CatalogFragment.Callback) getActivity()).onEnableDetailsFragment(movieUri);
+                        }
+
+                    }
+                }
+            };
+
+            handler.sendEmptyMessage(MOVIES_LOADED);
+        }
     }
 
     @Override
@@ -118,10 +151,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(i);
                 if (c != null) {
-                    Intent intent = new Intent(getContext(), DetailsActivity.class);
-
-                    intent.setData(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
-                    startActivity(intent);
+                    ((Callback) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
                 }
             }
         });

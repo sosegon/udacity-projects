@@ -40,9 +40,11 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
     private final String LOG_TAG = MovieTrailersFragment.class.getSimpleName();
     private TrailerAdapter trailerAdapter;
+    private ListView lv_trailers;
+
+    private Uri mMovieUri;
     private int mFetchFromServerCount = 0;
     private long mMovieId;
-    private ListView lv_trailers;
 
     private static final int TRAILERS_LOADER_ID = 1;
     final static String[] TRAILER_COLUMNS = {
@@ -62,6 +64,11 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (args != null) {
+            mMovieUri = args.getParcelable(DetailsFragment.MOVIE_URI);
+        }
+
         View view = inflater.inflate(R.layout.fragment_movie_trailers, container, false);
 
         lv_trailers = (ListView) view.findViewById(R.id.lv_trailers);
@@ -97,6 +104,23 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // This happens in tablets
+        if (mMovieUri != null) {
+            long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
+            Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
+            mMovieId = movieId;
+
+            return new CursorLoader(
+                    getContext(),
+                    trailerUri,
+                    TRAILER_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        // This happens in phones
         Intent intent = getActivity().getIntent();
         if (intent == null) {
             return null;

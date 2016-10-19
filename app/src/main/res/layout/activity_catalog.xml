@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frg_catalog"
+    android:name="com.keemsa.popularmovies.fragment.CatalogFragment"
     style="@style/match_match"
-    android:id="@+id/frl_container"
-    tools:context=".CatalogActivity" />
+    tools:layout="@android:layout/list_content" />
