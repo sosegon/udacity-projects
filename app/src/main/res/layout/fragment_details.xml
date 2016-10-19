@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/tabhost"
     style="@style/match_match"
-    tools:context="com.keemsa.popularmovies.MovieDetailsActivity">
+    tools:context=".DetailsActivity">
 
     <LinearLayout
         style="@style/match_wrap"

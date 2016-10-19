@@ -26,7 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.keemsa.popularmovies.BuildConfig;
-import com.keemsa.popularmovies.MovieDetailsActivity;
+import com.keemsa.popularmovies.DetailsActivity;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -118,7 +118,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(i);
                 if (c != null) {
-                    Intent intent = new Intent(getContext(), MovieDetailsActivity.class);
+                    Intent intent = new Intent(getContext(), DetailsActivity.class);
 
                     intent.setData(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
                     startActivity(intent);

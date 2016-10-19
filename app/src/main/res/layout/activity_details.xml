@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/match_match"
+    tools:context=".DetailsActivity">
+
+    <fragment
+        android:id="@+id/frg_details"
+        android:name="com.keemsa.popularmovies.fragment.DetailsFragment"
+        style="@style/match_match" />
+
+</FrameLayout>
+
+

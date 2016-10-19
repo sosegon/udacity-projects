@@ -8,16 +8,16 @@ import android.view.MenuItem;
 
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity {
 
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String LOG_TAG = CatalogActivity.class.getSimpleName();
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
     private String mQueryBy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_catalog);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.frl_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)

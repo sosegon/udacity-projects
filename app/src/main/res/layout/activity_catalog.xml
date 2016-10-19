@@ -3,4 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/match_match"
     android:id="@+id/frl_container"
-    tools:context="com.keemsa.popularmovies.MainActivity" />
+    tools:context=".CatalogActivity" />
