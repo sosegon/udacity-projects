@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.keemsa.popularmovies.BuildConfig;
 import com.keemsa.popularmovies.R;
+import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.data.ReviewColumns;
 import com.keemsa.popularmovies.net.ReviewsAsyncTask;
@@ -235,15 +236,7 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
     }
 
     private boolean reviewExists(String reviewId){
-        Cursor c = getContext().getContentResolver().query(
-                MovieProvider.Review.withId(reviewId),
-                null,
-                null,
-                null,
-                null
-        );
-
-        return c.moveToFirst();
+        return Utility.reviewExists(getContext(), reviewId);
     }
 
     private void removeReviewFragments(){

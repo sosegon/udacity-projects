@@ -2,9 +2,12 @@ package com.keemsa.popularmovies;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.keemsa.popularmovies.data.MovieProvider;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,5 +61,41 @@ public class Utility {
         }
 
         return null;
+    }
+
+    public static boolean movieExists(Context context, long movieId) {
+        Cursor c = context.getContentResolver().query(
+                MovieProvider.Movie.withId(movieId),
+                null,
+                null,
+                null,
+                null
+        );
+
+        return c.moveToFirst();
+    }
+
+    public static boolean reviewExists(Context context, String reviewId) {
+        Cursor c = context.getContentResolver().query(
+                MovieProvider.Review.withId(reviewId),
+                null,
+                null,
+                null,
+                null
+        );
+
+        return c.moveToFirst();
+    }
+
+    public static boolean trailerExists(Context context, String trailerId) {
+        Cursor c = context.getContentResolver().query(
+                MovieProvider.Trailer.withId(trailerId),
+                null,
+                null,
+                null,
+                null
+        );
+
+        return c.moveToFirst();
     }
 }

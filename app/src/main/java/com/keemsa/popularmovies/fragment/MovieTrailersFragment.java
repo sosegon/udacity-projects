@@ -247,14 +247,6 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     }
 
     private boolean trailerExists(String trailerId) {
-        Cursor c = getContext().getContentResolver().query(
-                MovieProvider.Trailer.withId(trailerId),
-                null,
-                null,
-                null,
-                null
-        );
-
-        return c.moveToFirst();
+        return Utility.trailerExists(getContext(), trailerId);
     }
 }
