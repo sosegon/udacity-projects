@@ -27,7 +27,6 @@ public class TestDb extends AndroidTestCase {
     public void testCreateDb() throws Throwable {
         final HashSet<String> tableNameHashSet = new HashSet<String>();
         tableNameHashSet.add(com.keemsa.popularmovies.data.MovieDatabase.MOVIE);
-        tableNameHashSet.add(com.keemsa.popularmovies.data.MovieDatabase.FAV_MOVIE);
         tableNameHashSet.add(com.keemsa.popularmovies.data.MovieDatabase.TRAILER);
         tableNameHashSet.add(com.keemsa.popularmovies.data.MovieDatabase.REVIEW);
 
@@ -51,7 +50,6 @@ public class TestDb extends AndroidTestCase {
         // Check correct tables were created
         String[] tables_names = {
                 com.keemsa.popularmovies.data.MovieDatabase.MOVIE,
-                com.keemsa.popularmovies.data.MovieDatabase.FAV_MOVIE,
                 com.keemsa.popularmovies.data.MovieDatabase.TRAILER,
                 com.keemsa.popularmovies.data.MovieDatabase.REVIEW
         };
@@ -63,14 +61,6 @@ public class TestDb extends AndroidTestCase {
         movie_columns.add(MovieColumns.POSTER_URL);
         movie_columns.add(MovieColumns.RELEASE_DATE);
         movie_columns.add(MovieColumns.RATING);
-
-        HashSet<String> fav_movie_columns = new HashSet<String>();
-        fav_movie_columns.add(FavMovieColumns._ID);
-        fav_movie_columns.add(FavMovieColumns.TITLE);
-        fav_movie_columns.add(FavMovieColumns.SYNOPSIS);
-        fav_movie_columns.add(FavMovieColumns.POSTER_URL);
-        fav_movie_columns.add(FavMovieColumns.RELEASE_DATE);
-        fav_movie_columns.add(FavMovieColumns.RATING);
 
         HashSet<String> trailer_columns = new HashSet<String>();
         trailer_columns.add(TrailerColumns._ID);
@@ -87,7 +77,7 @@ public class TestDb extends AndroidTestCase {
         review_columns.add(ReviewColumns.URL);
         review_columns.add(ReviewColumns.MOVIE_ID);
 
-        HashSet[] column_names = {movie_columns, fav_movie_columns, trailer_columns, review_columns};
+        HashSet[] column_names = {movie_columns, trailer_columns, review_columns};
 
         for (int i = 0; i < tables_names.length; i++) {
             c = db.rawQuery("PRAGMA table_info(" + tables_names[i] + ")", null);
@@ -122,36 +112,6 @@ public class TestDb extends AndroidTestCase {
                 null, // columns
                 MovieColumns._ID + " = ?", // selection
                 new String[]{contentMovie.get(MovieColumns._ID).toString()}, // selection args
-                null, // groupBy
-                null, // having
-                null, // orderBy
-                null // limit
-        );
-
-        TestUtilities.validateCursor("", c, contentMovie);
-
-        assertFalse("Error: more than one record returned from movie query", c.moveToNext());
-
-        c.close();
-        db.close();
-    }
-
-    public void testFavMovieTable() {
-        setUp();
-
-        SQLiteDatabase db = MovieDatabase.getInstance(mContext).getWritableDatabase();
-        ContentValues contentMovie = TestUtilities.createMovieValues();
-
-        // Insert ContentValues in db
-        long id = db.insert(com.keemsa.popularmovies.data.MovieDatabase.FAV_MOVIE, null, contentMovie);
-
-        assertTrue(id != -1); // Successfully inserted
-
-        Cursor c = db.query(
-                com.keemsa.popularmovies.data.MovieDatabase.FAV_MOVIE, // Table
-                null, // columns
-                FavMovieColumns._ID + " = ?", // selection
-                new String[]{contentMovie.get(FavMovieColumns._ID).toString()}, // selection args
                 null, // groupBy
                 null, // having
                 null, // orderBy

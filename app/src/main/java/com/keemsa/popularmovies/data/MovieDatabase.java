@@ -16,13 +16,10 @@ import net.simonvt.schematic.annotation.Table;
         packageName = "com.keemsa.popularmovies.provider"
 )
 public class MovieDatabase {
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     @Table(MovieColumns.class)
     public static final String MOVIE = "movie";
-
-    @Table(FavMovieColumns.class)
-    public static final String FAV_MOVIE = "fav_movie";
 
     @Table(TrailerColumns.class)
     public static final String TRAILER = "trailer";

@@ -30,6 +30,7 @@ public class TestUtilities extends AndroidTestCase {
         movieValues.put(MovieColumns.POSTER_URL, "z6BP8yLwck8mN9dtdYKkZ4XGa3D.jpg");
         movieValues.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-09-14"));
         movieValues.put(MovieColumns.RATING, 4.7);
+        movieValues.put(MovieColumns.QUERY_TYPE, 2);
 
         return movieValues;
     }
@@ -42,6 +43,7 @@ public class TestUtilities extends AndroidTestCase {
         movieValues1.put(MovieColumns.POSTER_URL, "z6BP8yLwck8mN9dtdYKkZ4XGa3D.jpg");
         movieValues1.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-09-14"));
         movieValues1.put(MovieColumns.RATING, 4.7);
+        movieValues1.put(MovieColumns.QUERY_TYPE, 2);
 
         ContentValues movieValues2 = new ContentValues();
         movieValues2.put(MovieColumns._ID, 271110);
@@ -50,6 +52,7 @@ public class TestUtilities extends AndroidTestCase {
         movieValues2.put(MovieColumns.POSTER_URL, "5N20rQURev5CNDcMjHVUZhpoCNC.jpg");
         movieValues2.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-04-27"));
         movieValues2.put(MovieColumns.RATING, 6.77);
+        movieValues2.put(MovieColumns.QUERY_TYPE, 2);
 
         ContentValues movieValues3 = new ContentValues();
         movieValues3.put(MovieColumns._ID, 278924);
@@ -58,6 +61,7 @@ public class TestUtilities extends AndroidTestCase {
         movieValues3.put(MovieColumns.POSTER_URL, "tgfRDJs5PFW20Aoh1orEzuxW8cN.jpg");
         movieValues3.put(MovieColumns.RELEASE_DATE, Utility.getDateInMilliSeconds("2016-08-25"));
         movieValues3.put(MovieColumns.RATING, 4.34);
+        movieValues3.put(MovieColumns.QUERY_TYPE, 2);
 
         return new ContentValues[]{movieValues2, movieValues3, movieValues1}; // ASC orderBy ID
     }
