@@ -26,4 +26,10 @@ public class UtilityUnitTest {
         posterUrl = Utility.formatPosterUrl(posterUrl);
         assertTrue(posterUrl.equals("ioeijdjksj"));
     }
+
+    @Test
+    public void createQueryType() throws Exception {
+        int type = Utility.createQueryType(true, false, true);
+        assertEquals(type, 5);
+    }
 }

@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 
 import java.text.ParseException;
@@ -54,8 +55,7 @@ public class Utility {
             return Uri.parse("http://www.youtube.com").buildUpon()
                     .appendPath("watch")
                     .appendQueryParameter("v", key).build();
-        }
-        else if (site.toLowerCase().equals("vimeo")) {
+        } else if (site.toLowerCase().equals("vimeo")) {
             return Uri.parse("http://www.vimeo.com").buildUpon()
                     .appendPath(key).build();
         }
@@ -97,5 +97,61 @@ public class Utility {
         );
 
         return c.moveToFirst();
+    }
+
+    public static boolean isFavourite(int queryType) {
+        return queryType == 1 || queryType == 3 || queryType == 5 || queryType == 7;
+    }
+
+    public static boolean isPopular(int queryType) {
+        return queryType == 2 || queryType == 3 || queryType == 6 || queryType == 7;
+    }
+
+    public static boolean isRated(int queryType) {
+        return queryType >= 4 && queryType <= 7;
+    }
+
+    public static int createQueryType(boolean rated, boolean popular, boolean favourite) {
+        String type = "" +
+                (rated ? "1" : "0") +
+                (popular ? "1" : "0") +
+                (favourite ? "1" : "0");
+
+        return Integer.parseInt(type, 2);
+    }
+
+    public static boolean[] getValuesFromQueryType(int queryType) {
+        return new boolean[]{isRated(queryType), isPopular(queryType), isFavourite(queryType)};
+    }
+
+    public static String queryFilterByQueryBy(Context context) {
+        String queryBy = Utility.getPreferredQueryBy(context);
+
+        if (queryBy.equals(context.getResources().getStringArray(R.array.prf_values_sort)[0])) { // popular
+            return MovieColumns.QUERY_TYPE + " in (2, 3, 6, 7)";
+        } else if (queryBy.equals(context.getResources().getStringArray(R.array.prf_values_sort)[1])) { // rated
+            return MovieColumns.QUERY_TYPE + " >= 4";
+        } else { // favourite
+            return MovieColumns.QUERY_TYPE + " in (3, 5, 7)";
+        }
+    }
+
+    /*
+       Used to set the value of the row MovieColumns.QUERY_TYPE
+       This function is used when the movie is first fetched from the
+       server (it's not present in the db). In this case, the movie has
+       been fetched either by popularity or rating, no other option is
+       possible
+     */
+    public static int queryTypeByQueryBy(Context context) {
+        String queryBy = Utility.getPreferredQueryBy(context);
+
+        if (queryBy.equals(context.getResources().getStringArray(R.array.prf_values_sort)[0])) { // popular
+            return 2;
+        } else if (queryBy.equals(context.getResources().getStringArray(R.array.prf_values_sort)[1])) { // rated
+            return 4;
+        } else {
+            return -1;
+        }
     }
 }

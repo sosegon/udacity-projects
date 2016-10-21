@@ -3,7 +3,6 @@ package com.keemsa.popularmovies.fragment;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -56,11 +54,22 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     private final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
-            MovieColumns.POSTER_URL
+            MovieColumns.TITLE,
+            MovieColumns.SYNOPSIS,
+            MovieColumns.POSTER_URL,
+            MovieColumns.QUERY_TYPE,
+            MovieColumns.RELEASE_DATE,
+            MovieColumns.RATING
     };
 
-    private final int MOVIE_ID = 0;
-    private final int MOVIE_POSTER_URL = 1;
+    private final int MOVIE_ID = 0,
+                        MOVIE_TITLE = 1,
+                        MOVIE_SYNOPSIS = 2,
+                        MOVIE_POSTER_URL = 3,
+                        MOVIE_QUERY_TYPE = 4,
+                        MOVIE_RELEASE_DATE = 5,
+                        MOVIE_RATING = 6;
+
     private final int MOVIES_LOADED = 1;
 
     public interface Callback {
@@ -80,7 +89,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
                 getContext(),
                 MovieProvider.Movie.ALL,
                 MOVIE_COLUMNS,
-                null,
+                Utility.queryFilterByQueryBy(getContext()),
                 null,
                 null
         );
@@ -202,7 +211,6 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     private void updateMovieCatalog() {
         // Construct uri
         String baseUrl = getString(R.string.base_query_url);
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         String queryBy = Utility.getPreferredQueryBy(getContext());
         String url = Uri.parse(baseUrl).buildUpon()
                 .appendPath(queryBy)
@@ -251,7 +259,6 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         }
 
         try {
-            getContext().getContentResolver().delete(MovieProvider.Movie.ALL, null, null);
             Vector<ContentValues> cvMovies = processMovies(json);
             if (cvMovies.size() > 0) {
                 ContentValues[] cvArray = new ContentValues[cvMovies.size()];
@@ -271,24 +278,83 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
         for (int i = 0; i < moviesJson.length(); i++) {
             JSONObject currentMovie = moviesJson.getJSONObject(i);
+
+            long _id = currentMovie.optLong("id");
+            if(movieExists(_id)){
+                updateQueryType(_id, Utility.getPreferredQueryBy(getContext()));
+                continue;
+            }
+
             String title = currentMovie.optString("original_title"),
                     synopsis = currentMovie.optString("overview"),
                     posterUrl = Utility.formatPosterUrl(currentMovie.optString("poster_path")),
                     releaseDate = currentMovie.optString("release_date"),
-                    rating = currentMovie.optString("vote_average"),
-                    _id = currentMovie.optString("id");
+                    rating = currentMovie.optString("vote_average");
 
             ContentValues cvMovie = new ContentValues();
+            cvMovie.put(MovieColumns._ID, _id);
             cvMovie.put(MovieColumns.TITLE, title);
             cvMovie.put(MovieColumns.SYNOPSIS, synopsis);
             cvMovie.put(MovieColumns.POSTER_URL, posterUrl);
             cvMovie.put(MovieColumns.RELEASE_DATE, releaseDate);
             cvMovie.put(MovieColumns.RATING, rating);
-            cvMovie.put(MovieColumns._ID, _id);
+            // At this point QueryBy is popular or rating
+            cvMovie.put(MovieColumns.QUERY_TYPE, Utility.queryTypeByQueryBy(getContext()));
 
             cvVector.add(cvMovie);
         }
 
         return cvVector;
+    }
+
+    private boolean movieExists (long movieId) {
+        return Utility.movieExists(getContext(), movieId);
+    }
+
+    private boolean updateQueryType(long movieId, String queryBy) {
+        Cursor c = getContext().getContentResolver().query(
+                MovieProvider.Movie.withId(movieId),
+                MOVIE_COLUMNS,
+                null,
+                null,
+                null
+        );
+
+        if(c.moveToFirst()){
+            int queryType = c.getInt(MOVIE_QUERY_TYPE);
+            boolean[] currentType = Utility.getValuesFromQueryType(queryType);
+            String rated = getResources().getStringArray(R.array.prf_values_sort)[1];
+            String popular = getResources().getStringArray(R.array.prf_values_sort)[0];
+            int newQueryType;
+            if(queryBy.equals(rated)){
+                newQueryType = Utility.createQueryType(true, currentType[1], currentType[2]);
+            }
+            else if(queryBy.equals(popular)){
+                newQueryType = Utility.createQueryType(currentType[0], true, currentType[2]);
+            }
+            else {
+                newQueryType = queryType;
+            }
+
+            ContentValues cvMovie = new ContentValues();
+            cvMovie.put(MovieColumns._ID, c.getLong(MOVIE_ID));
+            cvMovie.put(MovieColumns.TITLE, c.getString(MOVIE_TITLE));
+            cvMovie.put(MovieColumns.SYNOPSIS, c.getString(MOVIE_SYNOPSIS));
+            cvMovie.put(MovieColumns.POSTER_URL, c.getString(MOVIE_POSTER_URL));
+            cvMovie.put(MovieColumns.RELEASE_DATE, c.getInt(MOVIE_RELEASE_DATE));
+            cvMovie.put(MovieColumns.RATING, c.getFloat(MOVIE_RATING));
+            cvMovie.put(MovieColumns.QUERY_TYPE, newQueryType);
+
+            int i = getContext().getContentResolver().update(
+                    MovieProvider.Movie.withId(movieId),
+                    cvMovie,
+                    null,
+                    null
+            );
+
+            return i >= 0;
+        }
+
+        return false;
     }
 }
