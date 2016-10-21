@@ -13,7 +13,6 @@ import com.keemsa.popularmovies.fragment.DetailsFragment;
 public class CatalogActivity extends AppCompatActivity implements CatalogFragment.Callback {
 
     private final String LOG_TAG = CatalogActivity.class.getSimpleName();
-    private final String CATALOG_FRAGMENT_TAG = "CFTAG";
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
     private String mQueryBy;
     private boolean mTwoPane = false;
@@ -39,8 +38,8 @@ public class CatalogActivity extends AppCompatActivity implements CatalogFragmen
         super.onResume();
         String queryBy = Utility.getPreferredQueryBy(this);
 
-        if (queryBy != null && queryBy.equals(mQueryBy)) {
-            CatalogFragment cf = (CatalogFragment) getSupportFragmentManager().findFragmentByTag(CATALOG_FRAGMENT_TAG);
+        if (queryBy != null && !queryBy.equals(mQueryBy)) {
+            CatalogFragment cf = (CatalogFragment) getSupportFragmentManager().findFragmentById(R.id.frg_catalog);
             if (cf != null) {
                 cf.onQueryByChanged();
             }
