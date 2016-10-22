@@ -191,7 +191,11 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     }
 
     public void onQueryByChanged() {
-        updateMovieCatalog();
+        String queryBy = Utility.getPreferredQueryBy(getContext());
+        String fav = getResources().getStringArray(R.array.prf_values_sort)[0];
+        if(!queryBy.equals(fav)) {
+            updateMovieCatalog();
+        }
         getLoaderManager().restartLoader(CATALOG_LOADER_ID, null, this);
     }
 

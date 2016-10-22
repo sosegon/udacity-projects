@@ -15,10 +15,12 @@
     <string-array name="prf_entries_sort">
         <item>Popularity</item>
         <item>Rating</item>
+        <item>Favourite</item>
     </string-array>
     <string-array name="prf_values_sort">
         <item>popular</item>
         <item>top_rated</item>
+        <item>favourite</item>
     </string-array>
 
     <string name="lbl_reviews">Reviews</string>
