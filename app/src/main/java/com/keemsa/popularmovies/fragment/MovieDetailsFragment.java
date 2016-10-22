@@ -1,6 +1,7 @@
 package com.keemsa.popularmovies.fragment;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
+import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +45,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             txt_score_details,
             txt_desc_details;
 
-    private ImageView imv_movie_poster_details;
+    private ImageView imv_movie_poster_details,
+                        imv_movie_fav_details;
 
     private Uri mMovieUri;
     private Movie mMovie;
@@ -53,13 +56,17 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             MovieColumns.SYNOPSIS,
             MovieColumns.POSTER_URL,
             MovieColumns.RELEASE_DATE,
-            MovieColumns.RATING
+            MovieColumns.RATING,
+            MovieColumns.QUERY_TYPE,
+            MovieColumns._ID
     };
     private final int MOVIE_TITLE = 0;
     private final int MOVIE_SYNOPSIS = 1;
     private final int MOVIE_POSTER_URL = 2;
     private final int MOVIE_RELEASE_DATE = 3;
     private final int MOVIE_RATING = 4;
+    private final int MOVIE_QUERY_TYPE = 5;
+    private final int MOVIE_ID = 6;
 
     public MovieDetailsFragment() {
         // Required empty public constructor
@@ -108,12 +115,16 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         String desc = data.getString(MOVIE_SYNOPSIS);
         String posterUrl = Utility.formatPosterUrl(data.getString(MOVIE_POSTER_URL));
         String fullPosterUrl = Uri.parse(getContext().getString(R.string.base_img_url)).buildUpon().appendPath(posterUrl).build().toString();
+        int queryType = data.getInt(MOVIE_QUERY_TYPE);
+        long id = data.getLong(MOVIE_ID);
 
         /*
            Create the mMovie objects to be used
            as a container of data.
          */
         mMovie = new Movie(title, desc, fullPosterUrl, date, score);
+        mMovie.setQueryType(queryType);
+        mMovie.setId(id);
 
         fillViewsWithValues(mMovie);
     }
@@ -151,6 +162,14 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         txt_score_details = (TextView) view.findViewById(R.id.txt_score_details);
         txt_desc_details = (TextView) view.findViewById(R.id.txt_desc_details);
         imv_movie_poster_details = (ImageView) view.findViewById(R.id.imv_movie_poster_details);
+        imv_movie_fav_details = (ImageView) view.findViewById(R.id.imv_movie_fav_details);
+
+        imv_movie_fav_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleMovieFav();
+            }
+        });
 
         return view;
     }
@@ -169,5 +188,37 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         txt_desc_details.setText(movie.getSynopsis());
 
         Picasso.with(getContext()).load(movie.getPosterUrl()).into(imv_movie_poster_details);
+        boolean fav = Utility.isFavourite(movie.getQueryType());
+        imv_movie_fav_details.setImageResource(fav ? R.drawable.ic_fav : R.drawable.ic_nonfav);
+    }
+
+    private void toggleMovieFav(){
+        boolean newFav = !Utility.isFavourite(mMovie.getQueryType());
+        imv_movie_fav_details.setImageResource(newFav ? R.drawable.ic_fav : R.drawable.ic_nonfav);
+
+        // TODO: Do this when leaving the fragment to improve performance by avoiding multiple db operations
+        // update the record in db
+        ContentValues cv = new ContentValues();
+        cv.put(MovieColumns._ID, mMovie.getId());
+        cv.put(MovieColumns.TITLE, mMovie.getTitle());
+        cv.put(MovieColumns.SYNOPSIS, mMovie.getSynopsis());
+        cv.put(MovieColumns.RELEASE_DATE, mMovie.getReleaseDate());
+        // Be careful here since posterUrl of the object is not the same value of posterUrl of record in db
+        cv.put(MovieColumns.POSTER_URL, Uri.parse(mMovie.getPosterUrl()).getLastPathSegment());
+        cv.put(MovieColumns.RATING, mMovie.getRating());
+
+        boolean prevTypes[] = Utility.getValuesFromQueryType(mMovie.getQueryType());
+        int newQueryType = Utility.createQueryType(prevTypes[0], prevTypes[1], newFav);
+        cv.put(MovieColumns.QUERY_TYPE, newQueryType);
+
+        getContext().getContentResolver().update(
+                MovieProvider.Movie.withId(mMovie.getId()),
+                cv,
+                null,
+                null
+        );
+
+        // update member object
+        mMovie.setQueryType(newQueryType);
     }
 }

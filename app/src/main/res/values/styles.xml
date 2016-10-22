@@ -110,6 +110,14 @@
         <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 
+    <style name="imv_movie_fav_details" parent="wrap_wrap">
+        <item name="android:layout_below">@id/txt_score_details</item>
+        <item name="android:layout_toRightOf">@id/imv_movie_poster_details</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_1</item>
+        <item name="android:background">@drawable/ic_nonfav</item>
+    </style>
+
     <style name="txt_desc_details">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>

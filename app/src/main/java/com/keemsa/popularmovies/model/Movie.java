@@ -10,6 +10,7 @@ public class Movie implements Parcelable {
     private String title, posterUrl, synopsis, releaseDate;
     private float rating;
     private long id;
+    private int queryType;
 
     public Movie(String title, String synopsis, String posterUrl, String releaseDate, float rating) {
         this.posterUrl = posterUrl;
@@ -114,5 +115,13 @@ public class Movie implements Parcelable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getQueryType() {
+        return queryType;
+    }
+
+    public void setQueryType(int queryType) {
+        this.queryType = queryType;
     }
 }
