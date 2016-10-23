@@ -1,15 +1,23 @@
 package com.keemsa.popularmovies;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -153,5 +161,56 @@ public class Utility {
         } else {
             return -1;
         }
+    }
+
+    public static String getPosterDirectory(Context context){
+        return context.getString(R.string.folder_posters);
+    }
+
+    /*
+       Code from http://www.codexpedia.com/android/android-download-and-save-image-through-picasso/
+     */
+    public static Target picassoImageTarget(Context context, final String imageDir, final String imageName) {
+        ContextWrapper cw = new ContextWrapper(context);
+        final File directory = cw.getDir(imageDir, Context.MODE_PRIVATE);
+        return new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final File myImageFile = new File(directory, imageName); // Create image file
+                        FileOutputStream fos = null;
+                        try {
+                            fos = new FileOutputStream(myImageFile);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Log.i(LOG_TAG, "image saved to: " + myImageFile.getAbsolutePath());
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                if (placeHolderDrawable != null) {}
+            }
+        };
+    }
+
+    public static void downloadAndSavePoster(Context context, String posterUrl) {
+        String imageDir = Utility.getPosterDirectory(context);
+        String fullPosterUrl = Uri.parse(context.getString(R.string.base_img_url)).buildUpon().appendPath(posterUrl).build().toString();
+        Picasso.with(context).load(fullPosterUrl).into(Utility.picassoImageTarget(context, imageDir, posterUrl));
     }
 }

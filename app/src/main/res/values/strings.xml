@@ -27,4 +27,6 @@
     <string name="lbl_details">Details</string>
     <string name="lbl_trailers">Trailers</string>
     <string name="review_author">Author: <xliff:g id="author_name">%1$s</xliff:g> </string>
+
+    <string name="folder_posters">posters</string>
 </resources>

@@ -52,7 +52,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     private static final int CATALOG_LOADER_ID = 1;
 
-    private final String[] MOVIE_COLUMNS = {
+    public static final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
             MovieColumns.TITLE,
             MovieColumns.SYNOPSIS,
@@ -62,7 +62,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
             MovieColumns.RATING
     };
 
-    private final int MOVIE_ID = 0,
+    public static final int MOVIE_ID = 0,
                         MOVIE_TITLE = 1,
                         MOVIE_SYNOPSIS = 2,
                         MOVIE_POSTER_URL = 3,
