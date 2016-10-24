@@ -2,6 +2,8 @@ package com.keemsa.popularmovies.fragment;
 
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -23,6 +25,8 @@ import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 
 /**
@@ -187,7 +191,14 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         txt_score_details.setText("" + movie.getRating());
         txt_desc_details.setText(movie.getSynopsis());
 
-        Picasso.with(getContext()).load(movie.getPosterUrl()).into(imv_movie_poster_details);
+        String posterUrl = Uri.parse(movie.getPosterUrl()).getLastPathSegment();
+        ContextWrapper cw = new ContextWrapper(getContext());
+        File directory = cw.getDir(Utility.getPosterDirectory(getContext()), Context.MODE_PRIVATE);
+        File posterFile = new File(directory, posterUrl);
+        if (posterFile.exists()) { // At this point the image is already stored locally, but just in case.
+            Picasso.with(getContext()).load(posterFile).fit().into(imv_movie_poster_details);
+        }
+
         boolean fav = Utility.isFavourite(movie.getQueryType());
         imv_movie_fav_details.setImageResource(fav ? R.drawable.ic_fav : R.drawable.ic_nonfav);
     }
