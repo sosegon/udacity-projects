@@ -41,7 +41,7 @@
         <item name="android:textColor">@color/colorSecondaryText</item>
     </style>
 
-    <!-- activity_catalog.xmlxml -->
+    <!-- activity_catalog.xml -->
     <style name="frl_catalog" parent="match_match">
         <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
         <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
@@ -69,6 +69,17 @@
 
     <style name="imv_movie_poster" parent="match_match">
         <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <!-- item_trailer.xml -->
+    <style name="imv_trailer_thumbnail" parent="wrap_wrap">
+        <item name="android:layout_margin">@dimen/padding_1</item>
+        <item name="android:background">@drawable/ic_play</item>
+    </style>
+
+    <style name="txt_trailer_name" parent="wrap_wrap">
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <!-- fragment_review.xml -->
