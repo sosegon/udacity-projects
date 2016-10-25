@@ -85,6 +85,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        setProgressBarVisibility(View.VISIBLE);
         return new CursorLoader(
                 getContext(),
                 MovieProvider.Movie.ALL,
@@ -97,6 +98,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
+        setProgressBarVisibility(View.GONE);
         movieAdapter.swapCursor(data);
 
         if (!((Callback) getActivity()).hasSinglePane()) {
