@@ -56,7 +56,6 @@
         <item name="android:gravity">center</item>
     </style>
 
-
     <style name="prg_load" parent="wrap_wrap">
         <item name="android:indeterminate">false</item>
         <item name="android:layout_centerInParent">true</item>
@@ -72,7 +71,22 @@
         <item name="android:scaleType">centerCrop</item>
     </style>
 
-    <!-- fragment_movie_details.xml -->
+    <!-- fragment_review.xml -->
+    <style name="txt_review_author" parent="match_wrap">
+        <item name="android:paddingLeft">@dimen/padding_1</item>
+        <item name="android:paddingRight">@dimen/padding_1</item>
+        <item name="android:paddingTop">@dimen/padding_1</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+    </style>
+
+    <style name="txt_review_content" parent="match_wrap">
+        <item name="android:paddingLeft">@dimen/padding_1</item>
+        <item name="android:paddingRight">@dimen/padding_1</item>
+        <item name="android:paddingTop">@dimen/padding_1</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+    </style>
+
+    <!-- fragment_details.xml -->
     <style name="txt_title_details">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/txt_title_details</item>
@@ -83,6 +97,7 @@
         <item name="android:textColor">@color/colorTextIcons</item>
     </style>
 
+    <!-- fragment_movie_details.xml -->
     <style name="imv_movie_poster_details">
         <item name="android:layout_below">@id/txt_title_details</item>
         <item name="android:layout_alignParentLeft">true</item>

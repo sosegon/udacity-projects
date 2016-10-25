@@ -5,10 +5,10 @@
 
     <TextView
         android:id="@+id/txt_review_author"
-        style="@style/match_wrap" />
+        style="@style/txt_review_author" />
 
     <TextView
         android:id="@+id/txt_review_content"
-        style="@style/match_wrap" />
+        style="@style/txt_review_content" />
 
 </LinearLayout>

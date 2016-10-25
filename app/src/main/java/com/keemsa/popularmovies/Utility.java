@@ -213,4 +213,15 @@ public class Utility {
         String fullPosterUrl = Uri.parse(context.getString(R.string.base_img_url)).buildUpon().appendPath(posterUrl).build().toString();
         Picasso.with(context).load(fullPosterUrl).into(Utility.picassoImageTarget(context, imageDir, posterUrl));
     }
+
+    // taken from http://www.seal.io/2010/12/only-way-how-to-align-text-in-block-in.html
+    public static String justifyText(String text) {
+        return "<html>" +
+                    "<body>" +
+                            "<p align=\"justify\">" +
+                                text +
+                            "</p>" +
+                    "</body>" +
+                "</html>";
+    }
 }
