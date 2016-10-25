@@ -15,8 +15,7 @@
 
         <TabWidget
             android:id="@android:id/tabs"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            style="@style/match_wrap" />
 
         <View style="@style/divider"></View>
 

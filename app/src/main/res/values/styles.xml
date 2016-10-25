@@ -98,6 +98,14 @@
     </style>
 
     <!-- fragment_details.xml -->
+    <!-- TODO: Add animation in title
+         Some movies have long tiles, which causes that the TextView
+         can't display the entire text. The solution is to enable an
+         animation that displays the entire title at first, then just
+         enough text to fill one line. I've seen this in whatsapp where
+         the text "Last seen today 12:23" is displayed with an animation,
+         and at the end of it, just "today 12:23" is shown."
+    -->
     <style name="txt_title_details">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/txt_title_details</item>
@@ -106,6 +114,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:background">@color/colorPrimaryLight</item>
         <item name="android:textColor">@color/colorTextIcons</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <!-- fragment_movie_details.xml -->
