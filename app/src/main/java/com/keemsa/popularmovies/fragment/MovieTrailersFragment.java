@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.keemsa.popularmovies.BuildConfig;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieProvider;
@@ -36,7 +35,7 @@ import java.util.Vector;
 /**
  * Created by sebastian on 10/16/16.
  */
-public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, TrailersAsyncTask.AsyncTaskReceiver {
+public class MovieTrailersFragment extends Fragment {
 
     private final String LOG_TAG = MovieTrailersFragment.class.getSimpleName();
     private TrailerAdapter trailerAdapter;
@@ -46,7 +45,8 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     private int mFetchFromServerCount = 0;
     private long mMovieId;
 
-    private static final int TRAILERS_LOADER_ID = 1;
+    private static final int TRAILERS_CURSOR_LOADER_ID = 1;
+    private static final int TRAILERS_ASYNC_LOADER_ID = 2;
     final static String[] TRAILER_COLUMNS = {
             TrailerColumns._ID,
             TrailerColumns.KEY,
@@ -57,6 +57,115 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     final static int TRAILER_KEY = 1;
     final static int TRAILER_NAME = 2;
     final static int TRAILER_SITE = 3;
+
+    private LoaderManager.LoaderCallbacks<String> asyncLoader = new LoaderManager.LoaderCallbacks<String>() {
+        @Override
+        public Loader<String> onCreateLoader(int id, Bundle args) {
+            /*
+                The app is here because it didn't find trailers with
+                the cursor loader. After using this loader, the
+                cursor loader will be restarted.
+             */
+            mFetchFromServerCount++;
+
+            // Verify network connection to fetch trailers
+            ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = manager.getActiveNetworkInfo();
+
+            if (netInfo == null || !netInfo.isConnected()) {
+                return null;
+            }
+
+            // This happens in tablets
+            if (mMovieUri != null) {
+                long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
+                mMovieId = movieId;
+
+                return new TrailersAsyncTask(getContext(), mMovieId);
+            }
+
+            // This happens in phones
+            Intent intent = getActivity().getIntent();
+            if (intent == null) {
+                return null;
+            }
+
+            long movieId = Long.parseLong(intent.getData().getLastPathSegment());
+            mMovieId = movieId;
+            return new TrailersAsyncTask(getContext(), mMovieId);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<String> loader, String data) {
+            processJson(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<String> loader) {
+
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            // This happens in tablets
+            if (mMovieUri != null) {
+                long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
+                Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
+                mMovieId = movieId;
+
+                return new CursorLoader(
+                        getContext(),
+                        trailerUri,
+                        TRAILER_COLUMNS,
+                        null,
+                        null,
+                        null
+                );
+            }
+
+            // This happens in phones
+            Intent intent = getActivity().getIntent();
+            if (intent == null) {
+                return null;
+            }
+
+            long movieId = Long.parseLong(intent.getData().getLastPathSegment());
+            Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
+            mMovieId = movieId;
+            return new CursorLoader(
+                    getContext(),
+                    trailerUri,
+                    TRAILER_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            Log.i(LOG_TAG, "Records for trailer of movie: " + data.getCount());
+            trailerAdapter.swapCursor(data);
+            /*
+                If there are no trailers for the movie with the cursor loader,
+                proceed to fetch trailers using the async loader. After results
+                are obtained, the cursor loader has to be restarted, which may
+                result in no trailers again, because it was not possible to fetch
+                them with the async loader or there are no trailers in the server.
+                By checking mFetchFromServerCount, infinite loop is avoided.
+            */
+            if (data.getCount() == 0 && mFetchFromServerCount == 0) {
+                getLoaderManager().initLoader(TRAILERS_ASYNC_LOADER_ID, null, asyncLoader);
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            trailerAdapter.swapCursor(null);
+        }
+    };
 
     public MovieTrailersFragment() {
     }
@@ -103,71 +212,11 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // This happens in tablets
-        if (mMovieUri != null) {
-            long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
-            Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
-            mMovieId = movieId;
-
-            return new CursorLoader(
-                    getContext(),
-                    trailerUri,
-                    TRAILER_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
-        }
-
-        // This happens in phones
-        Intent intent = getActivity().getIntent();
-        if (intent == null) {
-            return null;
-        }
-
-        long movieId = Long.parseLong(intent.getData().getLastPathSegment());
-        Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
-        mMovieId = movieId;
-        return new CursorLoader(
-                getContext(),
-                trailerUri,
-                TRAILER_COLUMNS,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.e(LOG_TAG, "Records for trailer of movie: " + data.getCount());
-        trailerAdapter.swapCursor(data);
-        /*
-           If there are no trailers for the movie in the provider,
-           proceed to fetch trailers from the server. After results
-           are obtained, the loader has to be restarted, which may
-           result in no trailers again, because it was not possible
-           to fetch them or there are no trailers in the server.
-           By checking mFetchFromServerCount, infinite loop is avoided.
-         */
-        if (data.getCount() == 0 && mFetchFromServerCount == 0) {
-            fetchTrailers();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        trailerAdapter.swapCursor(null);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getLoaderManager().initLoader(TRAILERS_LOADER_ID, null, this);
+        getLoaderManager().initLoader(TRAILERS_CURSOR_LOADER_ID, null, cursorLoader);
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
     public void processJson(String json) {
         if (json == null || json.length() == 0) {
             return;
@@ -179,35 +228,11 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
                 ContentValues[] cvArray = new ContentValues[cvTrailers.size()];
                 cvTrailers.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(MovieProvider.Trailer.ALL, cvArray);
-                getLoaderManager().restartLoader(TRAILERS_LOADER_ID, null, this);
+                getLoaderManager().restartLoader(TRAILERS_CURSOR_LOADER_ID, null, cursorLoader);
             }
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error parsing json data of trailers");
         }
-    }
-
-    private void fetchTrailers() {
-        // Verify network connection to fetch reviews
-        ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = manager.getActiveNetworkInfo();
-
-        if (netInfo != null && netInfo.isConnected()) {
-            getTrailersFromServer();
-        }
-    }
-
-    private void getTrailersFromServer() {
-        // Construct the url
-        String baseUrl = getString(R.string.base_query_url);
-        String url = Uri.parse(baseUrl).buildUpon()
-                .appendPath("" + mMovieId)
-                .appendPath("videos")
-                .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
-                .build()
-                .toString();
-        TrailersAsyncTask task = new TrailersAsyncTask(this);
-        task.execute(url);
-        mFetchFromServerCount++;
     }
 
     private Vector<ContentValues> processTrailers(String json) throws JSONException {

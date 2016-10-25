@@ -1,7 +1,12 @@
 package com.keemsa.popularmovies.net;
 
-import android.os.AsyncTask;
+import android.content.Context;
+import android.net.Uri;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
+
+import com.keemsa.popularmovies.BuildConfig;
+import com.keemsa.popularmovies.R;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -12,33 +17,46 @@ import java.net.URL;
 /**
  * Created by sebastian on 10/16/16.
  */
-public class TrailersAsyncTask extends AsyncTask<String, Void, String> {
-
-    public interface AsyncTaskReceiver {
-        void processJson(String json);
-    }
+public class TrailersAsyncTask extends AsyncTaskLoader<String> {
 
     private final String LOG_TAG = TrailersAsyncTask.class.getSimpleName();
-    private AsyncTaskReceiver receiver;
     private int response = -1;
+    private long mMovieId;
+    private String jsonTrailers;
 
-    public TrailersAsyncTask(AsyncTaskReceiver receiver) {
-        this.receiver = receiver;
+    public TrailersAsyncTask(Context context, long mMovieId) {
+        super(context);
+        this.mMovieId = mMovieId;
     }
 
     @Override
-    protected String doInBackground(String... urls) {
-        if (urls != null && urls.length > 0) {
-            return fetchMovieTrailers(urls[0]);
+    public String loadInBackground() {
+        String baseUrl = getContext().getString(R.string.base_query_url);
+        String url = Uri.parse(baseUrl).buildUpon()
+                .appendPath("" + mMovieId)
+                .appendPath("videos")
+                .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
+                .build()
+                .toString();
+
+        return fetchMovieTrailers(url);
+    }
+
+    @Override
+    public void deliverResult(String data) {
+        super.deliverResult(data);
+        jsonTrailers = data;
+    }
+
+    // As stated in http://stackoverflow.com/a/7481941/1065981
+    @Override
+    protected void onStartLoading() {
+        if (jsonTrailers != null) {
+            deliverResult(jsonTrailers);
         }
-        return null;
-    }
 
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-        if (s != null) {
-            receiver.processJson(s);
+        if (takeContentChanged() || jsonTrailers == null) {
+            forceLoad();
         }
     }
 
