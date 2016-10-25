@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.keemsa.popularmovies.BuildConfig;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieProvider;
@@ -37,7 +36,7 @@ import java.util.Vector;
 /**
  * Created by sebastian on 10/13/16.
  */
-public class MovieReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, ReviewsAsyncTask.AsyncTaskReceiver {
+public class MovieReviewsFragment extends Fragment {
 
     private final String LOG_TAG = MovieReviewsFragment.class.getSimpleName();
 
@@ -48,13 +47,123 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
     private long mMovieId;
     private int mFetchFromServerCount = 0;
 
-    private final int REVIEW_LOADER = 0;
+    private final int REVIEW_CURSOR_LOADER_ID = 0;
+    private final int REVIEW_ASYNC_LOADER_ID = 1;
     final static String[] REVIEW_COLUMNS = {
             ReviewColumns.AUTHOR,
             ReviewColumns.CONTENT,
     };
     final static int REVIEW_AUTHOR = 0;
     final static int REVIEW_CONTENT = 1;
+
+    private LoaderManager.LoaderCallbacks<String> asyncLoader = new LoaderManager.LoaderCallbacks<String>() {
+        @Override
+        public Loader<String> onCreateLoader(int id, Bundle args) {
+            /*
+                The app is here because it didn't find trailers with
+                the cursor loader. After using this loader, the
+                cursor loader will be restarted.
+             */
+            mFetchFromServerCount++;
+
+            // Verify network connection to fetch reviews
+            ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = manager.getActiveNetworkInfo();
+
+            if (netInfo == null || !netInfo.isConnected()) {
+                return null;
+            }
+
+            // This happens in tablets
+            if (mMovieUri != null) {
+                long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
+                mMovieId = movieId;
+
+                return new ReviewsAsyncTask(getContext(), mMovieId);
+            }
+
+            // This happens in phones
+            Intent intent = getActivity().getIntent();
+            if (intent == null) {
+                return null;
+            }
+
+            long movieId = Long.parseLong(intent.getData().getLastPathSegment());
+            mMovieId = movieId;
+            return new ReviewsAsyncTask(getContext(), mMovieId);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<String> loader, String data) {
+            processJson(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<String> loader) {
+
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            // This happens in tablets
+            if (mMovieUri != null) {
+                long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
+                Uri reviewUri = MovieProvider.Review.ofMovie(movieId);
+                mMovieId = movieId;
+
+                return new CursorLoader(
+                        getActivity(),
+                        reviewUri,
+                        REVIEW_COLUMNS,
+                        null,
+                        null,
+                        null
+                );
+            }
+
+            // This happens in phones
+            Intent intent = getActivity().getIntent();
+            if (intent == null) {
+                return null;
+            }
+
+            long movieId = Long.parseLong(intent.getData().getLastPathSegment());
+            Uri reviewUri = MovieProvider.Review.ofMovie(movieId);
+            mMovieId = movieId;
+            return new CursorLoader(
+                    getActivity(),
+                    reviewUri,
+                    REVIEW_COLUMNS,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            Log.i(LOG_TAG, "Records for review of movie: " + data.getCount());
+            reviewAdapter.swapCursor(data);
+            /*
+                If there are no reviews for the movie with the cursor loader,
+                proceed to fetch reviews using the async loader. After results
+                are obtained, the cursor loader has to be restarted, which may
+                result in no reviews again, because it was not possible to fetch
+                them with the async loader or there are no reviews in the server.
+                By checking mFetchFromServerCount, infinite loop is avoided.
+            */
+            if (data.getCount() == 0 && mFetchFromServerCount == 0) {
+                getLoaderManager().initLoader(REVIEW_ASYNC_LOADER_ID, null, asyncLoader);
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            reviewAdapter.swapCursor(null);
+        }
+    };
 
     public MovieReviewsFragment() {
 
@@ -98,71 +207,11 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // This happens in tablets
-        if (mMovieUri != null) {
-            long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
-            Uri reviewUri = MovieProvider.Review.ofMovie(movieId);
-            mMovieId = movieId;
-
-            return new CursorLoader(
-                    getActivity(),
-                    reviewUri,
-                    REVIEW_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
-        }
-
-        // This happens in phones
-        Intent intent = getActivity().getIntent();
-        if (intent == null) {
-            return null;
-        }
-
-        long movieId = Long.parseLong(intent.getData().getLastPathSegment());
-        Uri reviewUri = MovieProvider.Review.ofMovie(movieId);
-        mMovieId = movieId;
-        return new CursorLoader(
-                getActivity(),
-                reviewUri,
-                REVIEW_COLUMNS,
-                null,
-                null,
-                null
-        );
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.e(LOG_TAG, "Records for review of movie: " + data.getCount());
-        reviewAdapter.swapCursor(data);
-        /*
-           If there are no reviews for the movie in the provider,
-           proceed to fetch reviews from the server. After results
-           are obtained, the loader has to be restarted, which may
-           result in no reviews again, because it was not possible
-           to fetch reviews or there are no reviews in the server.
-           By checking mFetchFromServerCount, infinite loop is avoided.
-         */
-        if(data.getCount() == 0 && mFetchFromServerCount == 0){
-            fetchReviews();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        reviewAdapter.swapCursor(null);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getLoaderManager().initLoader(REVIEW_LOADER, null, this);
+        getLoaderManager().initLoader(REVIEW_CURSOR_LOADER_ID, null, cursorLoader);
         super.onActivityCreated(savedInstanceState);
     }
 
-    @Override
     public void processJson(String json) {
         if (json == null || json.length() == 0) {
             return;
@@ -174,36 +223,12 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
                 ContentValues[] cvArray = new ContentValues[cvReviews.size()];
                 cvReviews.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(MovieProvider.Review.ALL, cvArray);
-                getLoaderManager().restartLoader(REVIEW_LOADER, null, this);
+                getLoaderManager().restartLoader(REVIEW_CURSOR_LOADER_ID, null, cursorLoader);
             }
 
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error parsing json");
+            Log.e(LOG_TAG, "Error parsing json data of reviews");
         }
-    }
-
-    private void fetchReviews(){
-        // Verify network connection to fetch reviews
-        ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-
-        if (networkInfo != null && networkInfo.isConnected()) {
-            getReviewsFromServer();
-        }
-    }
-
-    private void getReviewsFromServer(){
-        // Construct url
-        String baseUrl = getString(R.string.base_query_url);
-        String url = Uri.parse(baseUrl).buildUpon()
-                .appendPath("" + mMovieId)
-                .appendPath("reviews")
-                .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
-                .build()
-                .toString();
-        ReviewsAsyncTask task = new ReviewsAsyncTask(this);
-        task.execute(url);
-        mFetchFromServerCount++;
     }
 
     private Vector<ContentValues> processReviews(String json) throws JSONException {
@@ -215,7 +240,7 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
         for (int i = 0; i < reviewsJson.length(); i++) {
             JSONObject currentReview = reviewsJson.getJSONObject(i);
             String _id = currentReview.optString("id");
-            if(reviewExists(_id)){
+            if (reviewExists(_id)) {
                 continue;
             }
             String author = currentReview.optString("author"),
@@ -235,21 +260,21 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
         return cvVector;
     }
 
-    private boolean reviewExists(String reviewId){
+    private boolean reviewExists(String reviewId) {
         return Utility.reviewExists(getContext(), reviewId);
     }
 
-    private void removeReviewFragments(){
+    private void removeReviewFragments() {
         List<Fragment> fragments = getFragmentManager().getFragments();
         ArrayList<Fragment> toRemove = new ArrayList<Fragment>();
 
-        for(Fragment frg : fragments){
-            if(frg instanceof ReviewFragment){
+        for (Fragment frg : fragments) {
+            if (frg instanceof ReviewFragment) {
                 toRemove.add(frg);
             }
         }
 
-        for(Fragment frg : toRemove){
+        for (Fragment frg : toRemove) {
             getFragmentManager().beginTransaction().remove(frg).commit();
         }
     }
