@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -40,6 +41,7 @@ public class MovieTrailersFragment extends Fragment {
     private final String LOG_TAG = MovieTrailersFragment.class.getSimpleName();
     private TrailerAdapter trailerAdapter;
     private ListView lv_trailers;
+    private TextView txt_trailers_msg;
 
     private Uri mMovieUri;
     private int mFetchFromServerCount = 0;
@@ -180,8 +182,17 @@ public class MovieTrailersFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_movie_trailers, container, false);
 
+        txt_trailers_msg = (TextView) view.findViewById(R.id.txt_trailers_msg);
+
         lv_trailers = (ListView) view.findViewById(R.id.lv_trailers);
+
+        // Add empty view
+        lv_trailers.setEmptyView(txt_trailers_msg);
+
+        // Create adapter
         trailerAdapter = new TrailerAdapter(getContext(), null, 0);
+
+        // Attach adapter to view
         lv_trailers.setAdapter(trailerAdapter);
 
         lv_trailers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
