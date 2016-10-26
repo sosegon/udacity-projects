@@ -201,13 +201,16 @@ public class CatalogFragment extends Fragment {
         setProgressBarVisibility(View.GONE);
 
         txt_catalog_message = (TextView) view.findViewById(R.id.txt_catalog_msg);
-        setCatalogMessageVisibility(View.GONE);
 
         // Create adapter
         movieAdapter = new MovieAdapter(getContext(), null, 0);
 
-        // Attach adapter to view
         GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
+
+        // Add empty view
+        gridView.setEmptyView(txt_catalog_message);
+
+        // Attach adapter to view
         gridView.setAdapter(movieAdapter);
 
         // Set listener to start activity with detailed info about movie
@@ -228,7 +231,6 @@ public class CatalogFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFetchFromServerCount = 0;
-        setCatalogMessageVisibility(View.GONE);
         if (savedInstanceState == null || !savedInstanceState.containsKey("movieList")) {
             getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
         } else {
@@ -263,28 +265,6 @@ public class CatalogFragment extends Fragment {
     public void setProgressBarVisibility(int value) {
         if (prg_load != null) {
             prg_load.setVisibility(value);
-        }
-    }
-
-    public void setCatalogMessageVisibility(int value) {
-        if (txt_catalog_message != null) {
-            txt_catalog_message.setVisibility(value);
-        }
-    }
-
-    public void setCatalogMessageText(int value) {
-        switch (value) {
-            case 0:
-                setCatalogMessageText(getString(R.string.msg_no_connection));
-                break;
-            case 1:
-                setCatalogMessageText(getString(R.string.msg_server_error));
-        }
-    }
-
-    public void setCatalogMessageText(String value) {
-        if (txt_catalog_message != null) {
-            txt_catalog_message.setText(value);
         }
     }
 
