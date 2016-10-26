@@ -106,11 +106,9 @@
          the text "Last seen today 12:23" is displayed with an animation,
          and at the end of it, just "today 12:23" is shown."
     -->
-    <style name="txt_title_details">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/txt_title_details</item>
-        <item name="android:textSize">@dimen/lbl_size_1</item>
-        <item name="android:paddingLeft">@dimen/padding_1</item>
+    <style name="txt_title_details" parent="match_wrap">
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+        <item name="android:padding">@dimen/padding_1</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:background">@color/colorPrimaryLight</item>
         <item name="android:textColor">@color/colorTextIcons</item>
