@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -42,6 +43,7 @@ public class MovieReviewsFragment extends Fragment {
 
     private ReviewPagerAdapter<ReviewFragment> reviewAdapter;
     private ViewPager pgr_reviews;
+    private TextView txt_reviews_msg;
 
     private Uri mMovieUri;
     private long mMovieId;
@@ -157,6 +159,10 @@ public class MovieReviewsFragment extends Fragment {
             if (data.getCount() == 0 && mFetchFromServerCount == 0) {
                 getLoaderManager().initLoader(REVIEW_ASYNC_LOADER_ID, null, asyncLoader);
             }
+
+            if (txt_reviews_msg != null) {
+                txt_reviews_msg.setVisibility(data.getCount() == 0 ? View.VISIBLE : View.GONE);
+            }
         }
 
         @Override
@@ -177,6 +183,8 @@ public class MovieReviewsFragment extends Fragment {
         }
 
         View view = inflater.inflate(R.layout.fragment_movie_reviews, container, false);
+
+        txt_reviews_msg = (TextView) view.findViewById(R.id.txt_reviews_msg);
 
         /* TODO: Find a better solution to handle ReviewFragments
            I remove ReviewFragment instances when another

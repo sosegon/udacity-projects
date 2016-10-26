@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scv_movie_reviews"
-    style="@style/match_wrap">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/match_match">
 
-    <com.keemsa.popularmovies.fragment.WrapContentHeightViewPager
-        android:id="@+id/pgr_reviews"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/txt_reviews_msg"
+        style="@style/txt_static_message"
+        android:text="@string/msg_no_reviews" />
 
-</ScrollView>
+    <ScrollView
+        android:id="@+id/scv_movie_reviews"
+        style="@style/match_match">
+
+        <com.keemsa.popularmovies.fragment.WrapContentHeightViewPager
+            android:id="@+id/pgr_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ScrollView>
+</RelativeLayout>

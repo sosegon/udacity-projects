@@ -8,6 +8,7 @@
     <string name="msg_server_error">Server error, cannot fetch data</string>
     <string name="msg_no_movies">No movies available</string>
     <string name="msg_no_trailers">No trailers available</string>
+    <string name="msg_no_reviews">No reviews available</string>
 
     <string name="lbl_settings">Settings</string>
 
