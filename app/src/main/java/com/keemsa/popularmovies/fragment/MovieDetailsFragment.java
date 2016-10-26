@@ -99,7 +99,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         return new CursorLoader(
                 getActivity(),
-                intent.getData(),
+                mMovieUri,
                 MOVIE_COLUMNS,
                 null,
                 null,
@@ -154,9 +154,16 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // This happens in tablets
         Bundle args = getArguments();
         if (args != null) {
             mMovieUri = args.getParcelable(DetailsFragment.MOVIE_URI);
+        }
+
+        // This happens in phones
+        Intent intent = getActivity().getIntent();
+        if (intent != null) {
+            mMovieUri = intent.getData();
         }
 
         // Inflate the layout for this fragment
