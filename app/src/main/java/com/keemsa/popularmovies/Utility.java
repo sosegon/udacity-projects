@@ -6,8 +6,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -163,7 +167,7 @@ public class Utility {
         }
     }
 
-    public static String getPosterDirectory(Context context){
+    public static String getPosterDirectory(Context context) {
         return context.getString(R.string.folder_posters);
     }
 
@@ -201,9 +205,11 @@ public class Utility {
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
             }
+
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
-                if (placeHolderDrawable != null) {}
+                if (placeHolderDrawable != null) {
+                }
             }
         };
     }
@@ -217,11 +223,37 @@ public class Utility {
     // taken from http://www.seal.io/2010/12/only-way-how-to-align-text-in-block-in.html
     public static String justifyText(String text) {
         return "<html>" +
-                    "<body>" +
-                            "<p align=\"justify\">" +
-                                text +
-                            "</p>" +
-                    "</body>" +
+                "<body>" +
+                "<p align=\"justify\">" +
+                text +
+                "</p>" +
+                "</body>" +
                 "</html>";
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = manager.getActiveNetworkInfo();
+
+        return netInfo != null && netInfo.isConnected();
+    }
+
+    public static Loader<String> getLoaderBasedOnMovieUri(Context context, Class<? extends AsyncTaskLoader> loader, Uri movieUri) {
+        long movieId = Long.parseLong(movieUri.getLastPathSegment());
+        Class[] args = new Class[2];
+        args[0] = Context.class;
+        args[1] = long.class;
+
+        try {
+            return Utility.isNetworkAvailable(context) ? (Loader<String>) loader.getDeclaredConstructor(args).newInstance(context, movieId) : null;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.getMessage());
+        }
+
+        return null;
+    }
+
+    public static long getMovieIdFromUri(Uri uri){
+        return Long.parseLong(uri.getLastPathSegment());
     }
 }

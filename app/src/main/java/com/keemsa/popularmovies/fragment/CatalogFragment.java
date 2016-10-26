@@ -2,10 +2,7 @@ package com.keemsa.popularmovies.fragment;
 
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -91,15 +88,7 @@ public class CatalogFragment extends Fragment {
              */
             mFetchFromServerCount++;
 
-            // Verify network connection to fetch trailers
-            ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = manager.getActiveNetworkInfo();
-
-            if (netInfo == null || !netInfo.isConnected()) {
-                return null;
-            }
-
-            return new MoviesAsyncTask(getContext());
+            return Utility.isNetworkAvailable(getContext()) ? new MoviesAsyncTask(getContext()) : null;
         }
 
         @Override

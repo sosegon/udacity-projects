@@ -1,11 +1,8 @@
 package com.keemsa.popularmovies.fragment;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -70,20 +67,9 @@ public class MovieTrailersFragment extends Fragment {
              */
             mFetchFromServerCount++;
 
-            // Verify network connection to fetch trailers
-            ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = manager.getActiveNetworkInfo();
-
-            if (netInfo == null || !netInfo.isConnected()) {
-                return null;
-            }
-
             // This happens in tablets
             if (mMovieUri != null) {
-                long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
-                mMovieId = movieId;
-
-                return new TrailersAsyncTask(getContext(), mMovieId);
+                return Utility.getLoaderBasedOnMovieUri(getContext(), TrailersAsyncTask.class, mMovieUri);
             }
 
             // This happens in phones
@@ -92,9 +78,7 @@ public class MovieTrailersFragment extends Fragment {
                 return null;
             }
 
-            long movieId = Long.parseLong(intent.getData().getLastPathSegment());
-            mMovieId = movieId;
-            return new TrailersAsyncTask(getContext(), mMovieId);
+            return Utility.getLoaderBasedOnMovieUri(getContext(), TrailersAsyncTask.class, mMovieUri);
         }
 
         @Override
@@ -113,9 +97,7 @@ public class MovieTrailersFragment extends Fragment {
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             // This happens in tablets
             if (mMovieUri != null) {
-                long movieId = Long.parseLong(mMovieUri.getLastPathSegment());
-                Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
-                mMovieId = movieId;
+                Uri trailerUri = MovieProvider.Trailer.ofMovie(mMovieId);
 
                 return new CursorLoader(
                         getContext(),
@@ -133,9 +115,7 @@ public class MovieTrailersFragment extends Fragment {
                 return null;
             }
 
-            long movieId = Long.parseLong(intent.getData().getLastPathSegment());
-            Uri trailerUri = MovieProvider.Trailer.ofMovie(movieId);
-            mMovieId = movieId;
+            Uri trailerUri = MovieProvider.Trailer.ofMovie(mMovieId);
             return new CursorLoader(
                     getContext(),
                     trailerUri,
@@ -175,10 +155,20 @@ public class MovieTrailersFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // This happens in tablets
         Bundle args = getArguments();
         if (args != null) {
             mMovieUri = args.getParcelable(DetailsFragment.MOVIE_URI);
         }
+
+        // This happens in phones
+        Intent intent = getActivity().getIntent();
+        if (intent != null) {
+            mMovieUri = intent.getData();
+        }
+
+        // In either case, the uri is ready
+        mMovieId = Utility.getMovieIdFromUri(mMovieUri);
 
         View view = inflater.inflate(R.layout.fragment_movie_trailers, container, false);
 
