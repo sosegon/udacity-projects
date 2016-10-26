@@ -78,7 +78,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // This happens in tablets
         if (mMovieUri != null) {
             return new CursorLoader(
                     getActivity(),
@@ -90,21 +89,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             );
         }
 
-        // This happens in phones
-        Intent intent = getActivity().getIntent();
-
-        if (intent == null) {
-            return null;
-        }
-
-        return new CursorLoader(
-                getActivity(),
-                mMovieUri,
-                MOVIE_COLUMNS,
-                null,
-                null,
-                null
-        );
+        return null;
     }
 
     @Override

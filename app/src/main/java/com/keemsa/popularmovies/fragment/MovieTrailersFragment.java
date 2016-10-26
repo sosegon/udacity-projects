@@ -67,17 +67,6 @@ public class MovieTrailersFragment extends Fragment {
              */
             mFetchFromServerCount++;
 
-            // This happens in tablets
-            if (mMovieUri != null) {
-                return Utility.getLoaderBasedOnMovieUri(getContext(), TrailersAsyncTask.class, mMovieUri);
-            }
-
-            // This happens in phones
-            Intent intent = getActivity().getIntent();
-            if (intent == null) {
-                return null;
-            }
-
             return Utility.getLoaderBasedOnMovieUri(getContext(), TrailersAsyncTask.class, mMovieUri);
         }
 
@@ -95,7 +84,6 @@ public class MovieTrailersFragment extends Fragment {
     private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            // This happens in tablets
             if (mMovieUri != null) {
                 Uri trailerUri = MovieProvider.Trailer.ofMovie(mMovieId);
 
@@ -109,21 +97,7 @@ public class MovieTrailersFragment extends Fragment {
                 );
             }
 
-            // This happens in phones
-            Intent intent = getActivity().getIntent();
-            if (intent == null) {
-                return null;
-            }
-
-            Uri trailerUri = MovieProvider.Trailer.ofMovie(mMovieId);
-            return new CursorLoader(
-                    getContext(),
-                    trailerUri,
-                    TRAILER_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
+            return null;
         }
 
         @Override

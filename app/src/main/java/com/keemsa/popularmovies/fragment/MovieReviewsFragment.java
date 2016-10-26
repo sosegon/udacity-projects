@@ -65,17 +65,6 @@ public class MovieReviewsFragment extends Fragment {
              */
             mFetchFromServerCount++;
 
-            // This happens in tablets
-            if (mMovieUri != null) {
-                return Utility.getLoaderBasedOnMovieUri(getContext(), ReviewsAsyncTask.class, mMovieUri);
-            }
-
-            // This happens in phones
-            Intent intent = getActivity().getIntent();
-            if (intent == null) {
-                return null;
-            }
-
             return Utility.getLoaderBasedOnMovieUri(getContext(), ReviewsAsyncTask.class, mMovieUri);
         }
 
@@ -93,7 +82,6 @@ public class MovieReviewsFragment extends Fragment {
     private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            // This happens in tablets
             if (mMovieUri != null) {
                 Uri reviewUri = MovieProvider.Review.ofMovie(mMovieId);
 
@@ -107,21 +95,7 @@ public class MovieReviewsFragment extends Fragment {
                 );
             }
 
-            // This happens in phones
-            Intent intent = getActivity().getIntent();
-            if (intent == null) {
-                return null;
-            }
-
-            Uri reviewUri = MovieProvider.Review.ofMovie(mMovieId);
-            return new CursorLoader(
-                    getActivity(),
-                    reviewUri,
-                    REVIEW_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
+            return null;
         }
 
         @Override
