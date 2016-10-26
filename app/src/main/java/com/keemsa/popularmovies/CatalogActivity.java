@@ -31,6 +31,8 @@ public class CatalogActivity extends AppCompatActivity implements CatalogFragmen
          */
 
         mTwoPane = findViewById(R.id.frl_details_container) != null;
+
+        getSupportActionBar().setElevation(0);
     }
 
     @Override

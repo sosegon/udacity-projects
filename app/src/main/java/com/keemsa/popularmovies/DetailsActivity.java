@@ -15,5 +15,7 @@ public class DetailsActivity extends AppCompatActivity {
            to what was done in Sunshine app.
            Is there any disadvantage related to this approach?
          */
+
+        getSupportActionBar().setElevation(0);
     }
 }

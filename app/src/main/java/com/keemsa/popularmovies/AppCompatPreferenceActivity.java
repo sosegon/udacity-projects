@@ -24,6 +24,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
         getDelegate().onCreate(savedInstanceState);
 
         getDelegate().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getDelegate().getSupportActionBar().setElevation(0);
 
         super.onCreate(savedInstanceState);
     }
