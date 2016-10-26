@@ -1,8 +1,13 @@
 package com.keemsa.popularmovies.net;
 
-import android.os.AsyncTask;
+import android.content.Context;
+import android.net.Uri;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
-import android.view.View;
+
+import com.keemsa.popularmovies.BuildConfig;
+import com.keemsa.popularmovies.R;
+import com.keemsa.popularmovies.Utility;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -13,46 +18,45 @@ import java.net.URL;
 /**
  * Created by sebastian on 31/08/16.
  */
-public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
+public class MoviesAsyncTask extends AsyncTaskLoader<String> {
 
-    public interface MoviesAsyncTaskReceiver {
-        void processJSON(String json);
-
-        void setProgressBarVisibility(int value);
-
-        void setCatalogMessageVisibility(int value);
-
-        void setCatalogMessageText(int value);
-    }
-
-    private final String LOG_TAG = MoviesAsyncTask.class.getSimpleName();
+    private final String LOG_TAG = TrailersAsyncTask.class.getSimpleName();
     private int response = -1;
-    private MoviesAsyncTaskReceiver receiver;
+    private String jsonMovies;
 
-    public MoviesAsyncTask(MoviesAsyncTaskReceiver receiver) {
-        this.receiver = receiver;
+    public MoviesAsyncTask(Context context) {
+        super(context);
     }
 
     @Override
-    protected void onPreExecute() {
-        receiver.setProgressBarVisibility(View.VISIBLE);
+    public String loadInBackground() {
+        String baseUrl = getContext().getString(R.string.base_query_url);
+        String queryBy = Utility.getPreferredQueryBy(getContext());
+        String url = Uri.parse(baseUrl).buildUpon()
+                .appendPath(queryBy)
+                .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
+                .build()
+                .toString();
+
+        return fetchMoviesData(url);
     }
 
     @Override
-    protected String doInBackground(String... strings) {
-        return fetchMoviesData(strings[0]);
+    public void deliverResult(String data) {
+        super.deliverResult(data);
+        jsonMovies = data;
     }
 
+    // As stated in http://stackoverflow.com/a/7481941/1065981
     @Override
-    protected void onPostExecute(String s) {
-        if (response != 200) {
-            receiver.setCatalogMessageText(1);
-            receiver.setCatalogMessageVisibility(View.VISIBLE);
-            return;
+    protected void onStartLoading() {
+        if (jsonMovies != null) {
+            deliverResult(jsonMovies);
         }
 
-        receiver.setProgressBarVisibility(View.GONE);
-        receiver.processJSON(s);
+        if (takeContentChanged() || jsonMovies == null) {
+            forceLoad();
+        }
     }
 
     private String fetchMoviesData(String url) {
@@ -84,7 +88,7 @@ public class MoviesAsyncTask extends AsyncTask<String, Void, String> {
                 }
             }
         } catch (Exception e) {
-            Log.e(LOG_TAG, "Error");
+            Log.e(LOG_TAG, "Error connecting to the server to fetch movies' data");
         } finally {
             if (connection != null) {
                 connection.disconnect();

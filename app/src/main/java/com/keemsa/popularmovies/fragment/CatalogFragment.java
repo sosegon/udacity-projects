@@ -24,7 +24,6 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.keemsa.popularmovies.BuildConfig;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -42,15 +41,17 @@ import java.util.Vector;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesAsyncTaskReceiver, LoaderManager.LoaderCallbacks<Cursor> {
+public class CatalogFragment extends Fragment {
 
     private final String LOG_TAG = CatalogFragment.class.getSimpleName();
     private MovieAdapter movieAdapter;
     private ArrayList<Movie> movieList;
     private ProgressBar prg_load;
     private TextView txt_catalog_message;
+    private int mFetchFromServerCount = 0;
 
-    private static final int CATALOG_LOADER_ID = 1;
+    private static final int CATALOG_CURSOR_LOADER_ID = 1;
+    private static final int CATALOG_ASYNC_LOADER_ID = 2;
 
     public static final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
@@ -63,12 +64,12 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     };
 
     public static final int MOVIE_ID = 0,
-                        MOVIE_TITLE = 1,
-                        MOVIE_SYNOPSIS = 2,
-                        MOVIE_POSTER_URL = 3,
-                        MOVIE_QUERY_TYPE = 4,
-                        MOVIE_RELEASE_DATE = 5,
-                        MOVIE_RATING = 6;
+            MOVIE_TITLE = 1,
+            MOVIE_SYNOPSIS = 2,
+            MOVIE_POSTER_URL = 3,
+            MOVIE_QUERY_TYPE = 4,
+            MOVIE_RELEASE_DATE = 5,
+            MOVIE_RATING = 6;
 
     private final int MOVIES_LOADED = 1;
 
@@ -80,60 +81,113 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         boolean hasSinglePane();
     }
 
+    private LoaderManager.LoaderCallbacks asyncLoader = new LoaderManager.LoaderCallbacks<String>() {
+        @Override
+        public Loader onCreateLoader(int id, Bundle args) {
+            /*
+                The app is here because it didn't find trailers with
+                the cursor loader. After using this loader, the
+                cursor loader will be restarted.
+             */
+            mFetchFromServerCount++;
+
+            // Verify network connection to fetch trailers
+            ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = manager.getActiveNetworkInfo();
+
+            if (netInfo == null || !netInfo.isConnected()) {
+                return null;
+            }
+
+            return new MoviesAsyncTask(getContext());
+        }
+
+        @Override
+        public void onLoadFinished(Loader<String> loader, String data) {
+            processJson(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<String> loader) {
+
+        }
+    };
+
+    private LoaderManager.LoaderCallbacks cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            setProgressBarVisibility(View.VISIBLE);
+            return new CursorLoader(
+                    getContext(),
+                    MovieProvider.Movie.ALL,
+                    MOVIE_COLUMNS,
+                    Utility.queryFilterByQueryBy(getContext()),
+                    null,
+                    null
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
+            Log.i(LOG_TAG, "Records for movies: " + data.getCount());
+            movieAdapter.swapCursor(data);
+
+            if (!((Callback) getActivity()).hasSinglePane()) {
+                /*
+                    In two panes, DetailsFragment has to be added once the movies
+                    are loaded, therefore a Uri can be passed to it, which in turns
+                    passes it to its children fragment, so they can perform the
+                    corresponding queries and display the information
+                    Solution according to http://stackoverflow.com/a/12421522/1065981
+                 */
+                if (data.getCount() > 0) {
+                    Handler handler = new Handler() {
+                        @Override
+                        public void handleMessage(Message msg) {
+                            if (msg.what == MOVIES_LOADED) {
+                                if (data.moveToFirst()) {
+                                    Uri movieUri = MovieProvider.Movie.withId(data.getLong(MOVIE_ID));
+                                    ((CatalogFragment.Callback) getActivity()).onEnableDetailsFragment(movieUri);
+                                }
+                            }
+                        }
+                    };
+
+                    handler.sendEmptyMessage(MOVIES_LOADED);
+                }
+            }
+            /*
+                If there are no movies with the cursor loader,
+                proceed to fetch them using the async loader. After results
+                are obtained, the cursor loader has to be restarted, which may
+                result in no movies again, because it was not possible to fetch
+                them with the async loader or there are no movies in the server.
+                By checking mFetchFromServerCount, infinite loop is avoided.
+            */
+            if (data.getCount() == 0 && mFetchFromServerCount == 0) {
+                getLoaderManager().initLoader(CATALOG_ASYNC_LOADER_ID, null, asyncLoader);
+            }
+
+            String queryBy = Utility.getPreferredQueryBy(getContext());
+            String fav = getResources().getStringArray(R.array.prf_values_sort)[2];
+            if (mFetchFromServerCount > 0 || data.getCount() > 0 || queryBy.equals(fav)) {
+                setProgressBarVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            movieAdapter.swapCursor(null);
+        }
+    };
+
     public CatalogFragment() {
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setProgressBarVisibility(View.VISIBLE);
-        return new CursorLoader(
-                getContext(),
-                MovieProvider.Movie.ALL,
-                MOVIE_COLUMNS,
-                Utility.queryFilterByQueryBy(getContext()),
-                null,
-                null
-        );
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
-        setProgressBarVisibility(View.GONE);
-        movieAdapter.swapCursor(data);
-
-        if (!((Callback) getActivity()).hasSinglePane()) {
-            /*
-               In two panes, DetailsFragment has to be added once the movies
-               are loaded, therefore a Uri can be passed to it, which in turns
-               passes it to its children fragment, so they can perform the
-               corresponding queries and display the information
-               Solution according to http://stackoverflow.com/a/12421522/1065981
-             */
-            Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    if (msg.what == MOVIES_LOADED) {
-                        if (data.moveToFirst()) {
-                            Uri movieUri = MovieProvider.Movie.withId(data.getLong(MOVIE_ID));
-                            ((CatalogFragment.Callback) getActivity()).onEnableDetailsFragment(movieUri);
-                        }
-
-                    }
-                }
-            };
-
-            handler.sendEmptyMessage(MOVIES_LOADED);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        movieAdapter.swapCursor(null);
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getLoaderManager().initLoader(CATALOG_LOADER_ID, null, this);
+        getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -173,9 +227,10 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFetchFromServerCount = 0;
         setCatalogMessageVisibility(View.GONE);
         if (savedInstanceState == null || !savedInstanceState.containsKey("movieList")) {
-            fetchMovieCatalog();
+            getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movieList");
         }
@@ -194,54 +249,29 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
 
     public void onQueryByChanged() {
         String queryBy = Utility.getPreferredQueryBy(getContext());
-        String fav = getResources().getStringArray(R.array.prf_values_sort)[0];
-        if(!queryBy.equals(fav)) {
-            updateMovieCatalog();
-        }
-        getLoaderManager().restartLoader(CATALOG_LOADER_ID, null, this);
+        String fav = getResources().getStringArray(R.array.prf_values_sort)[2];
+        /*
+            If the queryBy variable is popular of rated, then the app has to connect
+            to the server to fetch data, and add new movies. Otherwise, it simply queries
+            the local content provider.
+         */
+        mFetchFromServerCount = queryBy.equals(fav) ? 1 : 0;
+
+        getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
     }
 
-    private void fetchMovieCatalog() {
-        // Verify network connection to fetch movies
-        ConnectivityManager manager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-
-        if (networkInfo != null && networkInfo.isConnected()) {
-            updateMovieCatalog();
-        } else {
-            setCatalogMessageText(getString(R.string.msg_no_connection));
-            setCatalogMessageVisibility(View.VISIBLE);
-        }
-    }
-
-    private void updateMovieCatalog() {
-        // Construct uri
-        String baseUrl = getString(R.string.base_query_url);
-        String queryBy = Utility.getPreferredQueryBy(getContext());
-        String url = Uri.parse(baseUrl).buildUpon()
-                .appendPath(queryBy)
-                .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
-                .build()
-                .toString();
-        MoviesAsyncTask task = new MoviesAsyncTask(this);
-        task.execute(url);
-    }
-
-    @Override
     public void setProgressBarVisibility(int value) {
         if (prg_load != null) {
             prg_load.setVisibility(value);
         }
     }
 
-    @Override
     public void setCatalogMessageVisibility(int value) {
         if (txt_catalog_message != null) {
             txt_catalog_message.setVisibility(value);
         }
     }
 
-    @Override
     public void setCatalogMessageText(int value) {
         switch (value) {
             case 0:
@@ -258,8 +288,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         }
     }
 
-    @Override
-    public void processJSON(String json) {
+    public void processJson(String json) {
         if (json == null || json.length() == 0) {
             return;
         }
@@ -270,10 +299,11 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
                 ContentValues[] cvArray = new ContentValues[cvMovies.size()];
                 cvMovies.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(MovieProvider.Movie.ALL, cvArray);
+                getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
             }
 
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error parsing json");
+            Log.e(LOG_TAG, "Error parsing json data of movies");
         }
     }
 
@@ -286,7 +316,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
             JSONObject currentMovie = moviesJson.getJSONObject(i);
 
             long _id = currentMovie.optLong("id");
-            if(movieExists(_id)){
+            if (movieExists(_id)) {
                 updateQueryType(_id, Utility.getPreferredQueryBy(getContext()));
                 continue;
             }
@@ -313,7 +343,7 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
         return cvVector;
     }
 
-    private boolean movieExists (long movieId) {
+    private boolean movieExists(long movieId) {
         return Utility.movieExists(getContext(), movieId);
     }
 
@@ -326,19 +356,17 @@ public class CatalogFragment extends Fragment implements MoviesAsyncTask.MoviesA
                 null
         );
 
-        if(c.moveToFirst()){
+        if (c.moveToFirst()) {
             int queryType = c.getInt(MOVIE_QUERY_TYPE);
             boolean[] currentType = Utility.getValuesFromQueryType(queryType);
             String rated = getResources().getStringArray(R.array.prf_values_sort)[1];
             String popular = getResources().getStringArray(R.array.prf_values_sort)[0];
             int newQueryType;
-            if(queryBy.equals(rated)){
+            if (queryBy.equals(rated)) {
                 newQueryType = Utility.createQueryType(true, currentType[1], currentType[2]);
-            }
-            else if(queryBy.equals(popular)){
+            } else if (queryBy.equals(popular)) {
                 newQueryType = Utility.createQueryType(currentType[0], true, currentType[2]);
-            }
-            else {
+            } else {
                 newQueryType = queryType;
             }
 
