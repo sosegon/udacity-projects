@@ -233,6 +233,10 @@ public class MovieReviewsFragment extends Fragment {
     private Vector<ContentValues> processReviews(String json) throws JSONException {
         JSONObject dataJson = new JSONObject(json);
         long movieId = dataJson.getLong("id");
+        if (movieId != mMovieId) {
+            return new Vector<>();
+        }
+
         JSONArray reviewsJson = dataJson.getJSONArray("results");
         Vector<ContentValues> cvVector = new Vector<>(reviewsJson.length());
 
