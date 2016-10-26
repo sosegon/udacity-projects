@@ -162,6 +162,8 @@ public class CatalogFragment extends Fragment {
             if (mFetchFromServerCount > 0 || data.getCount() > 0 || queryBy.equals(fav)) {
                 setProgressBarVisibility(View.GONE);
             }
+
+            updateEmptyView();
         }
 
         @Override
@@ -172,7 +174,6 @@ public class CatalogFragment extends Fragment {
 
     public CatalogFragment() {
     }
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -360,5 +361,17 @@ public class CatalogFragment extends Fragment {
         }
 
         return false;
+    }
+
+    private void updateEmptyView() {
+        if (movieAdapter.getCount() == 0) {
+            if (txt_catalog_msg != null) {
+                String message = getString(R.string.msg_no_available, getString(R.string.lbl_movies).toLowerCase());
+                if (!Utility.isNetworkAvailable(getContext())) {
+                    message = getString(R.string.msg_no_connection);
+                }
+                txt_catalog_msg.setText(message);
+            }
+        }
     }
 }

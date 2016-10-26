@@ -114,9 +114,7 @@ public class MovieReviewsFragment extends Fragment {
                 getLoaderManager().initLoader(REVIEW_ASYNC_LOADER_ID, null, asyncLoader);
             }
 
-            if (txt_reviews_msg != null) {
-                txt_reviews_msg.setVisibility(data.getCount() == 0 ? View.VISIBLE : View.GONE);
-            }
+            updateEmptyView();
         }
 
         @Override
@@ -254,5 +252,19 @@ public class MovieReviewsFragment extends Fragment {
         for (Fragment frg : toRemove) {
             getFragmentManager().beginTransaction().remove(frg).commit();
         }
+    }
+
+    private void updateEmptyView() {
+        if (reviewAdapter.getCount() == 0) {
+            if (txt_reviews_msg != null) {
+                String message = getString(R.string.msg_no_available, getString(R.string.lbl_reviews).toLowerCase());
+                if (!Utility.isNetworkAvailable(getContext())) {
+                    message = getString(R.string.msg_no_connection);
+                }
+                txt_reviews_msg.setText(message);
+            }
+        }
+
+        txt_reviews_msg.setVisibility(reviewAdapter.getCount() == 0 ? View.VISIBLE : View.GONE);
     }
 }

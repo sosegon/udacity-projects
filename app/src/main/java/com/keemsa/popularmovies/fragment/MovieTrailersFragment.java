@@ -115,6 +115,8 @@ public class MovieTrailersFragment extends Fragment {
             if (data.getCount() == 0 && mFetchFromServerCount == 0) {
                 getLoaderManager().initLoader(TRAILERS_ASYNC_LOADER_ID, null, asyncLoader);
             }
+
+            updateEmptyView();
         }
 
         @Override
@@ -249,5 +251,17 @@ public class MovieTrailersFragment extends Fragment {
 
     private boolean trailerExists(String trailerId) {
         return Utility.trailerExists(getContext(), trailerId);
+    }
+
+    private void updateEmptyView() {
+        if (trailerAdapter.getCount() == 0) {
+            if (txt_trailers_msg != null) {
+                String message = getString(R.string.msg_no_available, getString(R.string.lbl_trailers).toLowerCase());
+                if (!Utility.isNetworkAvailable(getContext())) {
+                    message = getString(R.string.msg_no_connection);
+                }
+                txt_trailers_msg.setText(message);
+            }
+        }
     }
 }

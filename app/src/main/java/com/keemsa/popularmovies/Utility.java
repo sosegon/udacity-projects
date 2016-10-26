@@ -235,7 +235,7 @@ public class Utility {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = manager.getActiveNetworkInfo();
 
-        return netInfo != null && netInfo.isConnected();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public static Loader<String> getLoaderBasedOnMovieUri(Context context, Class<? extends AsyncTaskLoader> loader, Uri movieUri) {
