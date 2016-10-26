@@ -183,6 +183,7 @@ public class MovieTrailersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_trailers, container, false);
 
         txt_trailers_msg = (TextView) view.findViewById(R.id.txt_trailers_msg);
+        txt_trailers_msg.setText(getString(R.string.msg_no_available, getString(R.string.lbl_trailers).toLowerCase()));
 
         lv_trailers = (ListView) view.findViewById(R.id.lv_trailers);
 

@@ -4,8 +4,7 @@
 
     <TextView
         android:id="@+id/txt_reviews_msg"
-        style="@style/txt_static_message"
-        android:text="@string/msg_no_reviews" />
+        style="@style/txt_static_message" />
 
     <ScrollView
         android:id="@+id/scv_movie_reviews"

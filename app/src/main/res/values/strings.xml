@@ -6,9 +6,7 @@
 
     <string name="msg_no_connection">No connection available</string>
     <string name="msg_server_error">Server error, cannot fetch data</string>
-    <string name="msg_no_movies">No movies available</string>
-    <string name="msg_no_trailers">No trailers available</string>
-    <string name="msg_no_reviews">No reviews available</string>
+    <string name="msg_no_available">No <xliff:g id="data">%1$s</xliff:g> available</string>
 
     <string name="lbl_settings">Settings</string>
 
@@ -26,6 +24,7 @@
         <item>favourite</item>
     </string-array>
 
+    <string name="lbl_movies">Movies</string>
     <string name="lbl_reviews">Reviews</string>
     <string name="lbl_details">Details</string>
     <string name="lbl_trailers">Trailers</string>

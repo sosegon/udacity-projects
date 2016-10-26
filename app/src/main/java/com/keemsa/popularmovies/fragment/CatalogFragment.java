@@ -47,7 +47,7 @@ public class CatalogFragment extends Fragment {
     private MovieAdapter movieAdapter;
     private ArrayList<Movie> movieList;
     private ProgressBar prg_load;
-    private TextView txt_catalog_message;
+    private TextView txt_catalog_msg;
     private int mFetchFromServerCount = 0;
 
     private static final int CATALOG_CURSOR_LOADER_ID = 1;
@@ -200,7 +200,8 @@ public class CatalogFragment extends Fragment {
         prg_load = (ProgressBar) view.findViewById(R.id.prg_load);
         setProgressBarVisibility(View.GONE);
 
-        txt_catalog_message = (TextView) view.findViewById(R.id.txt_catalog_msg);
+        txt_catalog_msg = (TextView) view.findViewById(R.id.txt_catalog_msg);
+        txt_catalog_msg.setText(getString(R.string.msg_no_available, getString(R.string.lbl_movies).toLowerCase()));
 
         // Create adapter
         movieAdapter = new MovieAdapter(getContext(), null, 0);
@@ -208,7 +209,7 @@ public class CatalogFragment extends Fragment {
         GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
 
         // Add empty view
-        gridView.setEmptyView(txt_catalog_message);
+        gridView.setEmptyView(txt_catalog_msg);
 
         // Attach adapter to view
         gridView.setAdapter(movieAdapter);

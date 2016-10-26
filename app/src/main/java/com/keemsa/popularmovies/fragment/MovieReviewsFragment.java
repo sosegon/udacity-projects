@@ -185,6 +185,7 @@ public class MovieReviewsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_reviews, container, false);
 
         txt_reviews_msg = (TextView) view.findViewById(R.id.txt_reviews_msg);
+        txt_reviews_msg.setText(getString(R.string.msg_no_available, getString(R.string.lbl_reviews).toLowerCase()));
 
         /* TODO: Find a better solution to handle ReviewFragments
            I remove ReviewFragment instances when another
