@@ -7,9 +7,11 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -38,6 +40,11 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     private final String LOG_TAG = MoviesSyncAdapter.class.getSimpleName();
     ContentResolver mContentResolver;
 
+    // Interval at which to sync with the server, in seconds.
+    // 60 seconds (1 minute) * 60 minutes (1 hour) * 24 hours (1 day) * 7 days = 1 week
+    public static final int SYNC_INTERVAL = 604800;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+
     public static final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
             MovieColumns.TITLE,
@@ -64,6 +71,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     /**
      * Taken from https://github.com/udacity/Sunshine-Version-2/blob/lesson_6_sync_adapter_starter_code/sync/SunshineSyncAdapter.java#L32
      * Helper method to have the sync adapter sync immediately
+     *
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
@@ -93,7 +101,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
 
         // If the password doesn't exist, the account doesn't exist
-        if ( null == accountManager.getPassword(newAccount) ) {
+        if (null == accountManager.getPassword(newAccount)) {
 
         /*
          * Add the account and account type, no password or user data
@@ -108,6 +116,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
              * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
              * here.
              */
+            onAccountCreated(newAccount, context);
         }
         return newAccount;
     }
@@ -273,5 +282,52 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         return false;
+    }
+
+    /**
+     * Taken from https://gist.github.com/udacityandroid/7230489fb8cb3f46afee
+     * Helper method to schedule the sync adapter periodic execution
+     */
+    public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+        Account account = getSyncAccount(context);
+        String authority = context.getString(R.string.content_authority);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // we can enable inexact timers in our periodic sync
+            SyncRequest request = new SyncRequest.Builder().
+                    syncPeriodic(syncInterval, flexTime).
+                    setSyncAdapter(account, authority).
+                    setExtras(new Bundle()).build();
+            ContentResolver.requestSync(request);
+        } else {
+            ContentResolver.addPeriodicSync(account,
+                    authority, new Bundle(), syncInterval);
+        }
+    }
+
+    /*
+        Taken from https://gist.github.com/udacityandroid/7230489fb8cb3f46afee
+     */
+    private static void onAccountCreated(Account newAccount, Context context) {
+        /*
+         * Since we've created an account
+         */
+        MoviesSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+
+        /*
+         * Without calling setSyncAutomatically, our periodic sync will not be enabled.
+         */
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
+
+        /*
+         * Finally, let's do a sync to get things started
+         */
+        syncImmediately(context);
+    }
+
+    /*
+        Taken from https://gist.github.com/udacityandroid/7230489fb8cb3f46afee
+     */
+    public static void initializeSyncAdapter(Context context) {
+        getSyncAccount(context);
     }
 }

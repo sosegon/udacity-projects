@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 import com.keemsa.popularmovies.fragment.DetailsFragment;
+import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
 public class CatalogActivity extends AppCompatActivity implements CatalogFragment.Callback {
 
@@ -33,6 +34,8 @@ public class CatalogActivity extends AppCompatActivity implements CatalogFragmen
         mTwoPane = findViewById(R.id.frl_details_container) != null;
 
         getSupportActionBar().setElevation(0);
+
+        MoviesSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
