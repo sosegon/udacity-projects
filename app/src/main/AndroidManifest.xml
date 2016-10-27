@@ -56,6 +56,8 @@
                 android:resource="@xml/movies_syncadapter" />
         </service>
 
+        <service android:name=".service.TrailersService" />
+
     </application>
 
 </manifest>

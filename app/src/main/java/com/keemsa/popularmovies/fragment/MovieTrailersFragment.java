@@ -1,10 +1,12 @@
 package com.keemsa.popularmovies.fragment;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -22,13 +24,7 @@ import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.data.TrailerColumns;
-import com.keemsa.popularmovies.net.TrailersAsyncTask;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Vector;
+import com.keemsa.popularmovies.service.TrailersService;
 
 /**
  * Created by sebastian on 10/16/16.
@@ -39,6 +35,13 @@ public class MovieTrailersFragment extends Fragment {
     private TrailerAdapter trailerAdapter;
     private ListView lv_trailers;
     private TextView txt_trailers_msg;
+    /*
+        This handler is used to communicate the fragment and the service, so the
+        list view can be updated properly
+
+        As stated in http://stackoverflow.com/a/7871538/1065981
+     */
+    private Handler mServiceHandler;
 
     private Uri mMovieUri;
     private int mFetchFromServerCount = 0;
@@ -56,30 +59,6 @@ public class MovieTrailersFragment extends Fragment {
     final static int TRAILER_KEY = 1;
     final static int TRAILER_NAME = 2;
     final static int TRAILER_SITE = 3;
-
-    private LoaderManager.LoaderCallbacks<String> asyncLoader = new LoaderManager.LoaderCallbacks<String>() {
-        @Override
-        public Loader<String> onCreateLoader(int id, Bundle args) {
-            /*
-                The app is here because it didn't find trailers with
-                the cursor loader. After using this loader, the
-                cursor loader will be restarted.
-             */
-            mFetchFromServerCount++;
-
-            return Utility.getLoaderBasedOnMovieUri(getContext(), TrailersAsyncTask.class, mMovieUri);
-        }
-
-        @Override
-        public void onLoadFinished(Loader<String> loader, String data) {
-            processJson(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<String> loader) {
-
-        }
-    };
 
     private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
@@ -106,14 +85,18 @@ public class MovieTrailersFragment extends Fragment {
             trailerAdapter.swapCursor(data);
             /*
                 If there are no trailers for the movie with the cursor loader,
-                proceed to fetch trailers using the async loader. After results
+                proceed to fetch trailers using the service. After results
                 are obtained, the cursor loader has to be restarted, which may
                 result in no trailers again, because it was not possible to fetch
-                them with the async loader or there are no trailers in the server.
+                them with the service or there are no trailers in the server.
                 By checking mFetchFromServerCount, infinite loop is avoided.
             */
             if (data.getCount() == 0 && mFetchFromServerCount == 0) {
-                getLoaderManager().initLoader(TRAILERS_ASYNC_LOADER_ID, null, asyncLoader);
+                Intent intent = new Intent(getContext(), TrailersService.class);
+                intent.putExtra(TrailersService.MOVIE_ID, mMovieId);
+                intent.putExtra(TrailersService.INVOKER_MESSENGER, new Messenger(mServiceHandler));
+                getContext().startService(intent);
+                mFetchFromServerCount++;
             }
 
             updateEmptyView();
@@ -180,6 +163,18 @@ public class MovieTrailersFragment extends Fragment {
             }
         });
 
+        // As stated in http://stackoverflow.com/a/7871538/1065981
+        mServiceHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Bundle reply = msg.getData();
+                String notification = reply.getString(TrailersService.WORK_DONE);
+                if (notification.equals(TrailersService.WORK_DONE)) {
+                    getLoaderManager().restartLoader(TRAILERS_CURSOR_LOADER_ID, null, cursorLoader);
+                }
+            }
+        };
+
         return view;
     }
 
@@ -193,64 +188,6 @@ public class MovieTrailersFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         getLoaderManager().initLoader(TRAILERS_CURSOR_LOADER_ID, null, cursorLoader);
         super.onActivityCreated(savedInstanceState);
-    }
-
-    public void processJson(String json) {
-        if (json == null || json.length() == 0) {
-            return;
-        }
-
-        try {
-            Vector<ContentValues> cvTrailers = processTrailers(json);
-            if (cvTrailers.size() > 0) {
-                ContentValues[] cvArray = new ContentValues[cvTrailers.size()];
-                cvTrailers.toArray(cvArray);
-                getContext().getContentResolver().bulkInsert(MovieProvider.Trailer.ALL, cvArray);
-                getLoaderManager().restartLoader(TRAILERS_CURSOR_LOADER_ID, null, cursorLoader);
-            }
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error parsing json data of trailers");
-        }
-    }
-
-    private Vector<ContentValues> processTrailers(String json) throws JSONException {
-        JSONObject dataJson = new JSONObject(json);
-        long movieId = dataJson.getLong("id");
-        if (movieId != mMovieId) {
-            return new Vector<>();
-        }
-
-        JSONArray trailersJson = dataJson.getJSONArray("results");
-        Vector<ContentValues> cvVector = new Vector<>(trailersJson.length());
-
-        for (int i = 0; i < trailersJson.length(); i++) {
-            JSONObject currentTrailer = trailersJson.getJSONObject(i);
-            String _id = currentTrailer.optString("id");
-            if (trailerExists(_id)) {
-                continue;
-            }
-
-            String name = currentTrailer.optString("name"),
-                    type = currentTrailer.optString("type"),
-                    key = currentTrailer.optString("key"),
-                    site = currentTrailer.optString("site");
-
-            ContentValues cvTrailer = new ContentValues();
-            cvTrailer.put(TrailerColumns._ID, _id);
-            cvTrailer.put(TrailerColumns.NAME, name);
-            cvTrailer.put(TrailerColumns.KEY, key);
-            cvTrailer.put(TrailerColumns.SITE, site);
-            cvTrailer.put(TrailerColumns.TYPE, type);
-            cvTrailer.put(TrailerColumns.MOVIE_ID, mMovieId);
-
-            cvVector.add(cvTrailer);
-        }
-
-        return cvVector;
-    }
-
-    private boolean trailerExists(String trailerId) {
-        return Utility.trailerExists(getContext(), trailerId);
     }
 
     private void updateEmptyView() {
