@@ -31,4 +31,8 @@
     <string name="review_author">Author: <xliff:g id="author_name">%1$s</xliff:g> </string>
 
     <string name="folder_posters">posters</string>
+
+    <!-- Values for the SyncAdapter -->
+    <string name="sync_account_type">popularmovies.keemsa.com</string>
+    <string name="content_authority">com.keemsa.popularmovies</string>
 </resources>

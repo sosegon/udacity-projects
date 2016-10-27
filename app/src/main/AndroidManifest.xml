@@ -4,6 +4,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Permissions required by the sync adapter -->
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <!-- No need to write, the app only reads from the server -->
+    <!--<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />-->
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +32,30 @@
 
         <provider
             android:name="com.keemsa.popularmovies.provider.MovieProvider"
-            android:authorities="com.keemsa.popularmovies" />
+            android:authorities="com.keemsa.popularmovies"
+            android:exported="false"
+            android:syncable="true" />
+
+        <service android:name=".sync.MoviesAuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"></action>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/movies_authenticator" />
+        </service>
+
+        <service
+            android:name=".sync.MoviesSyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"></action>
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/movies_syncadapter" />
+        </service>
+
     </application>
 
 </manifest>
