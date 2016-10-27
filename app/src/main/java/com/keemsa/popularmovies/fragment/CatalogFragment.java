@@ -1,7 +1,6 @@
 package com.keemsa.popularmovies.fragment;
 
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,14 +25,9 @@ import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
-import com.keemsa.popularmovies.net.MoviesAsyncTask;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,10 +39,8 @@ public class CatalogFragment extends Fragment {
     private ArrayList<Movie> movieList;
     private ProgressBar prg_load;
     private TextView txt_catalog_msg;
-    private int mFetchFromServerCount = 0;
 
     private static final int CATALOG_CURSOR_LOADER_ID = 1;
-    private static final int CATALOG_ASYNC_LOADER_ID = 2;
 
     public static final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
@@ -77,30 +69,6 @@ public class CatalogFragment extends Fragment {
 
         boolean hasSinglePane();
     }
-
-    private LoaderManager.LoaderCallbacks asyncLoader = new LoaderManager.LoaderCallbacks<String>() {
-        @Override
-        public Loader onCreateLoader(int id, Bundle args) {
-            /*
-                The app is here because it didn't find trailers with
-                the cursor loader. After using this loader, the
-                cursor loader will be restarted.
-             */
-            mFetchFromServerCount++;
-
-            return Utility.isNetworkAvailable(getContext()) ? new MoviesAsyncTask(getContext()) : null;
-        }
-
-        @Override
-        public void onLoadFinished(Loader<String> loader, String data) {
-            processJson(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<String> loader) {
-
-        }
-    };
 
     private LoaderManager.LoaderCallbacks cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
@@ -145,21 +113,14 @@ public class CatalogFragment extends Fragment {
                     handler.sendEmptyMessage(MOVIES_LOADED);
                 }
             }
-            /*
-                If there are no movies with the cursor loader,
-                proceed to fetch them using the async loader. After results
-                are obtained, the cursor loader has to be restarted, which may
-                result in no movies again, because it was not possible to fetch
-                them with the async loader or there are no movies in the server.
-                By checking mFetchFromServerCount, infinite loop is avoided.
-            */
-            if (data.getCount() == 0 && mFetchFromServerCount == 0) {
-                getLoaderManager().initLoader(CATALOG_ASYNC_LOADER_ID, null, asyncLoader);
+
+            if (data.getCount() == 0) {
+                MoviesSyncAdapter.syncImmediately(getContext());
             }
 
             String queryBy = Utility.getPreferredQueryBy(getContext());
             String fav = getResources().getStringArray(R.array.prf_values_sort)[2];
-            if (mFetchFromServerCount > 0 || data.getCount() > 0 || queryBy.equals(fav)) {
+            if (data.getCount() > 0 || queryBy.equals(fav)) {
                 setProgressBarVisibility(View.GONE);
             }
 
@@ -221,7 +182,6 @@ public class CatalogFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFetchFromServerCount = 0;
         if (savedInstanceState == null || !savedInstanceState.containsKey("movieList")) {
             getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
         } else {
@@ -241,15 +201,6 @@ public class CatalogFragment extends Fragment {
     }
 
     public void onQueryByChanged() {
-        String queryBy = Utility.getPreferredQueryBy(getContext());
-        String fav = getResources().getStringArray(R.array.prf_values_sort)[2];
-        /*
-            If the queryBy variable is popular of rated, then the app has to connect
-            to the server to fetch data, and add new movies. Otherwise, it simply queries
-            the local content provider.
-         */
-        mFetchFromServerCount = queryBy.equals(fav) ? 1 : 0;
-
         getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
     }
 
@@ -257,110 +208,6 @@ public class CatalogFragment extends Fragment {
         if (prg_load != null) {
             prg_load.setVisibility(value);
         }
-    }
-
-    public void processJson(String json) {
-        if (json == null || json.length() == 0) {
-            return;
-        }
-
-        try {
-            Vector<ContentValues> cvMovies = processMovies(json);
-            if (cvMovies.size() > 0) {
-                ContentValues[] cvArray = new ContentValues[cvMovies.size()];
-                cvMovies.toArray(cvArray);
-                getContext().getContentResolver().bulkInsert(MovieProvider.Movie.ALL, cvArray);
-                getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-            }
-
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error parsing json data of movies");
-        }
-    }
-
-    private Vector<ContentValues> processMovies(String json) throws JSONException {
-        JSONObject dataJson = new JSONObject(json);
-        JSONArray moviesJson = dataJson.getJSONArray("results");
-        Vector<ContentValues> cvVector = new Vector<>(moviesJson.length());
-
-        for (int i = 0; i < moviesJson.length(); i++) {
-            JSONObject currentMovie = moviesJson.getJSONObject(i);
-
-            long _id = currentMovie.optLong("id");
-            if (movieExists(_id)) {
-                updateQueryType(_id, Utility.getPreferredQueryBy(getContext()));
-                continue;
-            }
-
-            String title = currentMovie.optString("original_title"),
-                    synopsis = currentMovie.optString("overview"),
-                    posterUrl = Utility.formatPosterUrl(currentMovie.optString("poster_path")),
-                    releaseDate = currentMovie.optString("release_date"),
-                    rating = currentMovie.optString("vote_average");
-
-            ContentValues cvMovie = new ContentValues();
-            cvMovie.put(MovieColumns._ID, _id);
-            cvMovie.put(MovieColumns.TITLE, title);
-            cvMovie.put(MovieColumns.SYNOPSIS, synopsis);
-            cvMovie.put(MovieColumns.POSTER_URL, posterUrl);
-            cvMovie.put(MovieColumns.RELEASE_DATE, releaseDate);
-            cvMovie.put(MovieColumns.RATING, rating);
-            // At this point QueryBy is popular or rating
-            cvMovie.put(MovieColumns.QUERY_TYPE, Utility.queryTypeByQueryBy(getContext()));
-
-            cvVector.add(cvMovie);
-        }
-
-        return cvVector;
-    }
-
-    private boolean movieExists(long movieId) {
-        return Utility.movieExists(getContext(), movieId);
-    }
-
-    private boolean updateQueryType(long movieId, String queryBy) {
-        Cursor c = getContext().getContentResolver().query(
-                MovieProvider.Movie.withId(movieId),
-                MOVIE_COLUMNS,
-                null,
-                null,
-                null
-        );
-
-        if (c.moveToFirst()) {
-            int queryType = c.getInt(MOVIE_QUERY_TYPE);
-            boolean[] currentType = Utility.getValuesFromQueryType(queryType);
-            String rated = getResources().getStringArray(R.array.prf_values_sort)[1];
-            String popular = getResources().getStringArray(R.array.prf_values_sort)[0];
-            int newQueryType;
-            if (queryBy.equals(rated)) {
-                newQueryType = Utility.createQueryType(true, currentType[1], currentType[2]);
-            } else if (queryBy.equals(popular)) {
-                newQueryType = Utility.createQueryType(currentType[0], true, currentType[2]);
-            } else {
-                newQueryType = queryType;
-            }
-
-            ContentValues cvMovie = new ContentValues();
-            cvMovie.put(MovieColumns._ID, c.getLong(MOVIE_ID));
-            cvMovie.put(MovieColumns.TITLE, c.getString(MOVIE_TITLE));
-            cvMovie.put(MovieColumns.SYNOPSIS, c.getString(MOVIE_SYNOPSIS));
-            cvMovie.put(MovieColumns.POSTER_URL, c.getString(MOVIE_POSTER_URL));
-            cvMovie.put(MovieColumns.RELEASE_DATE, c.getInt(MOVIE_RELEASE_DATE));
-            cvMovie.put(MovieColumns.RATING, c.getFloat(MOVIE_RATING));
-            cvMovie.put(MovieColumns.QUERY_TYPE, newQueryType);
-
-            int i = getContext().getContentResolver().update(
-                    MovieProvider.Movie.withId(movieId),
-                    cvMovie,
-                    null,
-                    null
-            );
-
-            return i >= 0;
-        }
-
-        return false;
     }
 
     private void updateEmptyView() {
