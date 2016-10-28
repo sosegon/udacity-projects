@@ -29,6 +29,9 @@ import com.keemsa.popularmovies.service.TrailersService;
 /**
  * Created by sebastian on 10/16/16.
  */
+/*
+    TODO: implement the listener to check the shared preferences like CatalogFragment
+ */
 public class MovieTrailersFragment extends Fragment {
 
     private final String LOG_TAG = MovieTrailersFragment.class.getSimpleName();
@@ -132,7 +135,7 @@ public class MovieTrailersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_trailers, container, false);
 
         txt_trailers_msg = (TextView) view.findViewById(R.id.txt_trailers_msg);
-        txt_trailers_msg.setText(getString(R.string.msg_no_available, getString(R.string.lbl_trailers).toLowerCase()));
+        txt_trailers_msg.setText(getString(R.string.msg_data_no_available, getString(R.string.lbl_trailers).toLowerCase()));
 
         lv_trailers = (ListView) view.findViewById(R.id.lv_trailers);
 
@@ -190,10 +193,13 @@ public class MovieTrailersFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
+    /*
+        TODO: Update the function based on network status, similar to what is done in CatalogFragment
+     */
     private void updateEmptyView() {
         if (trailerAdapter.getCount() == 0) {
             if (txt_trailers_msg != null) {
-                String message = getString(R.string.msg_no_available, getString(R.string.lbl_trailers).toLowerCase());
+                String message = getString(R.string.msg_data_no_available, getString(R.string.lbl_trailers).toLowerCase());
                 if (!Utility.isNetworkAvailable(getContext())) {
                     message = getString(R.string.msg_no_connection);
                 }

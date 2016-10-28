@@ -1,11 +1,13 @@
 package com.keemsa.popularmovies.fragment;
 
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CatalogFragment extends Fragment {
+public class CatalogFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     private final String LOG_TAG = CatalogFragment.class.getSimpleName();
     private MovieAdapter movieAdapter;
@@ -152,7 +154,7 @@ public class CatalogFragment extends Fragment {
         setProgressBarVisibility(View.GONE);
 
         txt_catalog_msg = (TextView) view.findViewById(R.id.txt_catalog_msg);
-        txt_catalog_msg.setText(getString(R.string.msg_no_available, getString(R.string.lbl_movies).toLowerCase()));
+        txt_catalog_msg.setText(getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase()));
 
         // Create adapter
         movieAdapter = new MovieAdapter(getContext(), null, 0);
@@ -190,14 +192,30 @@ public class CatalogFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        pref.registerOnSharedPreferenceChangeListener(this);
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        pref.unregisterOnSharedPreferenceChangeListener(this);
+        super.onPause();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("movieList", movieList);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (s.equals(getString(R.string.pref_movies_status_key))) {
+            updateEmptyView();
+        }
     }
 
     public void onQueryByChanged() {
@@ -213,10 +231,23 @@ public class CatalogFragment extends Fragment {
     private void updateEmptyView() {
         if (movieAdapter.getCount() == 0) {
             if (txt_catalog_msg != null) {
-                String message = getString(R.string.msg_no_available, getString(R.string.lbl_movies).toLowerCase());
-                if (!Utility.isNetworkAvailable(getContext())) {
-                    message = getString(R.string.msg_no_connection);
+                String message = getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase());
+
+                @MoviesSyncAdapter.MoviesStatus int status = Utility.getMoviesStatus(getContext());
+
+                switch (status) {
+                    case MoviesSyncAdapter.MOVIES_STATUS_SERVER_DOWN:
+                        message = getString(R.string.msg_data_no_available_server_down, getString(R.string.lbl_movies).toLowerCase());
+                        break;
+                    case MoviesSyncAdapter.MOVIES_STATUS_SERVER_INVALID:
+                        message = getString(R.string.msg_data_no_available_server_error, getString(R.string.lbl_movies).toLowerCase());
+                        break;
+                    default:
+                        if (!Utility.isNetworkAvailable(getContext())) {
+                            message = getString(R.string.msg_data_no_available_no_network, getString(R.string.lbl_movies).toLowerCase());
+                        }
                 }
+
                 txt_catalog_msg.setText(message);
             }
         }

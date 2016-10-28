@@ -24,6 +24,10 @@ public class ReviewsAsyncTask extends AsyncTaskLoader<String> {
     private long mMovieId;
     private String jsonReviews;
 
+    /*
+        TODO: Add flags for network status similar to what is done in MoviesSyncAdapter
+     */
+
     public ReviewsAsyncTask(Context context, long mMovieId) {
         super(context);
         this.mMovieId = mMovieId;

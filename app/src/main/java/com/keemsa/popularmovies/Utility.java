@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
+import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -255,5 +256,12 @@ public class Utility {
 
     public static long getMovieIdFromUri(Uri uri){
         return Long.parseLong(uri.getLastPathSegment());
+    }
+
+    @SuppressWarnings("ResourceType") // It helps to supress the error in line return
+    public static @MoviesSyncAdapter.MoviesStatus int getMoviesStatus(Context context) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return pref.getInt(context.getString(R.string.pref_movies_status_key), MoviesSyncAdapter.MOVIES_STATUS_UNKNOWN);
     }
 }

@@ -38,6 +38,10 @@ public class TrailersService extends IntentService{
     public static final String WORK_DONE = "wdn";
     private long mMovieId;
 
+    /*
+        TODO: Add flags for network status similar to what is done in MoviesSyncAdapter
+     */
+
     public TrailersService() {
         super("TrailersService");
     }

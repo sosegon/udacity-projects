@@ -34,6 +34,9 @@ import java.util.Vector;
 /**
  * Created by sebastian on 10/13/16.
  */
+/*
+    TODO: implement the listener to check the shared preferences like CatalogFragment
+ */
 public class MovieReviewsFragment extends Fragment {
 
     private final String LOG_TAG = MovieReviewsFragment.class.getSimpleName();
@@ -147,7 +150,7 @@ public class MovieReviewsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_movie_reviews, container, false);
 
         txt_reviews_msg = (TextView) view.findViewById(R.id.txt_reviews_msg);
-        txt_reviews_msg.setText(getString(R.string.msg_no_available, getString(R.string.lbl_reviews).toLowerCase()));
+        txt_reviews_msg.setText(getString(R.string.msg_data_no_available, getString(R.string.lbl_reviews).toLowerCase()));
 
         /* TODO: Find a better solution to handle ReviewFragments
            I remove ReviewFragment instances when another
@@ -254,10 +257,13 @@ public class MovieReviewsFragment extends Fragment {
         }
     }
 
+    /*
+        TODO: Update the function based on network status, similar to what is done in CatalogFragment
+     */
     private void updateEmptyView() {
         if (reviewAdapter.getCount() == 0) {
             if (txt_reviews_msg != null) {
-                String message = getString(R.string.msg_no_available, getString(R.string.lbl_reviews).toLowerCase());
+                String message = getString(R.string.msg_data_no_available, getString(R.string.lbl_reviews).toLowerCase());
                 if (!Utility.isNetworkAvailable(getContext())) {
                     message = getString(R.string.msg_no_connection);
                 }

@@ -7,12 +7,15 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.keemsa.popularmovies.BuildConfig;
@@ -26,8 +29,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Vector;
@@ -44,6 +50,15 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     // 60 seconds (1 minute) * 60 minutes (1 hour) * 24 hours (1 day) * 7 days = 1 week
     public static final int SYNC_INTERVAL = 604800;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MOVIES_STATUS_OK, MOVIES_STATUS_SERVER_DOWN, MOVIES_STATUS_SERVER_INVALID, MOVIES_STATUS_UNKNOWN})
+    public @interface MoviesStatus {}
+
+    public static final int MOVIES_STATUS_OK = 0;
+    public static final int MOVIES_STATUS_SERVER_DOWN = 1;
+    public static final int MOVIES_STATUS_SERVER_INVALID = 2;
+    public static final int MOVIES_STATUS_UNKNOWN = 3;
 
     public static final String[] MOVIE_COLUMNS = {
             MovieColumns._ID,
@@ -160,9 +175,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 if (output.length() != 0) {
                     moviesJson = output.toString();
                 }
+            } else {
+                setMoviesStatus(getContext(), MOVIES_STATUS_SERVER_DOWN);
             }
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error connecting to the server to fetch movies' data");
+        } catch (IOException e){
+            Log.e(LOG_TAG, "Error", e);
+            setMoviesStatus(getContext(), MOVIES_STATUS_SERVER_DOWN);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -191,11 +209,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 ContentValues[] cvArray = new ContentValues[cvMovies.size()];
                 cvMovies.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(MovieProvider.Movie.ALL, cvArray);
-                //getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
             }
+            setMoviesStatus(getContext(), MOVIES_STATUS_OK);
 
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Error parsing json data of movies");
+            setMoviesStatus(getContext(), MOVIES_STATUS_SERVER_INVALID);
         }
     }
 
@@ -329,5 +348,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
+    }
+
+    private static void setMoviesStatus(Context context, @MoviesStatus int moviesStatus) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefEditor = pref.edit();
+        prefEditor.putInt(context.getString(R.string.pref_movies_status_key), moviesStatus);
+        prefEditor.commit(); // use commit since the adapter is in background thread, otherwise use apply
     }
 }
