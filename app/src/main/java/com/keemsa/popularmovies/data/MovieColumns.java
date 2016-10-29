@@ -42,19 +42,14 @@ public interface MovieColumns {
        is determined from a binary table:
 
        Rating | Popularity | Favourite | Query_type | Possible
-         0         0            0           0            No
-         0         0            1           1            No
+         0         0            0           0            Yes    // used in search
+         0         0            1           1            Yes    // fav movie from a search
          0         1            0           2            Yes
          0         1            1           3            Yes
          1         0            0           4            Yes
          1         0            1           5            Yes
          1         1            0           6            Yes
          1         1            1           7            Yes
-
-       The table is self descriptive, but it's worth to mention
-       that the field Possible means that those values are not
-       allowed. 0 and 1 are not possible because a movie must be
-       retrieved by popularity or by query.
      */
     @DataType(INTEGER)
     @NotNull
