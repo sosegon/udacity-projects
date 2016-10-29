@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.app.FragmentTabHost xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frg_catalog"
-    android:name="com.keemsa.popularmovies.fragment.CatalogFragment"
+    android:id="@android:id/tabhost"
     style="@style/match_match"
-    tools:layout="@android:layout/list_content" />
+    tools:context=".DetailsActivity">
+
+    <LinearLayout
+        style="@style/match_wrap"
+        android:orientation="vertical">
+
+        <TabWidget
+            android:id="@android:id/tabs"
+            style="@style/match_wrap" />
+
+        <View style="@style/divider"></View>
+
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </LinearLayout>
+
+</android.support.v4.app.FragmentTabHost>

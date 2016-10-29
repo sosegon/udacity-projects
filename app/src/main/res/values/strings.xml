@@ -29,6 +29,10 @@
         <item>favourite</item>
     </string-array>
 
+
+    <string name="lbl_catalog">Catalog</string>
+    <string name="lbl_search">Search</string>
+
     <string name="lbl_movies">Movies</string>
     <string name="lbl_reviews">Reviews</string>
     <string name="lbl_details">Details</string>

@@ -61,6 +61,13 @@
         <item name="android:layout_centerInParent">true</item>
     </style>
 
+    <!-- search_catalog.xml -->
+    <style name="etx_search">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
     <!-- item_movie.xml -->
     <style name="frl_movie">
         <item name="android:layout_height">@dimen/poster_height</item>

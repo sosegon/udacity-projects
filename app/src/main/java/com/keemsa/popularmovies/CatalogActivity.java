@@ -3,20 +3,26 @@ package com.keemsa.popularmovies;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 import com.keemsa.popularmovies.fragment.DetailsFragment;
+import com.keemsa.popularmovies.fragment.SearchFragment;
 import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
 public class CatalogActivity extends AppCompatActivity implements CatalogFragment.Callback {
 
     private final String LOG_TAG = CatalogActivity.class.getSimpleName();
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
+    private final String CATALOG_FRAGMENT_TAG = "CFTAG";
+    private final String SEARCH_FRAGMENT_TAG = "SFTAG";
     private String mQueryBy;
     private boolean mTwoPane = false;
+    private FragmentTabHost mtabHost;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,20 @@ public class CatalogActivity extends AppCompatActivity implements CatalogFragmen
 
         mTwoPane = findViewById(R.id.frl_details_container) != null;
 
+        mtabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+
+        mtabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
+
+        mtabHost.addTab(
+                mtabHost.newTabSpec(CATALOG_FRAGMENT_TAG).setIndicator(getString(R.string.lbl_catalog), null),
+                CatalogFragment.class, null
+        );
+
+        mtabHost.addTab(
+                mtabHost.newTabSpec(SEARCH_FRAGMENT_TAG).setIndicator(getString(R.string.lbl_search), null),
+                SearchFragment.class, null
+        );
+
         getSupportActionBar().setElevation(0);
 
         MoviesSyncAdapter.initializeSyncAdapter(this);
@@ -44,7 +64,7 @@ public class CatalogActivity extends AppCompatActivity implements CatalogFragmen
         String queryBy = Utility.getPreferredQueryBy(this);
 
         if (queryBy != null && !queryBy.equals(mQueryBy)) {
-            CatalogFragment cf = (CatalogFragment) getSupportFragmentManager().findFragmentById(R.id.frg_catalog);
+            CatalogFragment cf = (CatalogFragment) getSupportFragmentManager().findFragmentByTag(CATALOG_FRAGMENT_TAG);
             if (cf != null) {
                 cf.onQueryByChanged();
             }
