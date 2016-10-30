@@ -22,6 +22,7 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CatalogFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class CatalogFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private final String LOG_TAG = CatalogFragment.class.getSimpleName();
     private MovieAdapter movieAdapter;
@@ -64,14 +65,6 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
     private final int MOVIES_LOADED = 1;
 
-    public interface Callback {
-        void onItemSelected(Uri movieUri);
-
-        void onEnableDetailsFragment(Uri movieUri);
-
-        boolean hasSinglePane();
-    }
-
     private LoaderManager.LoaderCallbacks cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -91,7 +84,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
             Log.i(LOG_TAG, "Records for movies: " + data.getCount());
             movieAdapter.swapCursor(data);
 
-            if (!((Callback) getActivity()).hasSinglePane()) {
+            if (!((MovieSelectedInterface) getActivity()).hasSinglePane()) {
                 /*
                     In two panes, DetailsFragment has to be added once the movies
                     are loaded, therefore a Uri can be passed to it, which in turns
@@ -106,7 +99,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
                             if (msg.what == MOVIES_LOADED) {
                                 if (data.moveToFirst()) {
                                     Uri movieUri = MovieProvider.Movie.withId(data.getLong(MOVIE_ID));
-                                    ((CatalogFragment.Callback) getActivity()).onEnableDetailsFragment(movieUri);
+                                    ((MovieSelectedInterface) getActivity()).onEnableDetailsFragment(movieUri);
                                 }
                             }
                         }
@@ -173,7 +166,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(i);
                 if (c != null) {
-                    ((Callback) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
+                    ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
                 }
             }
         });

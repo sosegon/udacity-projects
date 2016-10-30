@@ -13,7 +13,7 @@ import com.keemsa.popularmovies.fragment.DetailsFragment;
 import com.keemsa.popularmovies.fragment.SearchFragment;
 import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
-public class CatalogActivity extends AppCompatActivity implements CatalogFragment.Callback {
+public class CatalogActivity extends AppCompatActivity implements MovieSelectedInterface {
 
     private final String LOG_TAG = CatalogActivity.class.getSimpleName();
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
