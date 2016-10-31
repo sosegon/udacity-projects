@@ -7,14 +7,12 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.keemsa.popularmovies.AppStatus;
@@ -167,7 +165,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
             } else {
                 setMoviesStatus(getContext(), AppStatus.MOVIES_STATUS_SERVER_DOWN);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             Log.e(LOG_TAG, "Error", e);
             setMoviesStatus(getContext(), AppStatus.MOVIES_STATUS_SERVER_DOWN);
         } finally {
@@ -339,10 +337,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         getSyncAccount(context);
     }
 
-    private static void setMoviesStatus(Context context, @AppStatus.MoviesStatus int moviesStatus) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor prefEditor = pref.edit();
-        prefEditor.putInt(context.getString(R.string.pref_movies_status_key), moviesStatus);
-        prefEditor.commit(); // use commit since the adapter is in background thread, otherwise use apply
+    private static void setMoviesStatus(Context context, int moviesStatus) {
+        Utility.setMoviesStatus(context, moviesStatus);
     }
 }

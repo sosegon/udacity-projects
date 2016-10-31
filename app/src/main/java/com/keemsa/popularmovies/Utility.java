@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
@@ -60,6 +61,11 @@ public final class Utility {
         String queryBy = pref.getString(context.getString(R.string.prf_key_sort), context.getString(R.string.prf_default_sort));
 
         return queryBy;
+    }
+
+    public static String getSearchKeyword(Context context) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        return pref.getString(context.getString(R.string.pref_search_keyword_key), "");
     }
 
     public static Uri createTrailerUri(String site, String key) {
@@ -253,14 +259,44 @@ public final class Utility {
         return null;
     }
 
-    public static long getMovieIdFromUri(Uri uri){
+    public static long getMovieIdFromUri(Uri uri) {
         return Long.parseLong(uri.getLastPathSegment());
     }
 
     @SuppressWarnings("ResourceType") // It helps to supress the error in line return
-    public static @AppStatus.MoviesStatus int getMoviesStatus(Context context) {
+    public static
+    @AppStatus.MoviesStatus
+    int getMoviesStatus(Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 
         return pref.getInt(context.getString(R.string.pref_movies_status_key), AppStatus.MOVIES_STATUS_UNKNOWN);
+    }
+
+    public static void setMoviesStatus(Context context, @AppStatus.MoviesStatus int moviesStatus) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefEditor = pref.edit();
+        prefEditor.putInt(context.getString(R.string.pref_movies_status_key), moviesStatus);
+        prefEditor.commit(); // use commit since the adapter is in background thread, otherwise use apply
+    }
+
+    public static void updateMoviesEmptyView(Context context, TextView txt_message) {
+        String message = context.getString(R.string.msg_data_no_available, context.getString(R.string.lbl_movies).toLowerCase());
+
+        @AppStatus.MoviesStatus int status = Utility.getMoviesStatus(context);
+
+        switch (status) {
+            case AppStatus.MOVIES_STATUS_SERVER_DOWN:
+                message = context.getString(R.string.msg_data_no_available_server_down, context.getString(R.string.lbl_movies).toLowerCase());
+                break;
+            case AppStatus.MOVIES_STATUS_SERVER_INVALID:
+                message = context.getString(R.string.msg_data_no_available_server_error, context.getString(R.string.lbl_movies).toLowerCase());
+                break;
+            default:
+                if (!Utility.isNetworkAvailable(context)) {
+                    message = context.getString(R.string.msg_data_no_available_no_network, context.getString(R.string.lbl_movies).toLowerCase());
+                }
+        }
+
+        txt_message.setText(message);
     }
 }

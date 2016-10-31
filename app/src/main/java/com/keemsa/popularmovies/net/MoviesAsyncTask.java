@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import com.keemsa.popularmovies.AppStatus;
 import com.keemsa.popularmovies.BuildConfig;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -21,7 +22,6 @@ import java.net.URL;
 public class MoviesAsyncTask extends AsyncTaskLoader<String> {
 
     private final String LOG_TAG = TrailersAsyncTask.class.getSimpleName();
-    private int response = -1;
     private String jsonMovies;
 
     public MoviesAsyncTask(Context context) {
@@ -30,10 +30,10 @@ public class MoviesAsyncTask extends AsyncTaskLoader<String> {
 
     @Override
     public String loadInBackground() {
-        String baseUrl = getContext().getString(R.string.base_query_url);
-        String queryBy = Utility.getPreferredQueryBy(getContext());
+        String baseUrl = getContext().getString(R.string.base_search_url);
+        String searchKeyword = Utility.getSearchKeyword(getContext());
         String url = Uri.parse(baseUrl).buildUpon()
-                .appendPath(queryBy)
+                .appendQueryParameter("query", searchKeyword)
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
                 .build()
                 .toString();
@@ -70,9 +70,6 @@ public class MoviesAsyncTask extends AsyncTaskLoader<String> {
             connection.setRequestMethod("GET");
             connection.connect();
 
-            // Used in onPostExecute
-            response = connection.getResponseCode();
-
             InputStream stream = connection.getInputStream();
 
             if (stream != null) {
@@ -86,9 +83,13 @@ public class MoviesAsyncTask extends AsyncTaskLoader<String> {
                 if (output.length() != 0) {
                     moviesJson = output.toString();
                 }
+            } else {
+                Utility.setMoviesStatus(getContext(), AppStatus.MOVIES_STATUS_SERVER_DOWN);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error connecting to the server to fetch movies' data");
+            Utility.setMoviesStatus(getContext(), AppStatus.MOVIES_STATUS_SERVER_DOWN);
+
         } finally {
             if (connection != null) {
                 connection.disconnect();

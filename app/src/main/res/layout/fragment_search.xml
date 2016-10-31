@@ -24,6 +24,7 @@
 
     <ProgressBar
         android:id="@+id/prg_load_search"
+        android:visibility="gone"
         style="@style/prg_load" />
 
     <TextView

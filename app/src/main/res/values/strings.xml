@@ -3,6 +3,7 @@
 
     <string name="base_query_url">https://api.themoviedb.org/3/movie/</string>
     <string name="base_img_url">http://image.tmdb.org/t/p/w185</string>
+    <string name="base_search_url">https://api.themoviedb.org/3/search/movie</string>
 
     <string name="msg_no_connection">No connection available</string>
     <string name="msg_server_error">Server error, cannot fetch data</string>
@@ -46,4 +47,7 @@
     <string name="content_authority">com.keemsa.popularmovies</string>
 
     <string name="pref_movies_status_key" translatable="false">movies</string>
+
+    <!-- Preference key for search keyword -->
+    <string name="pref_search_keyword_key" translatable="false">search_keyword</string>
 </resources>

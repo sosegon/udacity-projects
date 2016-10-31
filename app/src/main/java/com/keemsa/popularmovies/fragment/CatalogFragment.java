@@ -22,7 +22,6 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.keemsa.popularmovies.AppStatus;
 import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -225,24 +224,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     private void updateEmptyView() {
         if (movieAdapter.getCount() == 0) {
             if (txt_catalog_msg != null) {
-                String message = getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase());
-
-                @AppStatus.MoviesStatus int status = Utility.getMoviesStatus(getContext());
-
-                switch (status) {
-                    case AppStatus.MOVIES_STATUS_SERVER_DOWN:
-                        message = getString(R.string.msg_data_no_available_server_down, getString(R.string.lbl_movies).toLowerCase());
-                        break;
-                    case AppStatus.MOVIES_STATUS_SERVER_INVALID:
-                        message = getString(R.string.msg_data_no_available_server_error, getString(R.string.lbl_movies).toLowerCase());
-                        break;
-                    default:
-                        if (!Utility.isNetworkAvailable(getContext())) {
-                            message = getString(R.string.msg_data_no_available_no_network, getString(R.string.lbl_movies).toLowerCase());
-                        }
-                }
-
-                txt_catalog_msg.setText(message);
+                Utility.updateMoviesEmptyView(getContext(), txt_catalog_msg);
             }
         }
     }
