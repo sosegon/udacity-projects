@@ -22,6 +22,7 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.AppStatus;
 import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -226,13 +227,13 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
             if (txt_catalog_msg != null) {
                 String message = getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase());
 
-                @MoviesSyncAdapter.MoviesStatus int status = Utility.getMoviesStatus(getContext());
+                @AppStatus.MoviesStatus int status = Utility.getMoviesStatus(getContext());
 
                 switch (status) {
-                    case MoviesSyncAdapter.MOVIES_STATUS_SERVER_DOWN:
+                    case AppStatus.MOVIES_STATUS_SERVER_DOWN:
                         message = getString(R.string.msg_data_no_available_server_down, getString(R.string.lbl_movies).toLowerCase());
                         break;
-                    case MoviesSyncAdapter.MOVIES_STATUS_SERVER_INVALID:
+                    case AppStatus.MOVIES_STATUS_SERVER_INVALID:
                         message = getString(R.string.msg_data_no_available_server_error, getString(R.string.lbl_movies).toLowerCase());
                         break;
                     default:

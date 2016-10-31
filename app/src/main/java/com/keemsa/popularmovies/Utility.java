@@ -16,7 +16,6 @@ import android.util.Log;
 
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
-import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -31,7 +30,7 @@ import java.util.TimeZone;
 /**
  * Created by sebastian on 10/4/16.
  */
-public class Utility {
+public final class Utility {
 
     private static final String LOG_TAG = Utility.class.getSimpleName();
 
@@ -259,9 +258,9 @@ public class Utility {
     }
 
     @SuppressWarnings("ResourceType") // It helps to supress the error in line return
-    public static @MoviesSyncAdapter.MoviesStatus int getMoviesStatus(Context context) {
+    public static @AppStatus.MoviesStatus int getMoviesStatus(Context context) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        return pref.getInt(context.getString(R.string.pref_movies_status_key), MoviesSyncAdapter.MOVIES_STATUS_UNKNOWN);
+        return pref.getInt(context.getString(R.string.pref_movies_status_key), AppStatus.MOVIES_STATUS_UNKNOWN);
     }
 }
