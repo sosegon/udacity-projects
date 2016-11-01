@@ -1,51 +1,60 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Popular Movies</string>
 
-    <string name="base_query_url">https://api.themoviedb.org/3/movie/</string>
-    <string name="base_img_url">http://image.tmdb.org/t/p/w185</string>
-    <string name="base_search_url">https://api.themoviedb.org/3/search/movie</string>
+    <!-- Base urls to connect to the server and retrieve data -->
+    <string name="base_query_url" translatable="false">https://api.themoviedb.org/3/movie/</string>
+    <string name="base_img_url" translatable="false">http://image.tmdb.org/t/p/w185</string>
+    <string name="base_search_url" translatable="false">https://api.themoviedb.org/3/search/movie</string>
 
+    <!-- Meaningful messages presented to the user in case of errors -->
     <string name="msg_no_connection">No connection available</string>
     <string name="msg_server_error">Server error, cannot fetch data</string>
-
-    <!-- Related to no data available -->
     <string name="msg_data_no_available">No <xliff:g id="data">%1$s</xliff:g> available</string>
     <string name="msg_data_no_available_no_network">No <xliff:g id="data">%1$s</xliff:g> available. The network is not accessible.</string>
     <string name="msg_data_no_available_server_down">No <xliff:g id="data">%1$s</xliff:g> available. The server is not returning data.</string>
     <string name="msg_data_no_available_server_error">No <xliff:g id="data">%1$s</xliff:g> available. The server is not returning valid data.</string>
 
+    <!-- Common labels used through the application -->
     <string name="lbl_settings">Settings</string>
-
+    <string name="lbl_catalog">Catalog</string>
+    <string name="lbl_search">Search</string>
+    <string name="lbl_movies">Movies</string>
+    <string name="lbl_reviews">Reviews</string>
+    <string name="lbl_details">Details</string>
+    <string name="lbl_trailers">Trailers</string>
     <string name="lbl_query">Query by</string>
+
+    <!-- Preference key for querying the movies -->
     <string name="prf_key_sort" translatable="false">sort</string>
-    <string name="prf_default_sort">popular</string>
+
+    <!-- Default value for querying movies -->
+    <string name="prf_default_sort" translatable="false">popular</string>
+
+    <!-- Labels for values for querying preference key -->
     <string-array name="prf_entries_sort">
         <item>Popularity</item>
         <item>Rating</item>
         <item>Favourite</item>
     </string-array>
+
+    <!-- Possible values for preference key query -->
     <string-array name="prf_values_sort">
         <item>popular</item>
         <item>top_rated</item>
         <item>favourite</item>
     </string-array>
 
-
-    <string name="lbl_catalog">Catalog</string>
-    <string name="lbl_search">Search</string>
-
-    <string name="lbl_movies">Movies</string>
-    <string name="lbl_reviews">Reviews</string>
-    <string name="lbl_details">Details</string>
-    <string name="lbl_trailers">Trailers</string>
+    <!-- String to be used in reviews to set "Author:" and the name in a single string -->
     <string name="review_author">Author: <xliff:g id="author_name">%1$s</xliff:g> </string>
 
-    <string name="folder_posters">posters</string>
+    <!-- Name of the folder to store the movie posters -->
+    <string name="folder_posters" translatable="false">posters</string>
 
     <!-- Values for the SyncAdapter -->
-    <string name="sync_account_type">popularmovies.keemsa.com</string>
-    <string name="content_authority">com.keemsa.popularmovies</string>
+    <string name="sync_account_type" translatable="false">popularmovies.keemsa.com</string>
+    <string name="content_authority" translatable="false">com.keemsa.popularmovies</string>
 
+    <!-- Preference key for movies status key -->
     <string name="pref_movies_status_key" translatable="false">movies</string>
 
     <!-- Preference key for search keyword -->
