@@ -24,6 +24,7 @@ import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
+import com.keemsa.popularmovies.ui.Typewriter;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
        because any other fragment will display information of the
        same movie
      */
-    private TextView txt_title_details;
+    private Typewriter txt_title_details;
     private TextView txt_year_details,
             txt_score_details,
             txt_desc_details;
@@ -131,7 +132,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
            At this point, it's safe to get the reference to the view
            in the activity
          */
-        txt_title_details = (TextView) getActivity().findViewById(R.id.txt_title_details);
+        txt_title_details = (Typewriter) getActivity().findViewById(R.id.txt_title_details);
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -176,7 +177,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
            to check its existence.
          */
         if (txt_title_details != null) {
-            txt_title_details.setText(movie.getTitle());
+            // Based on http://stackoverflow.com/a/6700718/1065981
+            /*
+                TODO: The animation works but it would be better to have an animation
+                from right to left
+             */
+            txt_title_details.setCharacterDelay(50);
+            txt_title_details.animateText(movie.getTitle());
         }
 
         txt_year_details.setText(movie.getReleaseDate());

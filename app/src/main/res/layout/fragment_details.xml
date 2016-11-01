@@ -9,7 +9,7 @@
         style="@style/match_wrap"
         android:orientation="vertical">
 
-        <TextView
+        <com.keemsa.popularmovies.ui.Typewriter
             android:id="@+id/txt_title_details"
             style="@style/txt_title_details" />
 
