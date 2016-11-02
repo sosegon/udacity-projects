@@ -24,6 +24,7 @@ import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;
+import com.keemsa.popularmovies.service.DbService;
 import com.keemsa.popularmovies.ui.Typewriter;
 import com.squareup.picasso.Picasso;
 
@@ -206,8 +207,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         boolean newFav = !Utility.isFavourite(mMovie.getQueryType());
         imv_movie_fav_details.setImageResource(newFav ? R.drawable.ic_fav : R.drawable.ic_nonfav);
 
-        // TODO: Do this when leaving the fragment to improve performance by avoiding multiple db operations
-        // update the record in db
         ContentValues cv = new ContentValues();
         cv.put(MovieColumns._ID, mMovie.getId());
         cv.put(MovieColumns.TITLE, mMovie.getTitle());
@@ -221,12 +220,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         int newQueryType = Utility.createQueryType(prevTypes[0], prevTypes[1], newFav);
         cv.put(MovieColumns.QUERY_TYPE, newQueryType);
 
-        getContext().getContentResolver().update(
-                MovieProvider.Movie.withId(mMovie.getId()),
-                cv,
-                null,
-                null
-        );
+        // update the record in db
+        Intent intent = new Intent(getContext(), DbService.class);
+        intent.setData(MovieProvider.Movie.withId(mMovie.getId()));
+        intent.putExtra(DbService.DB_SERVICE_OPERATION, DbService.DB_SERVICE_UPDATE);
+        intent.putExtra(DbService.DB_SERVICE_VALUE, cv);
+
+        getContext().startService(intent);
 
         // update member object
         mMovie.setQueryType(newQueryType);
