@@ -1,4 +1,4 @@
-package com.keemsa.popularmovies.fragment;
+package com.keemsa.popularmovies.adapter;
 
 import android.database.Cursor;
 import android.os.Bundle;

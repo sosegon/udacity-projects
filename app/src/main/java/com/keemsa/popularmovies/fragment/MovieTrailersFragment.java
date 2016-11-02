@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
+import com.keemsa.popularmovies.adapter.TrailerAdapter;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.data.TrailerColumns;
 import com.keemsa.popularmovies.service.TrailersService;
@@ -52,16 +53,16 @@ public class MovieTrailersFragment extends Fragment {
 
     private static final int TRAILERS_CURSOR_LOADER_ID = 1;
     private static final int TRAILERS_ASYNC_LOADER_ID = 2;
-    final static String[] TRAILER_COLUMNS = {
+    public final static String[] TRAILER_COLUMNS = {
             TrailerColumns._ID,
             TrailerColumns.KEY,
             TrailerColumns.NAME,
             TrailerColumns.SITE
     };
-    final static int TRAILER_ID = 0;
-    final static int TRAILER_KEY = 1;
-    final static int TRAILER_NAME = 2;
-    final static int TRAILER_SITE = 3;
+    public final static int TRAILER_ID = 0;
+    public final static int TRAILER_KEY = 1;
+    public final static int TRAILER_NAME = 2;
+    public final static int TRAILER_SITE = 3;
 
     private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override

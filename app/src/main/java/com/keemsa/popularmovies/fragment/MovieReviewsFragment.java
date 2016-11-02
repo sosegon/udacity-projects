@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
+import com.keemsa.popularmovies.adapter.ReviewPagerAdapter;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.data.ReviewColumns;
 import com.keemsa.popularmovies.net.ReviewsAsyncTask;

@@ -1,4 +1,4 @@
-package com.keemsa.popularmovies.fragment;
+package com.keemsa.popularmovies.adapter;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -9,9 +9,10 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
-import com.squareup.picasso.Picasso;
+import com.keemsa.popularmovies.fragment.CatalogFragment;
 
 import java.io.File;
 
@@ -60,7 +61,8 @@ public class MovieAdapter extends CursorAdapter {
         File directory = cw.getDir(Utility.getPosterDirectory(context), Context.MODE_PRIVATE);
         File posterFile = new File(directory, posterUrl);
         if (posterFile.exists()) {
-            Picasso.with(context).load(posterFile).fit().into(holder.posterView);
+            Glide.with(context).load(posterFile).into(holder.posterView);
+            //Picasso.with(context).load(posterFile).fit().into(holder.posterView);
         }
         else {
             Utility.downloadAndSavePoster(context, posterUrl);

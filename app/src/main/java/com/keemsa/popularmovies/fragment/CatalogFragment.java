@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
+import com.keemsa.popularmovies.adapter.MovieAdapter;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.model.Movie;

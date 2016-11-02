@@ -1,4 +1,4 @@
-package com.keemsa.popularmovies.fragment;
+package com.keemsa.popularmovies.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
+import com.keemsa.popularmovies.fragment.MovieTrailersFragment;
 
 /**
  * Created by sebastian on 10/16/16.
