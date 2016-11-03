@@ -10,7 +10,7 @@
         android:id="@+id/scv_movie_reviews"
         style="@style/match_match">
 
-        <com.keemsa.popularmovies.fragment.WrapContentHeightViewPager
+        <com.keemsa.popularmovies.ui.WrapContentHeightViewPager
             android:id="@+id/pgr_reviews"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
