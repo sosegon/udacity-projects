@@ -5,9 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 import com.keemsa.popularmovies.fragment.DetailsFragment;
 import com.keemsa.popularmovies.fragment.SearchFragment;
@@ -19,6 +22,7 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
     private final String SEARCH_FRAGMENT_TAG = "SFTAG";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private String mQueryBy;
     private boolean mTwoPane = false;
     private FragmentTabHost mtabHost;
@@ -69,6 +73,12 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
                 cf.onQueryByChanged();
             }
             mQueryBy = queryBy;
+        }
+
+        if (!checkPlayServices()) {
+            // This is where we could either prompt a user that they should install
+            // the latest version of Google Play Services, or add an error snackbar
+            // that some features won't be available.
         }
     }
 
@@ -132,5 +142,21 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
                     .setData(movieUri);
             startActivity(intent);
         }
+    }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
