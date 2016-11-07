@@ -59,4 +59,8 @@
 
     <!-- Preference key for search keyword -->
     <string name="pref_search_keyword_key" translatable="false">search_keyword</string>
+
+    <!-- GCM -->
+    <string name="gcm_movie_alert">Heads up: %1$s!</string>
+    <string name="gcm_defaultSenderId_" translatable="false">anse23</string>
 </resources>
