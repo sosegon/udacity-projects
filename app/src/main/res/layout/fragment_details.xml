@@ -9,10 +9,6 @@
         style="@style/match_wrap"
         android:orientation="vertical">
 
-        <com.keemsa.popularmovies.ui.Typewriter
-            android:id="@+id/txt_title_details"
-            style="@style/txt_title_details" />
-
         <TabWidget
             android:id="@android:id/tabs"
             style="@style/match_wrap" />

@@ -12,9 +12,13 @@
         android:layout_height="?attr/actionBarSize"
         android:theme="@style/Toolbar">
 
-        <TextView
-            style="@style/match_wrap"
-            android:text="@string/app_name" />
+        <com.keemsa.popularmovies.ui.Typewriter
+            android:id="@+id/txt_title_details"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingRight="@dimen/padding_1"
+            style="@style/match_wrap" />
+
     </android.support.v7.widget.Toolbar>
 
     <fragment
