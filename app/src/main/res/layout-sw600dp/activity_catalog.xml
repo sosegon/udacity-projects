@@ -8,11 +8,22 @@
         style="@style/match_wrap"
         android:orientation="vertical">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tbr_catalog"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/Toolbar">
+
+            <TextView
+                style="@style/match_wrap"
+                android:text="@string/app_name" />
+        </android.support.v7.widget.Toolbar>
+
         <TabWidget
             android:id="@android:id/tabs"
             style="@style/match_wrap" />
 
-        <View style="@style/divider"></View>
+        <View style="@style/divider" />
 
         <FrameLayout
             android:id="@android:id/tabcontent"
@@ -24,6 +35,6 @@
         android:id="@+id/frl_details_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"></FrameLayout>
+        android:layout_weight="2" />
 
 </LinearLayout>

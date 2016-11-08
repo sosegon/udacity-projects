@@ -2,8 +2,11 @@ package com.keemsa.popularmovies;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 public class DetailsActivity extends AppCompatActivity {
+
+    private Toolbar tbr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,6 +19,10 @@ public class DetailsActivity extends AppCompatActivity {
            Is there any disadvantage related to this approach?
          */
 
+        tbr = (Toolbar) findViewById(R.id.tbr_details);
+        setSupportActionBar(tbr);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setElevation(0);
     }
 }

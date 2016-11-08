@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private String mQueryBy;
     private boolean mTwoPane = false;
     private FragmentTabHost mtabHost;
+    private Toolbar tbr;
 
 
     @Override
@@ -61,6 +63,9 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
                 SearchFragment.class, null
         );
 
+        tbr = (Toolbar) findViewById(R.id.tbr_catalog);
+        setSupportActionBar(tbr);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setElevation(0);
 
         MoviesSyncAdapter.initializeSyncAdapter(this);

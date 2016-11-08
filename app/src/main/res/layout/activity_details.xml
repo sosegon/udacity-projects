@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/frl_details_container"
     style="@style/match_match"
+    android:orientation="vertical"
     tools:context=".DetailsActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tbr_details"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/Toolbar">
+
+        <TextView
+            style="@style/match_wrap"
+            android:text="@string/app_name" />
+    </android.support.v7.widget.Toolbar>
 
     <fragment
         android:id="@+id/frg_details"
         android:name="com.keemsa.popularmovies.fragment.DetailsFragment"
         style="@style/match_match" />
 
-</FrameLayout>
+</LinearLayout>
 
 
