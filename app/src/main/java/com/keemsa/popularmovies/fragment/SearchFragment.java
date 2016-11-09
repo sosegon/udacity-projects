@@ -131,8 +131,8 @@ public class SearchFragment extends Fragment {
         txt_search_msg = (TextView) view.findViewById(R.id.txt_search_msg);
         gv_search = (GridView) view.findViewById(R.id.gv_movies_search);
 
-        movieAdapter = new MovieAdapter(getContext(), null, 0);
-        gv_search.setAdapter(movieAdapter);
+//        movieAdapter = new MovieAdapter(getContext(), null, 0);
+//        gv_search.setAdapter(movieAdapter);
 
         imv_search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -227,10 +227,10 @@ public class SearchFragment extends Fragment {
     }
 
     private void updateEmptyView() {
-        if (movieAdapter.getCount() == 0) {
-            if (txt_search_msg != null) {
-                Utility.updateMoviesEmptyView(getContext(), txt_search_msg);
-            }
-        }
+//        if (movieAdapter.getCount() == 0) {
+//            if (txt_search_msg != null) {
+//                Utility.updateMoviesEmptyView(getContext(), txt_search_msg);
+//            }
+//        }
     }
 }

@@ -3,10 +3,11 @@ package com.keemsa.popularmovies.adapter;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.Cursor;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
 import com.keemsa.popularmovies.R;
@@ -19,26 +20,30 @@ import java.io.File;
 /**
  * Created by sebastian on 31/08/16.
  */
-public class MovieAdapter extends CursorAdapter {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
-    public static class ViewHolder {
-        public final ImageView posterView;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public ImageView posterView;
 
-        public ViewHolder(View view){
+        public ViewHolder(View view) {
+            super(view);
             posterView = (ImageView) view.findViewById(R.id.imv_movie_poster);
         }
     }
 
     private String LOG_TAG = MovieAdapter.class.getSimpleName();
     private ViewHolder holder;
+    private final Context mContext;
+    private Cursor mCursor;
 
-    public MovieAdapter(Context context, Cursor c, int flag) {
-        super(context, c, flag);
+    public MovieAdapter(Context context) {
+        mContext = context;
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        String posterUrl = cursor.getString(CatalogFragment.MOVIE_POSTER_URL);
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        mCursor.moveToPosition(position);
+        String posterUrl = mCursor.getString(CatalogFragment.MOVIE_POSTER_URL);
 
         /*
            TODO: Solve the problem of smooth scrolling
@@ -57,21 +62,48 @@ public class MovieAdapter extends CursorAdapter {
 
            I haven't found a solution for that.
          */
-        ContextWrapper cw = new ContextWrapper(context);
-        File directory = cw.getDir(Utility.getPosterDirectory(context), Context.MODE_PRIVATE);
+        ContextWrapper cw = new ContextWrapper(mContext);
+        File directory = cw.getDir(Utility.getPosterDirectory(mContext), Context.MODE_PRIVATE);
         File posterFile = new File(directory, posterUrl);
         if (posterFile.exists()) {
-            Picasso.with(context).load(posterFile).fit().into(holder.posterView);
+            Picasso.with(mContext).load(posterFile).fit().into(holder.posterView);
+        } else {
+            Utility.downloadAndSavePoster(mContext, posterUrl);
         }
-        else {
-            Utility.downloadAndSavePoster(context, posterUrl);
+        try {
+            Log.e(LOG_TAG, posterFile.getCanonicalPath().toString());
+            Log.e(LOG_TAG, mCursor.getString(CatalogFragment.MOVIE_TITLE));
+        } catch (Exception e) {
+
         }
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_movie, viewGroup, false);
-        holder = new ViewHolder(view);
-        return view;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (parent instanceof RecyclerView) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie, parent, false);
+            holder = new ViewHolder(view);
+            return holder;
+        } else {
+            throw new RuntimeException("Not bound to RecyclerViewSelection");
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        if (mCursor == null) {
+            return 0;
+        }
+
+        return mCursor.getCount();
+    }
+
+    public void swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
+        notifyDataSetChanged();
+    }
+
+    public Cursor getCursor() {
+        return mCursor;
     }
 }

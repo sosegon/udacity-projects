@@ -12,8 +12,9 @@
         android:id="@+id/txt_catalog_msg"
         style="@style/txt_static_message" />
 
-    <GridView
-        android:id="@+id/gv_movies"
-        style="@style/gv_movies" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_movies"
+        style="@style/match_match"
+        />
 
 </RelativeLayout>

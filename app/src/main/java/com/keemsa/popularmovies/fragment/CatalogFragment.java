@@ -13,12 +13,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -43,6 +43,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     private ArrayList<Movie> movieList;
     private ProgressBar prg_load;
     private TextView txt_catalog_msg;
+    private int mPosition = RecyclerView.NO_POSITION;
 
     private static final int CATALOG_CURSOR_LOADER_ID = 1;
 
@@ -151,26 +152,29 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         txt_catalog_msg.setText(getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase()));
 
         // Create adapter
-        movieAdapter = new MovieAdapter(getContext(), null, 0);
+        movieAdapter = new MovieAdapter(getContext());
 
-        GridView gridView = (GridView) view.findViewById(R.id.gv_movies);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_movies);
+
+        // Set a layout manager
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Add empty view
-        gridView.setEmptyView(txt_catalog_msg);
+        //gridView.setEmptyView(txt_catalog_msg);
 
         // Attach adapter to view
-        gridView.setAdapter(movieAdapter);
+        recyclerView.setAdapter(movieAdapter);
 
         // Set listener to start activity with detailed info about movie
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Cursor c = (Cursor) adapterView.getItemAtPosition(i);
-                if (c != null) {
-                    ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
-                }
-            }
-        });
+//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Cursor c = (Cursor) adapterView.getItemAtPosition(i);
+//                if (c != null) {
+//                    ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
+//                }
+//            }
+//        });
 
         return view;
     }
@@ -223,10 +227,10 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     }
 
     private void updateEmptyView() {
-        if (movieAdapter.getCount() == 0) {
-            if (txt_catalog_msg != null) {
-                Utility.updateMoviesEmptyView(getContext(), txt_catalog_msg);
-            }
-        }
+//        if (movieAdapter.getCount() == 0) {
+//            if (txt_catalog_msg != null) {
+//                Utility.updateMoviesEmptyView(getContext(), txt_catalog_msg);
+//            }
+//        }
     }
 }
