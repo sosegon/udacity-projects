@@ -152,29 +152,23 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         txt_catalog_msg.setText(getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase()));
 
         // Create adapter
-        movieAdapter = new MovieAdapter(getContext());
+        movieAdapter = new MovieAdapter(getContext(), new MovieAdapter.MovieAdapterOnClickHandler() {
+            @Override
+            public void onClick(long movieId, MovieAdapter.ViewHolder vh) {
+                ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(movieId));
+                mPosition = vh.getAdapterPosition();
+            }
+        }, txt_catalog_msg);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_movies);
+
+        recyclerView.setHasFixedSize(true);
 
         // Set a layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Add empty view
-        //gridView.setEmptyView(txt_catalog_msg);
-
         // Attach adapter to view
         recyclerView.setAdapter(movieAdapter);
-
-        // Set listener to start activity with detailed info about movie
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Cursor c = (Cursor) adapterView.getItemAtPosition(i);
-//                if (c != null) {
-//                    ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
-//                }
-//            }
-//        });
 
         return view;
     }
@@ -227,10 +221,10 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     }
 
     private void updateEmptyView() {
-//        if (movieAdapter.getCount() == 0) {
-//            if (txt_catalog_msg != null) {
-//                Utility.updateMoviesEmptyView(getContext(), txt_catalog_msg);
-//            }
-//        }
+        if (movieAdapter.getItemCount() == 0) {
+            if (txt_catalog_msg != null) {
+                Utility.updateMoviesEmptyView(getContext(), txt_catalog_msg);
+            }
+        }
     }
 }

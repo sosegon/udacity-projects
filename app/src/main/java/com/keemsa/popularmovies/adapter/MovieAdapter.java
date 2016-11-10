@@ -22,12 +22,24 @@ import java.io.File;
  */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static interface MovieAdapterOnClickHandler {
+        void onClick(long movieId, ViewHolder vh);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView posterView;
 
         public ViewHolder(View view) {
             super(view);
             posterView = (ImageView) view.findViewById(R.id.imv_movie_poster);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            mCursor.moveToPosition(position);
+            mClickHandler.onClick(mCursor.getLong(CatalogFragment.MOVIE_ID), this);
         }
     }
 
@@ -35,8 +47,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     private ViewHolder holder;
     private final Context mContext;
     private Cursor mCursor;
+    private final MovieAdapterOnClickHandler mClickHandler;
+    private final View mEmptyView;
 
-    public MovieAdapter(Context context) {
+    public MovieAdapter(Context context, MovieAdapterOnClickHandler ch, View emptyView) {
+        mClickHandler = ch;
+        mEmptyView = emptyView;
         mContext = context;
     }
 
@@ -66,15 +82,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         File directory = cw.getDir(Utility.getPosterDirectory(mContext), Context.MODE_PRIVATE);
         File posterFile = new File(directory, posterUrl);
         if (posterFile.exists()) {
-            Picasso.with(mContext).load(posterFile).fit().into(holder.posterView);
+            Picasso.with(mContext).load(posterFile).noFade().fit().into(holder.posterView);
         } else {
             Utility.downloadAndSavePoster(mContext, posterUrl);
-        }
-        try {
-            Log.e(LOG_TAG, posterFile.getCanonicalPath().toString());
-            Log.e(LOG_TAG, mCursor.getString(CatalogFragment.MOVIE_TITLE));
-        } catch (Exception e) {
-
         }
     }
 
@@ -101,6 +111,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public void swapCursor(Cursor newCursor) {
         mCursor = newCursor;
         notifyDataSetChanged();
+        mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     public Cursor getCursor() {
