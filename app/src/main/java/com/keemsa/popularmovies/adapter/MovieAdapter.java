@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import android.widget.ImageView;
 
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
-import com.keemsa.popularmovies.fragment.CatalogFragment;
+import com.keemsa.popularmovies.data.Queries;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -39,7 +38,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         public void onClick(View view) {
             int position = getAdapterPosition();
             mCursor.moveToPosition(position);
-            mClickHandler.onClick(mCursor.getLong(CatalogFragment.MOVIE_ID), this);
+            mClickHandler.onClick(mCursor.getLong(Queries.MOVIE_ID), this);
         }
     }
 
@@ -59,7 +58,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         mCursor.moveToPosition(position);
-        String posterUrl = mCursor.getString(CatalogFragment.MOVIE_POSTER_URL);
+        String posterUrl = mCursor.getString(Queries.MOVIE_POSTER_URL);
 
         /*
            TODO: Solve the problem of smooth scrolling

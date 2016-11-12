@@ -26,8 +26,8 @@ import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.adapter.MovieAdapter;
-import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
+import com.keemsa.popularmovies.data.Queries;
 import com.keemsa.popularmovies.model.Movie;
 import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
@@ -47,24 +47,6 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
     private static final int CATALOG_CURSOR_LOADER_ID = 1;
 
-    public static final String[] MOVIE_COLUMNS = {
-            MovieColumns._ID,
-            MovieColumns.TITLE,
-            MovieColumns.SYNOPSIS,
-            MovieColumns.POSTER_URL,
-            MovieColumns.QUERY_TYPE,
-            MovieColumns.RELEASE_DATE,
-            MovieColumns.RATING
-    };
-
-    public static final int MOVIE_ID = 0,
-            MOVIE_TITLE = 1,
-            MOVIE_SYNOPSIS = 2,
-            MOVIE_POSTER_URL = 3,
-            MOVIE_QUERY_TYPE = 4,
-            MOVIE_RELEASE_DATE = 5,
-            MOVIE_RATING = 6;
-
     private final int MOVIES_LOADED = 1;
 
     private LoaderManager.LoaderCallbacks cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
@@ -74,7 +56,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
             return new CursorLoader(
                     getContext(),
                     MovieProvider.Movie.ALL,
-                    MOVIE_COLUMNS,
+                    Queries.MOVIE_PROJECTION,
                     Utility.queryFilterByQueryBy(getContext()),
                     null,
                     null
@@ -100,7 +82,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
                         public void handleMessage(Message msg) {
                             if (msg.what == MOVIES_LOADED) {
                                 if (data.moveToFirst()) {
-                                    Uri movieUri = MovieProvider.Movie.withId(data.getLong(MOVIE_ID));
+                                    Uri movieUri = MovieProvider.Movie.withId(data.getLong(Queries.MOVIE_ID));
                                     ((MovieSelectedInterface) getActivity()).onEnableDetailsFragment(movieUri);
                                 }
                             }

@@ -21,6 +21,7 @@ import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.adapter.ReviewPagerAdapter;
 import com.keemsa.popularmovies.data.MovieProvider;
+import com.keemsa.popularmovies.data.Queries;
 import com.keemsa.popularmovies.data.ReviewColumns;
 import com.keemsa.popularmovies.net.ReviewsAsyncTask;
 
@@ -52,12 +53,6 @@ public class MovieReviewsFragment extends Fragment {
 
     private final int REVIEW_CURSOR_LOADER_ID = 0;
     private final int REVIEW_ASYNC_LOADER_ID = 1;
-    final static String[] REVIEW_COLUMNS = {
-            ReviewColumns.AUTHOR,
-            ReviewColumns.CONTENT,
-    };
-    final static int REVIEW_AUTHOR = 0;
-    final static int REVIEW_CONTENT = 1;
 
     private LoaderManager.LoaderCallbacks<String> asyncLoader = new LoaderManager.LoaderCallbacks<String>() {
         @Override
@@ -92,7 +87,7 @@ public class MovieReviewsFragment extends Fragment {
                 return new CursorLoader(
                         getActivity(),
                         reviewUri,
-                        REVIEW_COLUMNS,
+                        Queries.REVIEW_PROJECTION,
                         null,
                         null,
                         null
@@ -169,7 +164,7 @@ public class MovieReviewsFragment extends Fragment {
         removeReviewFragments();
 
         pgr_reviews = (ViewPager) view.findViewById(R.id.pgr_reviews);
-        reviewAdapter = new ReviewPagerAdapter<>(getFragmentManager(), ReviewFragment.class, REVIEW_COLUMNS, null);
+        reviewAdapter = new ReviewPagerAdapter<>(getFragmentManager(), ReviewFragment.class, Queries.REVIEW_PROJECTION, null);
         pgr_reviews.setAdapter(reviewAdapter);
 
         return view;

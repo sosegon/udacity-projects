@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
-import com.keemsa.popularmovies.fragment.MovieTrailersFragment;
+import com.keemsa.popularmovies.data.Queries;
 
 /**
  * Created by sebastian on 10/16/16.
@@ -36,7 +36,7 @@ public class TrailerAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        holder.txt_trailer_name.setText(cursor.getString(MovieTrailersFragment.TRAILER_NAME));
+        holder.txt_trailer_name.setText(cursor.getString(Queries.TRAILER_NAME));
     }
 
     @Override

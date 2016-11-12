@@ -23,6 +23,7 @@ import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
+import com.keemsa.popularmovies.data.Queries;
 import com.keemsa.popularmovies.model.Movie;
 import com.keemsa.popularmovies.service.DbService;
 import com.keemsa.popularmovies.ui.Typewriter;
@@ -57,22 +58,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private Uri mMovieUri;
     private Movie mMovie;
     private final int MOVIE_DETAIL_LOADER = 0;
-    private final String[] MOVIE_COLUMNS = {
-            MovieColumns.TITLE,
-            MovieColumns.SYNOPSIS,
-            MovieColumns.POSTER_URL,
-            MovieColumns.RELEASE_DATE,
-            MovieColumns.RATING,
-            MovieColumns.QUERY_TYPE,
-            MovieColumns._ID
-    };
-    private final int MOVIE_TITLE = 0;
-    private final int MOVIE_SYNOPSIS = 1;
-    private final int MOVIE_POSTER_URL = 2;
-    private final int MOVIE_RELEASE_DATE = 3;
-    private final int MOVIE_RATING = 4;
-    private final int MOVIE_QUERY_TYPE = 5;
-    private final int MOVIE_ID = 6;
 
     public MovieDetailsFragment() {
         // Required empty public constructor
@@ -84,7 +69,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             return new CursorLoader(
                     getActivity(),
                     mMovieUri,
-                    MOVIE_COLUMNS,
+                    Queries.MOVIE_PROJECTION,
                     null,
                     null,
                     null
@@ -100,14 +85,14 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             return;
         }
 
-        String title = data.getString(MOVIE_TITLE);
-        String date = data.getString(MOVIE_RELEASE_DATE);
-        float score = data.getFloat(MOVIE_RATING);
-        String desc = data.getString(MOVIE_SYNOPSIS);
-        String posterUrl = Utility.formatPosterUrl(data.getString(MOVIE_POSTER_URL));
+        String title = data.getString(Queries.MOVIE_TITLE);
+        String date = data.getString(Queries.MOVIE_RELEASE_DATE);
+        float score = data.getFloat(Queries.MOVIE_RATING);
+        String desc = data.getString(Queries.MOVIE_SYNOPSIS);
+        String posterUrl = Utility.formatPosterUrl(data.getString(Queries.MOVIE_POSTER_URL));
         String fullPosterUrl = Uri.parse(getContext().getString(R.string.base_img_url)).buildUpon().appendPath(posterUrl).build().toString();
-        int queryType = data.getInt(MOVIE_QUERY_TYPE);
-        long id = data.getLong(MOVIE_ID);
+        int queryType = data.getInt(Queries.MOVIE_QUERY_TYPE);
+        long id = data.getLong(Queries.MOVIE_ID);
 
         /*
            Create the mMovie objects to be used

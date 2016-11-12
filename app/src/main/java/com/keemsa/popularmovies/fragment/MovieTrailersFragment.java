@@ -24,7 +24,7 @@ import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.adapter.TrailerAdapter;
 import com.keemsa.popularmovies.data.MovieProvider;
-import com.keemsa.popularmovies.data.TrailerColumns;
+import com.keemsa.popularmovies.data.Queries;
 import com.keemsa.popularmovies.service.TrailersService;
 
 /**
@@ -53,16 +53,6 @@ public class MovieTrailersFragment extends Fragment {
 
     private static final int TRAILERS_CURSOR_LOADER_ID = 1;
     private static final int TRAILERS_ASYNC_LOADER_ID = 2;
-    public final static String[] TRAILER_COLUMNS = {
-            TrailerColumns._ID,
-            TrailerColumns.KEY,
-            TrailerColumns.NAME,
-            TrailerColumns.SITE
-    };
-    public final static int TRAILER_ID = 0;
-    public final static int TRAILER_KEY = 1;
-    public final static int TRAILER_NAME = 2;
-    public final static int TRAILER_SITE = 3;
 
     private LoaderManager.LoaderCallbacks<Cursor> cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
@@ -73,7 +63,7 @@ public class MovieTrailersFragment extends Fragment {
                 return new CursorLoader(
                         getContext(),
                         trailerUri,
-                        TRAILER_COLUMNS,
+                        Queries.TRAILER_PROJECTION,
                         null,
                         null,
                         null
@@ -154,10 +144,10 @@ public class MovieTrailersFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Cursor c = (Cursor) adapterView.getItemAtPosition(i);
                 if (c != null) {
-                    String site = c.getString(TRAILER_SITE);
-                    String key = c.getString(TRAILER_KEY);
+                    String site = c.getString(Queries.TRAILER_SITE);
+                    String key = c.getString(Queries.TRAILER_KEY);
                     if (site != null && key != null) {
-                        Uri trailerUrl = Utility.createTrailerUri(c.getString(TRAILER_SITE), c.getString(TRAILER_KEY));
+                        Uri trailerUrl = Utility.createTrailerUri(c.getString(Queries.TRAILER_SITE), c.getString(Queries.TRAILER_KEY));
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(trailerUrl);
                         startActivity(intent);
