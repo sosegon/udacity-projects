@@ -43,6 +43,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     private ArrayList<Movie> movieList;
     private ProgressBar prg_load;
     private TextView txt_catalog_msg;
+    private RecyclerView rv_movies;
     private int mPosition = RecyclerView.NO_POSITION;
 
     private static final int CATALOG_CURSOR_LOADER_ID = 1;
@@ -103,6 +104,12 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
                 setProgressBarVisibility(View.GONE);
             }
 
+            /*
+                This is a workaround to solve the problem of the recycler view
+                not updating the elements accordingly when scrolling.
+                TODO: Can this cause performance issues?
+             */
+            rv_movies.setItemViewCacheSize(data.getCount());
             updateEmptyView();
         }
 
@@ -146,15 +153,15 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
             }
         }, txt_catalog_msg);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv_movies);
+        rv_movies = (RecyclerView) view.findViewById(R.id.rv_movies);
 
-        recyclerView.setHasFixedSize(true);
+        rv_movies.setHasFixedSize(true);
 
         // Set a layout manager
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv_movies.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Attach adapter to view
-        recyclerView.setAdapter(movieAdapter);
+        rv_movies.setAdapter(movieAdapter);
 
         return view;
     }

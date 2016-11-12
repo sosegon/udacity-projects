@@ -60,23 +60,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         mCursor.moveToPosition(position);
         String posterUrl = mCursor.getString(Queries.MOVIE_POSTER_URL);
 
-        /*
-           TODO: Solve the problem of smooth scrolling
-           The goal of the next code is to avoid fetching the image from the server every time.
-           Instead, the poster is downloaded once and stored in the device, then that image
-           will be used in the future.
-
-
-           The motivation for this feature was to avoid the problem in the GridView that causes
-           an incorrect poster displayed for every movie. I thought this was caused because the
-           image is fetched from the server every time, but the problem persists when the posters
-           are loaded locally.
-
-           After testing the GridView with text only the problem remains. I discovered that the
-           problem is not related to images but to the GridView itself.
-
-           I haven't found a solution for that.
-         */
         ContextWrapper cw = new ContextWrapper(mContext);
         File directory = cw.getDir(Utility.getPosterDirectory(mContext), Context.MODE_PRIVATE);
         File posterFile = new File(directory, posterUrl);
