@@ -13,7 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -158,7 +158,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         rv_movies.setHasFixedSize(true);
 
         // Set a layout manager
-        rv_movies.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv_movies.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         // Attach adapter to view
         rv_movies.setAdapter(movieAdapter);
