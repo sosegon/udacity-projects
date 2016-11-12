@@ -117,7 +117,11 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+        if(getLoaderManager().getLoader(CATALOG_CURSOR_LOADER_ID) != null) {
+            getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+        } else{
+            getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -159,7 +163,11 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null || !savedInstanceState.containsKey("movieList")) {
-            getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+            if(getLoaderManager().getLoader(CATALOG_CURSOR_LOADER_ID) != null) {
+                getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+            } else{
+                getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+            }
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movieList");
         }
@@ -193,7 +201,11 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     }
 
     public void onQueryByChanged() {
-        getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+        if(getLoaderManager().getLoader(CATALOG_CURSOR_LOADER_ID) != null) {
+            getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+        } else{
+            getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
+        }
     }
 
     public void setProgressBarVisibility(int value) {
