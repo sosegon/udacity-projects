@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -27,10 +28,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView posterView;
+        public TextView titleView;
 
         public ViewHolder(View view) {
             super(view);
             posterView = (ImageView) view.findViewById(R.id.imv_movie_poster);
+            titleView = (TextView) view.findViewById(R.id.txt_movie_title);
             view.setOnClickListener(this);
         }
 
@@ -58,13 +61,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         mCursor.moveToPosition(position);
+
+        String title = mCursor.getString(Queries.MOVIE_TITLE);
+        holder.titleView.setText(title);
+
         String posterUrl = mCursor.getString(Queries.MOVIE_POSTER_URL);
+        if (posterUrl == null) {
+            return;
+        }
 
         ContextWrapper cw = new ContextWrapper(mContext);
         File directory = cw.getDir(Utility.getPosterDirectory(mContext), Context.MODE_PRIVATE);
         File posterFile = new File(directory, posterUrl);
         if (posterFile.exists()) {
-            Picasso.with(mContext).load(posterFile).noFade().fit().into(holder.posterView);
+            Picasso.with(mContext).load(posterFile).fit().placeholder(R.drawable.ic_movie_placeholder).into(holder.posterView);
         } else {
             Utility.downloadAndSavePoster(mContext, posterUrl);
         }

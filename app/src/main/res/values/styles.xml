@@ -77,16 +77,6 @@
         <item name="android:layout_weight">1</item>
     </style>
 
-    <!-- item_movie.xml -->
-    <style name="frl_movie">
-        <item name="android:layout_height">@dimen/poster_height</item>
-        <item name="android:layout_width">match_parent</item>
-    </style>
-
-    <style name="imv_movie_poster" parent="match_match">
-        <item name="android:scaleType">centerCrop</item>
-    </style>
-
     <!-- item_trailer.xml -->
     <style name="imv_trailer_thumbnail" parent="wrap_wrap">
         <item name="android:layout_margin">@dimen/padding_1</item>
