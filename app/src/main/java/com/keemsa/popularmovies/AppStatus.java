@@ -17,4 +17,11 @@ public interface AppStatus {
     int MOVIES_STATUS_SERVER_DOWN = 1;
     int MOVIES_STATUS_SERVER_INVALID = 2;
     int MOVIES_STATUS_UNKNOWN = 3;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MOVIES_SEARCH_MODE, MOVIES_CATALOG_MODE})
+    @interface MoviesMode{}
+
+    int MOVIES_CATALOG_MODE = 0;
+    int MOVIES_SEARCH_MODE = 1;
 }
