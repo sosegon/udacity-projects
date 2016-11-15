@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,8 +13,13 @@
         android:theme="@style/Toolbar">
 
         <TextView
-            style="@style/match_wrap"
+            style="@style/wrap_wrap"
             android:text="@string/app_name" />
+
+        <Spinner
+            android:id="@+id/spr_query_mode"
+            style="@style/wrap_match" />
+
     </android.support.v7.widget.Toolbar>
 
     <TabWidget

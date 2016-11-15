@@ -15,13 +15,14 @@
             android:theme="@style/Toolbar">
 
             <TextView
-                style="@style/match_wrap"
+                style="@style/wrap_wrap"
                 android:text="@string/app_name" />
-        </android.support.v7.widget.Toolbar>
 
-        <TabWidget
-            android:id="@android:id/tabs"
-            style="@style/match_wrap" />
+            <Spinner
+                android:id="@+id/spr_query_mode"
+                style="@style/wrap_match" />
+
+        </android.support.v7.widget.Toolbar>
 
         <View style="@style/divider" />
 

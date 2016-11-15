@@ -47,6 +47,12 @@
         <item>favourite</item>
     </string-array>
 
+    <!-- Labels for values for querying mode key -->
+    <string-array name="lbls_movies_mode">
+        <item>@string/lbl_catalog</item>
+        <item>@string/lbl_search</item>
+    </string-array>
+
     <!-- String to be used in reviews to set "Author:" and the name in a single string -->
     <string name="review_author">Author: <xliff:g id="author_name">%1$s</xliff:g> </string>
 

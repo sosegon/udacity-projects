@@ -10,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -28,7 +30,7 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private String mQueryBy;
     private boolean mTwoPane = false;
     private Toolbar tbr;
-
+    private Spinner spr_query_mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,12 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
          */
 
         mTwoPane = findViewById(R.id.frl_details_container) != null;
+
+        spr_query_mode = (Spinner) findViewById(R.id.spr_query_mode);
+        String modes[] = getResources().getStringArray(R.array.lbls_movies_mode);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, modes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spr_query_mode.setAdapter(adapter);
 
         tbr = (Toolbar) findViewById(R.id.tbr_catalog);
         setSupportActionBar(tbr);
