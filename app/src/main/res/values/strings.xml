@@ -23,6 +23,9 @@
     <string name="lbl_details">Details</string>
     <string name="lbl_trailers">Trailers</string>
     <string name="lbl_query">Query by</string>
+    <string name="lbl_popular">Popular</string>
+    <string name="lbl_rating">Rating</string>
+    <string name="lbl_favourite">Favourite</string>
 
     <!-- Preference key for querying the movies -->
     <string name="prf_key_sort" translatable="false">sort</string>
@@ -32,9 +35,9 @@
 
     <!-- Labels for values for querying preference key -->
     <string-array name="prf_entries_sort">
-        <item>Popularity</item>
-        <item>Rating</item>
-        <item>Favourite</item>
+        <item>@string/lbl_popular</item>
+        <item>@string/lbl_rating</item>
+        <item>@string/lbl_favourite</item>
     </string-array>
 
     <!-- Possible values for preference key query -->

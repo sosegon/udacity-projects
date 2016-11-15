@@ -18,13 +18,8 @@
     <string name="lbl_details">Detalles</string>
     <string name="lbl_trailers">Trailers</string>
     <string name="lbl_query">Consultar por</string>
-
-    <!-- Labels for values for querying preference key -->
-    <string-array name="prf_entries_sort">
-        <item>Popularidad</item>
-        <item>Puntaje</item>
-        <item>Favoritos</item>
-    </string-array>
+    <string name="lbl_rating">Puntaje</string>
+    <string name="lbl_favourite">Favoritos</string>
 
     <!-- String to be used in reviews to set "Author:" and the name in a single string -->
     <string name="review_author">Autor: <xliff:g id="author_name">%1$s</xliff:g> </string>
