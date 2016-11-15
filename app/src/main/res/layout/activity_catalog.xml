@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.app.FragmentTabHost xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@android:id/tabhost"
-    style="@style/match_match"
-    tools:context=".DetailsActivity">
+    style="@style/match_wrap"
+    android:orientation="vertical"
+    tools:context=".CatalogActivity">
 
-    <LinearLayout
-        style="@style/match_wrap"
-        android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tbr_catalog"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/Toolbar">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tbr_catalog"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/Toolbar">
+        <TextView
+            style="@style/match_wrap"
+            android:text="@string/app_name" />
+    </android.support.v7.widget.Toolbar>
 
-            <TextView
-                style="@style/match_wrap"
-                android:text="@string/app_name" />
-        </android.support.v7.widget.Toolbar>
+    <TabWidget
+        android:id="@android:id/tabs"
+        style="@style/match_wrap" />
 
-        <TabWidget
-            android:id="@android:id/tabs"
-            style="@style/match_wrap" />
+    <View style="@style/divider"></View>
 
-        <View style="@style/divider"></View>
-
-        <FrameLayout
-            android:id="@android:id/tabcontent"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-    </LinearLayout>
-
-</android.support.v4.app.FragmentTabHost>
+    <FrameLayout
+        android:id="@+id/frl_catalog_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+</LinearLayout>

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -16,7 +15,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 import com.keemsa.popularmovies.fragment.DetailsFragment;
-import com.keemsa.popularmovies.fragment.SearchFragment;
 import com.keemsa.popularmovies.gcm.RegistrationIntentService;
 import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
@@ -25,12 +23,10 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private final String LOG_TAG = CatalogActivity.class.getSimpleName();
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
-    private final String SEARCH_FRAGMENT_TAG = "SFTAG";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     private String mQueryBy;
     private boolean mTwoPane = false;
-    private FragmentTabHost mtabHost;
     private Toolbar tbr;
 
 
@@ -38,6 +34,12 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
+
+        if(savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.frl_catalog_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
+                    .commit();
+        }
 
         /*
            No need to add the DetailsFragment if the container is present.
@@ -48,20 +50,6 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
          */
 
         mTwoPane = findViewById(R.id.frl_details_container) != null;
-
-        mtabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
-
-        mtabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
-
-        mtabHost.addTab(
-                mtabHost.newTabSpec(CATALOG_FRAGMENT_TAG).setIndicator(getString(R.string.lbl_catalog), null),
-                CatalogFragment.class, null
-        );
-
-        mtabHost.addTab(
-                mtabHost.newTabSpec(SEARCH_FRAGMENT_TAG).setIndicator(getString(R.string.lbl_search), null),
-                SearchFragment.class, null
-        );
 
         tbr = (Toolbar) findViewById(R.id.tbr_catalog);
         setSupportActionBar(tbr);
