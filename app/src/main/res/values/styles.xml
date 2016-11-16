@@ -9,6 +9,9 @@
         <item name="android:toolbarStyle">@style/Toolbar</item>
     </style>
 
+    <style name="AppTheme.Catalog" parent="AppTheme" />
+    <style name="AppTheme.Details" parent="AppTheme" />
+
     <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:popupTheme">@style/Theme.AppCompat.Light.DarkActionBar</item>

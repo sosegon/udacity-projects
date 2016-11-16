@@ -22,12 +22,6 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <TabWidget
-        android:id="@android:id/tabs"
-        style="@style/match_wrap" />
-
-    <View style="@style/divider"></View>
-
     <FrameLayout
         android:id="@+id/frl_catalog_container"
         android:layout_width="fill_parent"

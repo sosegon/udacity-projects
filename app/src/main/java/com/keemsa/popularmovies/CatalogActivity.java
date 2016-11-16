@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Scene;
@@ -184,7 +186,12 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         } else {
             Intent intent = new Intent(this, DetailsActivity.class)
                     .setData(movieUri);
-            startActivity(intent);
+            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this);
+            ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
+            /*
+                TODO:Currently, it's not possible to add an animation to the TabWidget.
+                It simply appears before the other elements, and it does not look nice.
+             */
         }
     }
 
