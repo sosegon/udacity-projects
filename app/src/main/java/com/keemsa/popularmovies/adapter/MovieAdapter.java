@@ -76,7 +76,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         if (posterFile.exists()) {
             Picasso.with(mContext).load(posterFile).fit().placeholder(R.drawable.ic_movie_placeholder).into(holder.posterView);
         } else {
-            Utility.downloadAndSavePoster(mContext, posterUrl);
+            Utility.downloadAndSavePoster(mContext, posterUrl, holder.posterView);
         }
     }
 

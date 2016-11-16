@@ -10,11 +10,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -182,7 +184,7 @@ public final class Utility {
     /*
        Code from http://www.codexpedia.com/android/android-download-and-save-image-through-picasso/
      */
-    public static Target picassoImageTarget(Context context, final String imageDir, final String imageName) {
+    public static Target picassoImageTarget(final Context context, final String imageDir, final String imageName, @Nullable final ImageView view) {
         ContextWrapper cw = new ContextWrapper(context);
         final File directory = cw.getDir(imageDir, Context.MODE_PRIVATE);
         return new Target() {
@@ -205,6 +207,19 @@ public final class Utility {
                                 e.printStackTrace();
                             }
                         }
+
+                        /*
+                            Once the image is in the file, load it to the view
+                         */
+                        if(view != null) {
+                            view.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Picasso.with(context).load(myImageFile).fit().placeholder(R.drawable.ic_movie_placeholder).into(view);
+                                }
+                            });
+                        }
+
                         Log.i(LOG_TAG, "image saved to: " + myImageFile.getAbsolutePath());
                     }
                 }).start();
@@ -222,10 +237,14 @@ public final class Utility {
         };
     }
 
-    public static void downloadAndSavePoster(Context context, String posterUrl) {
+    public static void downloadAndSavePoster(Context context, String posterUrl, ImageView view) {
         String imageDir = Utility.getPosterDirectory(context);
         String fullPosterUrl = Uri.parse(context.getString(R.string.base_img_url)).buildUpon().appendPath(posterUrl).build().toString();
-        Picasso.with(context).load(fullPosterUrl).into(Utility.picassoImageTarget(context, imageDir, posterUrl));
+
+        /*
+            Loads the image to a file
+         */
+        Picasso.with(context).load(fullPosterUrl).into(Utility.picassoImageTarget(context, imageDir, posterUrl, view));
     }
 
     // taken from http://www.seal.io/2010/12/only-way-how-to-align-text-in-block-in.html
