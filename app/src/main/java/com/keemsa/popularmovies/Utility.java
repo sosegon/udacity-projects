@@ -10,6 +10,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -298,5 +300,18 @@ public final class Utility {
         }
 
         txt_message.setText(message);
+    }
+
+    public static void goLoader(Fragment fragment, int loaderId, LoaderManager.LoaderCallbacks callbacks) {
+
+        /*
+            Check the existence of the fragment to avoid creating a new one,
+            and just restart the previous one.
+         */
+        if (fragment.getLoaderManager().getLoader(loaderId) == null) {
+            fragment.getLoaderManager().initLoader(loaderId, null, callbacks);
+        } else {
+            fragment.getLoaderManager().restartLoader(loaderId, null, callbacks);
+        }
     }
 }

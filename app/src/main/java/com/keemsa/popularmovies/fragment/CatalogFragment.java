@@ -53,7 +53,6 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     private LoaderManager.LoaderCallbacks cursorLoader = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            setProgressBarVisibility(View.VISIBLE);
             return new CursorLoader(
                     getContext(),
                     MovieProvider.Movie.ALL,
@@ -100,9 +99,8 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
             String queryBy = Utility.getPreferredQueryBy(getContext());
             String fav = getResources().getStringArray(R.array.prf_values_sort)[2];
-            if (data.getCount() > 0 || queryBy.equals(fav)) {
-                setProgressBarVisibility(View.GONE);
-            }
+
+            prg_load.setVisibility(View.GONE);
 
             /*
                 This is a workaround to solve the problem of the recycler view
@@ -110,6 +108,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
                 TODO: Can this cause performance issues?
              */
             rv_movies.setItemViewCacheSize(data.getCount());
+
             updateEmptyView();
         }
 
@@ -124,11 +123,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        if(getLoaderManager().getLoader(CATALOG_CURSOR_LOADER_ID) != null) {
-            getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-        } else{
-            getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-        }
+        Utility.goLoader(CatalogFragment.this, CATALOG_CURSOR_LOADER_ID, cursorLoader);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -139,7 +134,6 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         View view = inflater.inflate(R.layout.fragment_catalog, container, false);
 
         prg_load = (ProgressBar) view.findViewById(R.id.prg_load);
-        setProgressBarVisibility(View.GONE);
 
         txt_catalog_msg = (TextView) view.findViewById(R.id.txt_catalog_msg);
         txt_catalog_msg.setText(getString(R.string.msg_data_no_available, getString(R.string.lbl_movies).toLowerCase()));
@@ -163,6 +157,8 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         // Attach adapter to view
         rv_movies.setAdapter(movieAdapter);
 
+        prg_load.setVisibility(View.VISIBLE);
+
         return view;
     }
 
@@ -170,11 +166,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null || !savedInstanceState.containsKey("movieList")) {
-            if(getLoaderManager().getLoader(CATALOG_CURSOR_LOADER_ID) != null) {
-                getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-            } else{
-                getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-            }
+            Utility.goLoader(CatalogFragment.this, CATALOG_CURSOR_LOADER_ID, cursorLoader);
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movieList");
         }
@@ -208,17 +200,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     }
 
     public void onQueryByChanged() {
-        if(getLoaderManager().getLoader(CATALOG_CURSOR_LOADER_ID) != null) {
-            getLoaderManager().initLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-        } else{
-            getLoaderManager().restartLoader(CATALOG_CURSOR_LOADER_ID, null, cursorLoader);
-        }
-    }
-
-    public void setProgressBarVisibility(int value) {
-        if (prg_load != null) {
-            prg_load.setVisibility(value);
-        }
+        Utility.goLoader(CatalogFragment.this, CATALOG_CURSOR_LOADER_ID, cursorLoader);
     }
 
     private void updateEmptyView() {

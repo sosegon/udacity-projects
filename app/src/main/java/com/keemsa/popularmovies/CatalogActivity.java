@@ -7,16 +7,24 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Scene;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 import com.keemsa.popularmovies.fragment.DetailsFragment;
+import com.keemsa.popularmovies.fragment.SearchFragment;
 import com.keemsa.popularmovies.gcm.RegistrationIntentService;
 import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
@@ -31,13 +39,14 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private boolean mTwoPane = false;
     private Toolbar tbr;
     private Spinner spr_query_mode;
+    private FrameLayout frl_catalog_container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
 
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.frl_catalog_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
                     .commit();
@@ -58,6 +67,30 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, modes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spr_query_mode.setAdapter(adapter);
+        spr_query_mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        switchToCatalog();
+                        break;
+                    case 1:
+                        switchToSearch();
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        /*
+            This layout has to be recovered because it is used as the root
+            scene for the transitions between catalog and search fragments
+         */
+        frl_catalog_container = (FrameLayout) findViewById(R.id.frl_catalog_container);
 
         tbr = (Toolbar) findViewById(R.id.tbr_catalog);
         setSupportActionBar(tbr);
@@ -169,5 +202,23 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
             return false;
         }
         return true;
+    }
+
+    private void switchToSearch() {
+        Scene sceneSearch = Scene.getSceneForLayout(frl_catalog_container, R.layout.fragment_search, this);
+        Transition tra = TransitionInflater.from(this).inflateTransition(R.transition.transition_catalog_search);
+        TransitionManager.go(sceneSearch, tra);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frl_catalog_container, new SearchFragment(), CATALOG_FRAGMENT_TAG)
+                .commit();
+    }
+
+    private void switchToCatalog() {
+        Scene sceneCatalog = Scene.getSceneForLayout(frl_catalog_container, R.layout.fragment_catalog, this);
+        Transition tra = TransitionInflater.from(this).inflateTransition(R.transition.transition_catalog_search);
+        TransitionManager.go(sceneCatalog, tra);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frl_catalog_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
+                .commit();
     }
 }

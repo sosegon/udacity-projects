@@ -11,13 +11,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -48,7 +48,8 @@ public class SearchFragment extends Fragment {
     private ImageView imv_search;
     private EditText etx_search;
     private TextView txt_search_msg;
-    private GridView gv_search;
+    private RecyclerView rv_search;
+    private int mPosition = RecyclerView.NO_POSITION;
 
     private String mKeyword;
 
@@ -107,6 +108,13 @@ public class SearchFragment extends Fragment {
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             movieAdapter.swapCursor(data);
             prg_load.setVisibility(View.GONE);
+
+            /*
+                Avoid wrong update of the elements. The same situation that
+                happens in the catalog fragment
+             */
+            rv_search.setItemViewCacheSize(data.getCount());
+
             updateEmptyView();
         }
 
@@ -129,29 +137,48 @@ public class SearchFragment extends Fragment {
         imv_search = (ImageView) view.findViewById(R.id.imv_search);
         etx_search = (EditText) view.findViewById(R.id.etx_search);
         txt_search_msg = (TextView) view.findViewById(R.id.txt_search_msg);
-        gv_search = (GridView) view.findViewById(R.id.gv_movies_search);
+        rv_search = (RecyclerView) view.findViewById(R.id.rv_movies_search);
 
-//        movieAdapter = new MovieAdapter(getContext(), null, 0);
-//        gv_search.setAdapter(movieAdapter);
+        // Create adapter
+        movieAdapter = new MovieAdapter(getContext(), new MovieAdapter.MovieAdapterOnClickHandler() {
+            @Override
+            public void onClick(long movieId, MovieAdapter.ViewHolder vh) {
+                ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(movieId));
+                mPosition = vh.getAdapterPosition();
+            }
+        }, txt_search_msg);
+
+        rv_search = (RecyclerView) view.findViewById(R.id.rv_movies_search);
+
+        rv_search.setHasFixedSize(true);
+
+        // Set a layout manager
+        rv_search.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        // Attach adapter to view
+        rv_search.setAdapter(movieAdapter);
 
         imv_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mKeyword = etx_search.getText().toString().toLowerCase();
                 setSearchKeyword(getContext(), mKeyword);
-                getLoaderManager().restartLoader(MOVIE_ASYNC_LOADER_ID, null, asyncLoader);
-                prg_load.setVisibility(View.VISIBLE);
-            }
-        });
 
-        // Set listener to start activity with detailed info about movie
-        gv_search.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Cursor c = (Cursor) adapterView.getItemAtPosition(i);
-                if (c != null) {
-                    ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(c.getLong(MOVIE_ID)));
-                }
+                /*
+                    Clear the adapter to avoid records of previous search
+                    to be mixed with the records of the new search
+                 */
+                movieAdapter.swapCursor(null);
+
+                /*
+                    Remove all views to avoid data from previous search.
+                    I guess this happens because I'm using setItemViewCacheSize
+                    to avoid the wrong update of elements when scrolling.
+                 */
+                rv_search.removeAllViews();
+
+                Utility.goLoader(SearchFragment.this, MOVIE_ASYNC_LOADER_ID, asyncLoader);
+                prg_load.setVisibility(View.VISIBLE);
             }
         });
 
@@ -170,7 +197,7 @@ public class SearchFragment extends Fragment {
                 cvMovies.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(MovieProvider.Movie.ALL, cvArray);
             }
-            getLoaderManager().restartLoader(MOVIE_CURSOR_LOADER_ID, null, cursorLoader);
+            Utility.goLoader(SearchFragment.this, MOVIE_CURSOR_LOADER_ID, cursorLoader);
             Utility.setMoviesStatus(getContext(), AppStatus.MOVIES_STATUS_OK);
 
         } catch (JSONException e) {
@@ -227,10 +254,10 @@ public class SearchFragment extends Fragment {
     }
 
     private void updateEmptyView() {
-//        if (movieAdapter.getCount() == 0) {
-//            if (txt_search_msg != null) {
-//                Utility.updateMoviesEmptyView(getContext(), txt_search_msg);
-//            }
-//        }
+        if (movieAdapter.getItemCount() == 0) {
+            if (txt_search_msg != null) {
+                Utility.updateMoviesEmptyView(getContext(), txt_search_msg);
+            }
+        }
     }
 }
