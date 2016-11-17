@@ -31,7 +31,11 @@ public class MoviesAsyncTask extends AsyncTaskLoader<String> {
     @Override
     public String loadInBackground() {
         String baseUrl = getContext().getString(R.string.base_search_url);
-        String searchKeyword = Utility.getSearchKeyword(getContext());
+        String searchKeyword = Utility.getPreferredValue(
+                getContext(),
+                getContext().getString(R.string.pref_search_keyword_key),
+                ""
+        );
         String url = Uri.parse(baseUrl).buildUpon()
                 .appendQueryParameter("query", searchKeyword)
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)

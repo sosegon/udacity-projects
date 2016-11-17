@@ -105,7 +105,11 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     @Override
     protected void onResume() {
         super.onResume();
-        String queryBy = Utility.getPreferredQueryBy(this);
+        String queryBy = Utility.getPreferredValue(
+                this,
+                getString(R.string.prf_key_sort),
+                getString(R.string.prf_default_sort)
+        );
 
         if (queryBy != null && !queryBy.equals(mQueryBy)) {
             CatalogFragment cf = (CatalogFragment) getSupportFragmentManager().findFragmentByTag(CATALOG_FRAGMENT_TAG);

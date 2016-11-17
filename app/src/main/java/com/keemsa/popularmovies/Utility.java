@@ -60,16 +60,9 @@ public final class Utility {
         return posterUrl;
     }
 
-    public static String getPreferredQueryBy(Context context) {
+    public static String getPreferredValue(Context context, String key, String defaultValue){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        String queryBy = pref.getString(context.getString(R.string.prf_key_sort), context.getString(R.string.prf_default_sort));
-
-        return queryBy;
-    }
-
-    public static String getSearchKeyword(Context context) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString(context.getString(R.string.pref_search_keyword_key), "");
+        return  pref.getString(key, defaultValue);
     }
 
     public static Uri createTrailerUri(String site, String key) {
@@ -147,7 +140,11 @@ public final class Utility {
     }
 
     public static String queryFilterByQueryBy(Context context) {
-        String queryBy = Utility.getPreferredQueryBy(context);
+        String queryBy = Utility.getPreferredValue(
+                context,
+                context.getString(R.string.prf_key_sort),
+                context.getString(R.string.prf_default_sort)
+        );
 
         if (queryBy.equals(context.getResources().getStringArray(R.array.prf_values_sort)[0])) { // popular
             return MovieColumns.QUERY_TYPE + " in (2, 3, 6, 7)";
@@ -166,7 +163,11 @@ public final class Utility {
        possible
      */
     public static int queryTypeByQueryBy(Context context) {
-        String queryBy = Utility.getPreferredQueryBy(context);
+        String queryBy = Utility.getPreferredValue(
+                context,
+                context.getString(R.string.prf_key_sort),
+                context.getString(R.string.prf_default_sort)
+        );
 
         if (queryBy.equals(context.getResources().getStringArray(R.array.prf_values_sort)[0])) { // popular
             return 2;

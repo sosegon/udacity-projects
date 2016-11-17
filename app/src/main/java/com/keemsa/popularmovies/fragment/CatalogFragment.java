@@ -97,9 +97,6 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
                 MoviesSyncAdapter.syncImmediately(getContext());
             }
 
-            String queryBy = Utility.getPreferredQueryBy(getContext());
-            String fav = getResources().getStringArray(R.array.prf_values_sort)[2];
-
             prg_load.setVisibility(View.GONE);
 
             /*

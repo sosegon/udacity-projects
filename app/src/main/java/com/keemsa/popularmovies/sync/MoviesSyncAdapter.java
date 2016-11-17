@@ -128,7 +128,11 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d(LOG_TAG, "onPerformSync Called");
 
         String baseUrl = getContext().getString(R.string.base_query_url);
-        String queryBy = Utility.getPreferredQueryBy(getContext());
+        String queryBy = Utility.getPreferredValue(
+                getContext(),
+                getContext().getString(R.string.prf_key_sort),
+                getContext().getString(R.string.prf_default_sort)
+        );
         String url = Uri.parse(baseUrl).buildUpon()
                 .appendPath(queryBy)
                 .appendQueryParameter("api_key", BuildConfig.MOVIEDB_API_KEY)
@@ -215,7 +219,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
             long _id = currentMovie.optLong("id");
             if (movieExists(_id)) {
-                updateQueryType(_id, Utility.getPreferredQueryBy(getContext()));
+                String queryBy = Utility.getPreferredValue(
+                        getContext(),
+                        getContext().getString(R.string.prf_key_sort),
+                        getContext().getString(R.string.prf_default_sort)
+                );
+                updateQueryType(_id, queryBy);
                 continue;
             }
 
