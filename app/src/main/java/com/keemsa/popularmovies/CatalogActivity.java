@@ -154,9 +154,12 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         DetailsFragment frg = new DetailsFragment();
         frg.setArguments(args);
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frl_details_container, frg)
-                .commit();
+        try {
+            Utility.replaceFragment(this, R.id.frl_details_container, frg, DETAILS_FRAGMENT_TAG);
+        }
+        catch (Exception e){
+            Log.e(LOG_TAG, "Not possible to create details fragment to show movie info");
+        }
     }
 
     @Override
@@ -168,9 +171,12 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
             DetailsFragment frg = new DetailsFragment();
             frg.setArguments(args);
 
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.frl_details_container, frg, DETAILS_FRAGMENT_TAG)
-                    .commit();
+            try {
+                Utility.replaceFragment(this, R.id.frl_details_container, frg, DETAILS_FRAGMENT_TAG);
+            }
+            catch (Exception e){
+                Log.e(LOG_TAG, "Not possible to create details fragment to show movie info");
+            }
 
         } else {
             Intent intent = new Intent(this, DetailsActivity.class)
@@ -226,10 +232,8 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         Scene newScene = Scene.getSceneForLayout(frl_catalog_container, layout, this);
         Transition tra = TransitionInflater.from(this).inflateTransition(R.transition.transition_catalog_search);
         TransitionManager.go(newScene, tra);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frl_catalog_container, Utility.createFragment(frg), tag)
-                .commit();
+
+        Utility.replaceFragment(this, R.id.frl_catalog_container, Utility.createFragment(frg), tag);
     }
 
     private void startSpinner(){

@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -374,5 +375,13 @@ public final class Utility {
         } else {
             fragment.getLoaderManager().restartLoader(loaderId, null, callbacks);
         }
+    }
+
+    public static void replaceFragment(AppCompatActivity activity, int containerId, Fragment frg, String tag) throws Exception {
+        activity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(containerId, frg, tag)
+                .commit();
     }
 }
