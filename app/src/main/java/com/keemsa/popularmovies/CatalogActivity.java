@@ -50,9 +50,15 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         setContentView(R.layout.activity_catalog);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.frl_catalog_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
-                    .commit();
+            /*
+                No need to create the fragment here since this will be done
+                below in the spinner section. This will avoid double creation
+                and will be more user friendly since it will create the fragment
+                base on previous usage (Catalog or Search)
+             */
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.frl_catalog_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
+//                    .commit();
         }
 
         /*
@@ -65,27 +71,7 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
 
         mTwoPane = findViewById(R.id.frl_details_container) != null;
 
-        spr_query_mode = (Spinner) findViewById(R.id.spr_query_mode);
-        String modes[] = getResources().getStringArray(R.array.lbls_movies_mode);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, modes);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spr_query_mode.setAdapter(adapter);
-        spr_query_mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                try {
-                    switchToMode(i);
-                }
-                catch (Exception e){
-                    Log.e(LOG_TAG, "Not possible to switch to another fragment");
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+        startSpinner();
 
         /*
             This layout has to be recovered because it is used as the root
@@ -244,5 +230,40 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
                 .beginTransaction()
                 .replace(R.id.frl_catalog_container, Utility.createFragment(frg), tag)
                 .commit();
+    }
+
+    private void startSpinner(){
+        spr_query_mode = (Spinner) findViewById(R.id.spr_query_mode);
+        String modes[] = getResources().getStringArray(R.array.lbls_movies_mode);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, modes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spr_query_mode.setAdapter(adapter);
+        @AppStatus.MoviesMode int moviesMode = Utility.getPreferredValue(
+                this,
+                getString(R.string.pref_movie_mode_key),
+                AppStatus.MOVIES_CATALOG_MODE
+        );
+        spr_query_mode.setSelection(moviesMode);
+        spr_query_mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Utility.setPreferredValue(
+                        CatalogActivity.this,
+                        CatalogActivity.this.getString(R.string.pref_movie_mode_key),
+                        i,
+                        true);
+                try {
+                    switchToMode(i);
+                }
+                catch (Exception e){
+                    Log.e(LOG_TAG, "Not possible to switch to another fragment");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 }

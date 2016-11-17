@@ -65,10 +65,28 @@ public final class Utility {
         return  pref.getString(key, defaultValue);
     }
 
+    public static int getPreferredValue(Context context, String key, int defaultValue){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        return  pref.getInt(key, defaultValue);
+    }
+
     public static void setPreferredValue(Context context, String key, String value, boolean async){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor prefEditor = pref.edit();
         prefEditor.putString(key, value);
+
+        if(async){
+            prefEditor.apply();
+        }
+        else{
+            prefEditor.commit();
+        }
+    }
+
+    public static void setPreferredValue(Context context, String key, int value, boolean async){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefEditor = pref.edit();
+        prefEditor.putInt(key, value);
 
         if(async){
             prefEditor.apply();

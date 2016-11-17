@@ -69,6 +69,9 @@
     <!-- Preference key for search keyword -->
     <string name="pref_search_keyword_key" translatable="false">search_keyword</string>
 
+    <!-- Preference key for movie mode (Catalog or Search) -->
+    <string name="pref_movie_mode_key" translatable="false">movie_mode</string>
+
     <!-- GCM -->
     <string name="gcm_movie_alert">Heads up: %1$s!</string>
     <string name="gcm_defaultSenderId_" translatable="false">anse23</string>
