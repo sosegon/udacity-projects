@@ -294,6 +294,16 @@ public final class Utility {
         return null;
     }
 
+    public static Fragment createFragment(Class<? extends Fragment> frg) throws Exception{
+        /*
+            The arguments passed to the fragment. Since I want to create one of
+            my fragments, zero arguments are needed.
+         */
+        Class[] args = new Class[0];
+
+        return (Fragment) frg.getDeclaredConstructor(args).newInstance(null);
+    }
+
     public static long getMovieIdFromUri(Uri uri) {
         return Long.parseLong(uri.getLastPathSegment());
     }

@@ -35,6 +35,7 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private final String LOG_TAG = CatalogActivity.class.getSimpleName();
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
+    private final String SEARCH_FRAGMENT_TAG = "SFTAG";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     private String mQueryBy;
@@ -72,13 +73,11 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         spr_query_mode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0:
-                        switchToCatalog();
-                        break;
-                    case 1:
-                        switchToSearch();
-                        break;
+                try {
+                    switchToMode(i);
+                }
+                catch (Exception e){
+                    Log.e(LOG_TAG, "Not possible to switch to another fragment");
                 }
             }
 
@@ -215,21 +214,35 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
         return true;
     }
 
-    private void switchToSearch() {
-        Scene sceneSearch = Scene.getSceneForLayout(frl_catalog_container, R.layout.fragment_search, this);
-        Transition tra = TransitionInflater.from(this).inflateTransition(R.transition.transition_catalog_search);
-        TransitionManager.go(sceneSearch, tra);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frl_catalog_container, new SearchFragment(), CATALOG_FRAGMENT_TAG)
-                .commit();
-    }
+    private void switchToMode(@AppStatus.MoviesMode int mode) throws Exception{
+        int layout = -1;
+        String tag = "";
+        Class frg = null;
+        switch (mode){
+            case AppStatus.MOVIES_CATALOG_MODE:
+                layout = R.layout.fragment_catalog;
+                tag = CATALOG_FRAGMENT_TAG;
+                frg = CatalogFragment.class;
+                break;
+            case AppStatus.MOVIES_SEARCH_MODE:
+                layout = R.layout.fragment_search;
+                tag = SEARCH_FRAGMENT_TAG;
+                frg = SearchFragment.class;
+                break;
+            default:
+                break;
+        }
 
-    private void switchToCatalog() {
-        Scene sceneCatalog = Scene.getSceneForLayout(frl_catalog_container, R.layout.fragment_catalog, this);
+        if(layout == -1){
+            throw new IllegalArgumentException("Invalid movie mode");
+        }
+
+        Scene newScene = Scene.getSceneForLayout(frl_catalog_container, layout, this);
         Transition tra = TransitionInflater.from(this).inflateTransition(R.transition.transition_catalog_search);
-        TransitionManager.go(sceneCatalog, tra);
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frl_catalog_container, new CatalogFragment(), CATALOG_FRAGMENT_TAG)
+        TransitionManager.go(newScene, tra);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frl_catalog_container, Utility.createFragment(frg), tag)
                 .commit();
     }
 }
