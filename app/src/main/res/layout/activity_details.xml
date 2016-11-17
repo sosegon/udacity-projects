@@ -21,10 +21,9 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <fragment
-        android:id="@+id/frg_details"
-        android:name="com.keemsa.popularmovies.fragment.DetailsFragment"
-        style="@style/match_match" />
+    <FrameLayout
+        style="@style/match_match"
+        android:id="@+id/frl_details_fragment_container"/>
 
 </LinearLayout>
 
