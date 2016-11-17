@@ -65,6 +65,19 @@ public final class Utility {
         return  pref.getString(key, defaultValue);
     }
 
+    public static void setPreferredValue(Context context, String key, String value, boolean async){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor prefEditor = pref.edit();
+        prefEditor.putString(key, value);
+
+        if(async){
+            prefEditor.apply();
+        }
+        else{
+            prefEditor.commit();
+        }
+    }
+
     public static Uri createTrailerUri(String site, String key) {
         if (site.toLowerCase().equals("youtube")) {
             return Uri.parse("http://www.youtube.com").buildUpon()

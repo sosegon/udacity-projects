@@ -162,7 +162,12 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mKeyword = etx_search.getText().toString().toLowerCase();
-                setSearchKeyword(getContext(), mKeyword);
+                Utility.setPreferredValue(
+                        getContext(),
+                        getContext().getString(R.string.pref_search_keyword_key),
+                        mKeyword,
+                        true
+                );
 
                 /*
                     Clear the adapter to avoid records of previous search
@@ -244,13 +249,6 @@ public class SearchFragment extends Fragment {
 
     private boolean movieExists(long movieId) {
         return Utility.movieExists(getContext(), movieId);
-    }
-
-    private static void setSearchKeyword(Context context, String keyword) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor prefEditor = pref.edit();
-        prefEditor.putString(context.getString(R.string.pref_search_keyword_key), keyword);
-        prefEditor.commit(); // use commit since the adapter is in background thread, otherwise use apply
     }
 
     private void updateEmptyView() {
