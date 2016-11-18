@@ -19,9 +19,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.CatalogActivity;
 import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -45,6 +47,11 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
     private TextView txt_catalog_msg;
     private RecyclerView rv_movies;
     private int mPosition = RecyclerView.NO_POSITION;
+
+    /*
+        Know when it is possible to share elements between activities
+     */
+    private boolean mHoldForTransition;
 
     private static final int CATALOG_CURSOR_LOADER_ID = 1;
 
@@ -95,6 +102,28 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
             if (data.getCount() == 0) {
                 MoviesSyncAdapter.syncImmediately(getContext());
+            } else {
+                rv_movies.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        if(rv_movies.getChildCount() > 0) {
+                            /*
+                                Remove previous listeners which are likely to have been
+                                added by this very same code
+                             */
+                            rv_movies.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                            if(mHoldForTransition) { // just for one pane mode
+                                /*
+                                    Once all the data is loaded and the view hierarchy is ready, it is
+                                    safe to start the postponed enter transition.
+                                 */
+                                getActivity().supportStartPostponedEnterTransition();
+                            }
+                        }
+                        return true;
+                    }
+                });
             }
 
             prg_load.setVisibility(View.GONE);
@@ -120,6 +149,13 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        if (mHoldForTransition) {
+            /*
+                Wait until the views are ready to start the transition, so hold the transition until
+                that. Elements will be ready when the data is loaded that is under onLoadFinished
+             */
+            getActivity().supportPostponeEnterTransition();
+        }
         Utility.goLoader(CatalogFragment.this, CATALOG_CURSOR_LOADER_ID, cursorLoader);
         super.onActivityCreated(savedInstanceState);
     }
@@ -139,7 +175,7 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         movieAdapter = new MovieAdapter(getContext(), new MovieAdapter.MovieAdapterOnClickHandler() {
             @Override
             public void onClick(long movieId, MovieAdapter.ViewHolder vh) {
-                ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(movieId));
+                ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(movieId), vh);
                 mPosition = vh.getAdapterPosition();
             }
         }, txt_catalog_msg);
@@ -155,6 +191,11 @@ public class CatalogFragment extends Fragment implements SharedPreferences.OnSha
         rv_movies.setAdapter(movieAdapter);
 
         prg_load.setVisibility(View.VISIBLE);
+
+        Bundle args = getArguments();
+        if(args != null){
+            mHoldForTransition = args.getBoolean(CatalogActivity.DETAIL_TRANSITION_ANIMATION);
+        }
 
         return view;
     }

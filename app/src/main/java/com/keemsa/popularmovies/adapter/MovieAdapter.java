@@ -3,6 +3,7 @@ package com.keemsa.popularmovies.adapter;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.Cursor;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,6 +79,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         } else {
             Utility.downloadAndSavePoster(mContext, posterUrl, holder.posterView);
         }
+
+        /*
+            The name of the transition has to be set in the source and the destination of the shared
+            element. In the case of the destination, that is done in the xml file (see fragment_movie_details.xml)
+            The source is every element in the recycler view. Since the name has to be unique, the
+            position of the element is added to the general name to accomplish that
+         */
+        ViewCompat.setTransitionName(holder.posterView, "posterView" + position);
     }
 
     @Override

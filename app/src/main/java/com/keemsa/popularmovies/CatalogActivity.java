@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Scene;
@@ -24,6 +25,7 @@ import android.widget.Spinner;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.keemsa.popularmovies.adapter.MovieAdapter;
 import com.keemsa.popularmovies.fragment.CatalogFragment;
 import com.keemsa.popularmovies.fragment.DetailsFragment;
 import com.keemsa.popularmovies.fragment.SearchFragment;
@@ -36,6 +38,13 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     private final String DETAILS_FRAGMENT_TAG = "DFTAG";
     private final String CATALOG_FRAGMENT_TAG = "CFTAG";
     private final String SEARCH_FRAGMENT_TAG = "SFTAG";
+
+    /*
+        It is used to pass the argument that enables transition
+        animation of the view. Currently, the movie poster
+     */
+    public static final String DETAIL_TRANSITION_ANIMATION = "DTA";
+
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
     private String mQueryBy;
@@ -163,7 +172,7 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
     }
 
     @Override
-    public void onItemSelected(Uri movieUri) {
+    public void onItemSelected(Uri movieUri, MovieAdapter.ViewHolder vh) {
         if (mTwoPane) {
             Bundle args = new Bundle();
             args.putParcelable(DetailsFragment.MOVIE_URI, movieUri);
@@ -179,9 +188,18 @@ public class CatalogActivity extends AppCompatActivity implements MovieSelectedI
             }
 
         } else {
-            Intent intent = new Intent(this, DetailsActivity.class)
-                    .setData(movieUri);
-            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this);
+            Intent intent = new Intent(this, DetailsActivity.class);
+            intent.setData(movieUri);
+
+            /*
+                 In one pane mode, the transition to share the movie
+                 poster is enable
+             */
+            intent.putExtra(DetailsActivity.DETAIL_TRANSITION_ANIMATION, true);
+
+            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    this,
+                    new Pair<View, String>(vh.posterView, getString(R.string.tra_movie_poster)));
             ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
             /*
                 TODO:Currently, it's not possible to add an animation to the TabWidget.

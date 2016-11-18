@@ -13,12 +13,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.keemsa.popularmovies.CatalogActivity;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
 import com.keemsa.popularmovies.data.MovieColumns;
@@ -53,11 +56,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             txt_desc_details;
 
     private ImageView imv_movie_poster_details,
-                        imv_movie_fav_details;
+            imv_movie_fav_details;
 
     private Uri mMovieUri;
     private Movie mMovie;
     private final int MOVIE_DETAIL_LOADER = 0;
+
+    private boolean mTransitionAnimation;
 
     public MovieDetailsFragment() {
         // Required empty public constructor
@@ -103,6 +108,15 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         mMovie.setId(id);
 
         fillViewsWithValues(mMovie);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (mTransitionAnimation) {
+            /*
+                At this point, the shared element have been properly measured and laid out, hence the
+                postponed transition can resume.
+             */
+            activity.supportStartPostponedEnterTransition();
+        }
     }
 
     @Override
@@ -136,6 +150,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         Intent intent = getActivity().getIntent();
         if (intent != null) {
             mMovieUri = intent.getData();
+            mTransitionAnimation = intent.getBooleanExtra(CatalogActivity.DETAIL_TRANSITION_ANIMATION, false);
         }
 
         // Inflate the layout for this fragment
@@ -188,7 +203,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         imv_movie_fav_details.setImageResource(fav ? R.drawable.ic_fav : R.drawable.ic_nonfav);
     }
 
-    private void toggleMovieFav(){
+    private void toggleMovieFav() {
         boolean newFav = !Utility.isFavourite(mMovie.getQueryType());
         imv_movie_fav_details.setImageResource(newFav ? R.drawable.ic_fav : R.drawable.ic_nonfav);
 

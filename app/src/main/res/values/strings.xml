@@ -75,4 +75,7 @@
     <!-- GCM -->
     <string name="gcm_movie_alert">Heads up: %1$s!</string>
     <string name="gcm_defaultSenderId_" translatable="false">anse23</string>
+
+    <!-- Transition names for shareable elements -->
+    <string name="tra_movie_poster" translatable="false">tra_movie_poster</string>
 </resources>

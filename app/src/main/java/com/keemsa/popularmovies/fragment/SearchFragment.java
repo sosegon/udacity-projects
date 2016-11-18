@@ -17,12 +17,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.keemsa.popularmovies.AppStatus;
+import com.keemsa.popularmovies.CatalogActivity;
 import com.keemsa.popularmovies.MovieSelectedInterface;
 import com.keemsa.popularmovies.R;
 import com.keemsa.popularmovies.Utility;
@@ -30,6 +32,7 @@ import com.keemsa.popularmovies.adapter.MovieAdapter;
 import com.keemsa.popularmovies.data.MovieColumns;
 import com.keemsa.popularmovies.data.MovieProvider;
 import com.keemsa.popularmovies.net.MoviesAsyncTask;
+import com.keemsa.popularmovies.sync.MoviesSyncAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +53,11 @@ public class SearchFragment extends Fragment {
     private TextView txt_search_msg;
     private RecyclerView rv_search;
     private int mPosition = RecyclerView.NO_POSITION;
+
+    /*
+      Know when it is possible to share elements between activities
+   */
+    private boolean mHoldForTransition;
 
     private String mKeyword;
 
@@ -109,6 +117,32 @@ public class SearchFragment extends Fragment {
             movieAdapter.swapCursor(data);
             prg_load.setVisibility(View.GONE);
 
+            if (data.getCount() == 0) {
+                MoviesSyncAdapter.syncImmediately(getContext());
+            } else {
+                rv_search.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        if (rv_search.getChildCount() > 0) {
+                                /*
+                                    Remove previous listeners which are likely to have been
+                                    added by this very same code
+                                 */
+                            rv_search.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                            if (mHoldForTransition) { // just for one pane mode
+                                    /*
+                                        Once all the data is loaded and the view hierarchy is ready, it is
+                                        safe to start the postponed enter transition.
+                                     */
+                                getActivity().supportStartPostponedEnterTransition();
+                            }
+                        }
+                        return true;
+                    }
+                });
+            }
+
             /*
                 Avoid wrong update of the elements. The same situation that
                 happens in the catalog fragment
@@ -127,6 +161,19 @@ public class SearchFragment extends Fragment {
     public SearchFragment() {
     }
 
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        if (mHoldForTransition) {
+            /*
+                Wait until the views are ready to start the transition, so hold the transition until
+                that. Elements will be ready when the data is loaded that is under onLoadFinished
+             */
+            getActivity().supportPostponeEnterTransition();
+        }
+        super.onActivityCreated(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -143,7 +190,7 @@ public class SearchFragment extends Fragment {
         movieAdapter = new MovieAdapter(getContext(), new MovieAdapter.MovieAdapterOnClickHandler() {
             @Override
             public void onClick(long movieId, MovieAdapter.ViewHolder vh) {
-                ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(movieId));
+                ((MovieSelectedInterface) getActivity()).onItemSelected(MovieProvider.Movie.withId(movieId), vh);
                 mPosition = vh.getAdapterPosition();
             }
         }, txt_search_msg);
@@ -186,6 +233,11 @@ public class SearchFragment extends Fragment {
                 prg_load.setVisibility(View.VISIBLE);
             }
         });
+
+        Bundle args = getArguments();
+        if (args != null) {
+            mHoldForTransition = args.getBoolean(CatalogActivity.DETAIL_TRANSITION_ANIMATION);
+        }
 
         return view;
     }
