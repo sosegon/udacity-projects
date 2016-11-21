@@ -17,7 +17,7 @@ public interface Projections {
 
   int STOCK_ID = 0,
       STOCK_BIDPRICE = 1,
-      STOCK_CHAGE = 2,
+      STOCK_CHANGE = 2,
       STOCK_CREATED = 3,
       STOCK_ISCURRENT = 4,
       STOCK_ISUP = 5,
