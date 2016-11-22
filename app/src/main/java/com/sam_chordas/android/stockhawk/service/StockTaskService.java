@@ -17,7 +17,6 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.squareup.okhttp.internal.Util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -34,6 +33,10 @@ public class StockTaskService extends GcmTaskService{
   private OkHttpClient client = new OkHttpClient();
   private Context mContext;
   private StringBuilder mStoredSymbols = new StringBuilder();
+
+  /*
+      Used to update a record in the db
+   */
   private boolean isUpdate;
 
   public StockTaskService(){}
@@ -52,7 +55,6 @@ public class StockTaskService extends GcmTaskService{
 
   @Override
   public int onRunTask(TaskParams params){
-    Cursor initQueryCursor;
     if (mContext == null){
       mContext = this;
     }
@@ -65,49 +67,22 @@ public class StockTaskService extends GcmTaskService{
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
-    if (params.getTag().equals("init") || params.getTag().equals("periodic")){
-      isUpdate = true;
-      initQueryCursor = mContext.getContentResolver().query(
-              QuoteProvider.Quotes.CONTENT_URI,
-              Projections.STOCK,
-              null,
-              null,
-              null
-      );
-      if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
-        // Init task. Populates DB with quotes for the symbols seen below
-        try {
-          urlStringBuilder.append(URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-        }
-      } else if (initQueryCursor != null){
-        DatabaseUtils.dumpCursor(initQueryCursor);
-        initQueryCursor.moveToFirst();
-        for (int i = 0; i < initQueryCursor.getCount(); i++){
-          mStoredSymbols.append("\"" + initQueryCursor.getString(initQueryCursor.getColumnIndex("symbol")) + "\",");
-          initQueryCursor.moveToNext();
-        }
-        mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
-        try {
-          urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-        }
-      }
-    } else if (params.getTag().equals("add")){
-      isUpdate = false;
-      // get symbol from params.getExtra and build query
-      String stockInput = params.getExtras().getString("symbol");
-      try {
-        urlStringBuilder.append(URLEncoder.encode("\""+stockInput+"\")", "UTF-8"));
-      } catch (UnsupportedEncodingException e){
-        e.printStackTrace();
-      }
-    }
+
+    /*
+        Construct the first part of the url based on the stocks: default, in the db, new
+     */
+    constructUrlForStocks(params, urlStringBuilder);
+
     // finalize the URL for the API query.
     urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=");
 
+    /*
+        Once the url is ready query the server for those stocks
+     */
+    return queryTheServer(urlStringBuilder);
+  }
+
+  private int queryTheServer(StringBuilder urlStringBuilder){
     String urlString;
     String getResponse;
     int result = GcmNetworkManager.RESULT_FAILURE;
@@ -141,6 +116,68 @@ public class StockTaskService extends GcmTaskService{
     }
 
     return result;
+  }
+
+  private void constructUrlForStocks(TaskParams params, StringBuilder urlStringBuilder){
+    Cursor initQueryCursor;
+    /*
+        "init" or "periodic" means a connection to the server based on
+        current records in the db
+     */
+    if (params.getTag().equals("init") || params.getTag().equals("periodic")){
+      isUpdate = true;
+      initQueryCursor = mContext.getContentResolver().query(
+              QuoteProvider.Quotes.CONTENT_URI,
+              Projections.STOCK,
+              null,
+              null,
+              null
+      );
+      /*
+          No records in the db? Then construct url for stocks of big tech companies
+       */
+      if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
+        // Init task. Populates DB with quotes for the symbols seen below
+        try {
+          urlStringBuilder.append(URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        }
+      }
+      /*
+          If records, then construct the url based on them
+       */
+      else if (initQueryCursor != null){
+        DatabaseUtils.dumpCursor(initQueryCursor);
+        initQueryCursor.moveToFirst();
+        for (int i = 0; i < initQueryCursor.getCount(); i++){
+          mStoredSymbols.append("\"" + initQueryCursor.getString(initQueryCursor.getColumnIndex("symbol")) + "\",");
+          initQueryCursor.moveToNext();
+        }
+        mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
+        try {
+          urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    /*
+        When tag is "add" the user is adding a new stock
+     */
+    else if (params.getTag().equals("add")){
+      isUpdate = false;
+      // get symbol from params.getExtra and build query
+      String stockInput = params.getExtras().getString("symbol");
+      try {
+        /*
+            Url constructed based on that specific stock
+         */
+        urlStringBuilder.append(URLEncoder.encode("\""+stockInput+"\")", "UTF-8"));
+      } catch (UnsupportedEncodingException e){
+        e.printStackTrace();
+      }
+    }
   }
 
 }
