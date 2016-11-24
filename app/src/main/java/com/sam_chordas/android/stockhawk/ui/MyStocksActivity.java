@@ -8,6 +8,9 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -19,8 +22,10 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
@@ -54,10 +59,25 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private Cursor mCursor;
   boolean isConnected;
 
+  private TextView txt_message;
+  private Handler mServiceHandler;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mContext = this;
+
+    // As stated in http://stackoverflow.com/a/7871538/1065981
+    mServiceHandler = new Handler() {
+      @Override
+      public void handleMessage(Message msg) {
+        Bundle reply = msg.getData();
+        String notification = reply.getString(StockIntentService.WORK_DONE);
+        if (notification.equals(StockIntentService.WORK_DONE)) {
+          getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, MyStocksActivity.this);
+        }
+      }
+    };
 
     /*
       Check network availability
@@ -68,16 +88,28 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     setContentView(R.layout.activity_my_stocks);
 
+    txt_message = (TextView) findViewById(R.id.txt_status);
+
     // The intent service is for executing immediate pulls from the Yahoo API
     // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
     if (savedInstanceState == null){
+      // pass messenger to react when the service has finished its work
+      mServiceIntent.putExtra(StockIntentService.INVOKER_MESSENGER, new Messenger(mServiceHandler));
+
       // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
       if (isConnected){
+        /*
+           TODO: Why is the service started here?
+           Once the loader has finished and no data have been found,
+           the service should be started. If data is found, then the
+           service should start to update the db
+         */
         startService(mServiceIntent);
       } else{
-        networkToast();
+        saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
+        Utils.updateStockStatusView(this, txt_message);
       }
     }
 
@@ -123,13 +155,24 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     // Add the stock to DB
                     mServiceIntent.putExtra("tag", "add");
                     mServiceIntent.putExtra("symbol", input.toString());
+
+                    /*
+                        Save name of the stock for further use
+                     */
+                    Utils.setSharedPreference(
+                            MyStocksActivity.this,
+                            MyStocksActivity.this.getString(R.string.pref_key_stock_queried),
+                            input.toString(),
+                            true);
+
                     startService(mServiceIntent);
                   }
                 }
               })
               .show();
         } else {
-          networkToast();
+          saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
+          Utils.updateStockStatusView(MyStocksActivity.this, txt_message);
         }
       }
     });
@@ -164,10 +207,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onResume() {
     super.onResume();
     getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
-  }
-
-  public void networkToast(){
-    Toast.makeText(mContext, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
   }
 
   public void restoreActionBar() {
@@ -222,10 +261,23 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
     mCursor = data;
+    if(data.getCount() == 0){
+      saveAppStatus(AppStatus.STOCK_STATUS_UNKNOWN);
+    }
+    Utils.updateStockStatusView(this, txt_message);
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader){
     mCursorAdapter.swapCursor(null);
+  }
+
+  private void saveAppStatus(@AppStatus.StockStatus int status){
+    Utils.setSharedPreference(
+            this,
+            getString(R.string.pref_key_stock_status),
+            status,
+            true
+    );
   }
 }

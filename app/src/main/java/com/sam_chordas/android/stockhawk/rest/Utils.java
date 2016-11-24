@@ -1,8 +1,17 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sam_chordas.android.stockhawk.AppStatus;
+import com.sam_chordas.android.stockhawk.InvalidStockException;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
@@ -22,31 +31,32 @@ public class Utils {
 
   public static boolean showPercent = true;
 
-  public static ArrayList quoteJsonToContentVals(String JSON) {
+  /*
+      Throws exceptions to handle them and show meaningful comments to the user
+   */
+  public static ArrayList quoteJsonToContentVals(String JSON) throws InvalidStockException, JSONException{
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
     JSONObject jsonObject = null;
     JSONArray resultsArray = null;
-    try {
-      jsonObject = new JSONObject(JSON);
-      if (jsonObject != null && jsonObject.length() != 0) {
-        jsonObject = jsonObject.getJSONObject("query");
-        int count = Integer.parseInt(jsonObject.getString("count"));
-        if (count == 1) {
-          jsonObject = jsonObject.getJSONObject("results").getJSONObject("quote");
-          addToBatchOperations(jsonObject, batchOperations);
-        } else {
-          resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
-          if (resultsArray != null && resultsArray.length() != 0) {
-            for (int i = 0; i < resultsArray.length(); i++) {
-              jsonObject = resultsArray.getJSONObject(i);
-              addToBatchOperations(jsonObject, batchOperations);
-            }
+
+    jsonObject = new JSONObject(JSON);
+    if (jsonObject != null && jsonObject.length() != 0) {
+      jsonObject = jsonObject.getJSONObject("query");
+      int count = Integer.parseInt(jsonObject.getString("count"));
+      if (count == 1) {
+        jsonObject = jsonObject.getJSONObject("results").getJSONObject("quote");
+        addToBatchOperations(jsonObject, batchOperations);
+      } else {
+        resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+        if (resultsArray != null && resultsArray.length() != 0) {
+          for (int i = 0; i < resultsArray.length(); i++) {
+            jsonObject = resultsArray.getJSONObject(i);
+            addToBatchOperations(jsonObject, batchOperations);
           }
         }
       }
-    } catch (JSONException e) {
-      Log.e(LOG_TAG, "String to JSON failed: " + e);
     }
+
     return batchOperations;
   }
 
@@ -102,9 +112,7 @@ public class Utils {
         continue;
       }
       String currentValue = jsonQuote.getString(currentKey);
-      if (currentValue == null || currentValue.equals("null")) {
-        continue;
-      } else {
+      if (!(currentValue == null || currentValue.equals("null"))) {
         return true;
       }
     }
@@ -115,15 +123,89 @@ public class Utils {
     return false;
   }
 
-  public static void addToBatchOperations(JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations) {
-    try {
-      if (isValidStock(jsonObject)) {
-        batchOperations.add(buildBatchOperation(jsonObject));
-      } else {
-        Log.d(LOG_TAG, "Invalid stock: " + jsonObject.getString("symbol"));
-      }
-    } catch (JSONException e) {
-      Log.d(LOG_TAG, "Invalid json format for stock");
+  public static void addToBatchOperations(JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations)
+          throws InvalidStockException, JSONException{
+    if (isValidStock(jsonObject)) {
+      batchOperations.add(buildBatchOperation(jsonObject));
+    } else {
+      throw new InvalidStockException("Invalid stock: " + jsonObject.getString("symbol"));
     }
+  }
+
+  @SuppressWarnings("ResourceType")
+  public static @AppStatus.StockStatus int getStockStatus(Context context){
+    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    return pref.getInt(context.getString(R.string.pref_key_stock_status), AppStatus.STOCK_STATUS_UNKNOWN);
+  }
+
+  public static String getStockQueried(Context context){
+    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    return pref.getString(context.getString(R.string.pref_key_stock_queried), "");
+  }
+
+  public static void setSharedPreference(Context context, String key, int value, boolean rightAway){
+    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    SharedPreferences.Editor editor = pref.edit();
+    editor.putInt(key, value);
+    if(rightAway){
+      editor.apply();
+    }
+    else {
+      editor.commit();
+    }
+  }
+
+  public static void setSharedPreference(Context context, String key, String value, boolean rightAway){
+    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    SharedPreferences.Editor editor = pref.edit();
+    editor.putString(key, value);
+    if(rightAway){
+      editor.apply();
+    }
+    else {
+      editor.commit();
+    }
+  }
+
+  public static void updateStockStatusView(Context context, TextView txt_status){
+    String message = context.getString(R.string.sta_no_stocks);
+
+    @AppStatus.StockStatus int status = Utils.getStockStatus(context);
+
+    switch (status){
+      case AppStatus.STOCK_STATUS_OK:
+        txt_status.setVisibility(View.GONE);
+        return;
+      case AppStatus.STOCK_STATUS_UNKNOWN:
+        message += " " + context.getString(R.string.sta_unknown);
+        break;
+      case AppStatus.STOCK_STATUS_NO_CONNECTION:
+        message += " " + context.getString(R.string.sta_no_connection);
+        break;
+      case AppStatus.STOCK_STATUS_NO_RESPONSE:
+        message += " " + context.getString(R.string.sta_no_response);
+        break;
+      case AppStatus.STOCK_STATUS_BAD_REQUEST:
+        message += " " + context.getString(R.string.sta_bad_response);
+        break;
+      case AppStatus.STOCK_STATUS_INVALID_DATA:
+        message += " " + context.getString(R.string.sta_invalid_data);
+        break;
+      case AppStatus.STOCK_STATUS_INVALID_STOCK:
+        message += " " + context.getString(R.string.sta_invalid_stock, getStockQueried(context));
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        return;
+      case AppStatus.STOCK_STATUS_INTERNAL_ERROR:
+        message += " " + context.getString(R.string.sta_internal_error);
+        break;
+      case AppStatus.STOCK_STATUS_NETWORK_ERROR:
+        message += " " + context.getString(R.string.sta_network_error);
+        break;
+      default:
+        break;
+    }
+
+    txt_status.setText(message);
+    txt_status.setVisibility(View.VISIBLE);
   }
 }
