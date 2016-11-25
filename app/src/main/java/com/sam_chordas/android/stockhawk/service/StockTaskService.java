@@ -18,7 +18,6 @@ import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
-import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONException;
 
@@ -113,9 +112,8 @@ public class StockTaskService extends GcmTaskService{
     StringBuilder urlStringBuilder = new StringBuilder();
     try{
       // Base URL for the Yahoo query
-      urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
-      urlStringBuilder.append(URLEncoder.encode("select * from yahoo.finance.quotes where symbol "
-        + "in (", "UTF-8"));
+      urlStringBuilder.append(mContext.getString(R.string.query_base_url));
+      urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
       Log.d(LOG_TAG, "Invalid encoding");
@@ -129,7 +127,7 @@ public class StockTaskService extends GcmTaskService{
     }
 
     // finalize the URL for the API query.
-    urlStringBuilder.append("&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=");
+    urlStringBuilder.append(mContext.getString(R.string.query_statement_tail));
 
     /*
         Once the url is ready query the server for those stocks
@@ -231,7 +229,7 @@ public class StockTaskService extends GcmTaskService{
       if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
         // Init task. Populates DB with quotes for the symbols seen below
         try {
-          urlStringBuilder.append(URLEncoder.encode("\"YHOO\",\"AAPL\",\"GOOG\",\"MSFT\")", "UTF-8"));
+          urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_main_stocks), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
           Log.d(LOG_TAG, "Invalid encoding");
