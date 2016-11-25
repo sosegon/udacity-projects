@@ -1,10 +1,14 @@
 package com.sam_chordas.android.stockhawk.rest;
 
+import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.v4.app.LoaderManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -207,5 +211,25 @@ public class Utils {
 
     txt_status.setText(message);
     txt_status.setVisibility(View.VISIBLE);
+  }
+
+  public static boolean isNetworkAvailable(Context context) {
+    ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo netInfo = manager.getActiveNetworkInfo();
+
+    return netInfo != null && netInfo.isConnectedOrConnecting();
+  }
+
+  public static void goLoader(AppCompatActivity activity, int loaderId, LoaderManager.LoaderCallbacks callbacks) {
+
+    /*
+        Check the existence of the fragment to avoid creating a new one,
+        and just restart the previous one.
+     */
+    if (activity.getSupportLoaderManager().getLoader(loaderId) == null) {
+      activity.getSupportLoaderManager().initLoader(loaderId, null, callbacks);
+    } else {
+      activity.getSupportLoaderManager().restartLoader(loaderId, null, callbacks);
+    }
   }
 }

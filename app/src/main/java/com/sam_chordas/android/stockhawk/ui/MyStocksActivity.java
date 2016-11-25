@@ -1,16 +1,14 @@
 package com.sam_chordas.android.stockhawk.ui;
 
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
+import android.support.v4.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -40,8 +38,9 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.squareup.okhttp.internal.Util;
 
-public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -74,7 +73,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         Bundle reply = msg.getData();
         String notification = reply.getString(StockIntentService.WORK_DONE);
         if (notification.equals(StockIntentService.WORK_DONE)) {
-          getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, MyStocksActivity.this);
+          Utils.goLoader(MyStocksActivity.this, CURSOR_LOADER_ID, MyStocksActivity.this);
         }
       }
     };
@@ -82,9 +81,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     /*
       Check network availability
      */
-    ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-    isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    isConnected = Utils.isNetworkAvailable(mContext);
 
     setContentView(R.layout.activity_my_stocks);
 
@@ -115,7 +112,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+    Utils.goLoader(this, CURSOR_LOADER_ID, this);
 
     mCursorAdapter = new QuoteCursorAdapter(this, null);
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
@@ -160,8 +157,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         Save name of the stock for further use
                      */
                     Utils.setSharedPreference(
-                            MyStocksActivity.this,
-                            MyStocksActivity.this.getString(R.string.pref_key_stock_queried),
+                            mContext,
+                            mContext.getString(R.string.pref_key_stock_queried),
                             input.toString(),
                             true);
 
@@ -172,7 +169,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
               .show();
         } else {
           saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
-          Utils.updateStockStatusView(MyStocksActivity.this, txt_message);
+          Utils.updateStockStatusView(mContext, txt_message);
         }
       }
     });
@@ -199,14 +196,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
           .build();
       // Schedule task with tag "periodic." This ensure that only the stocks present in the DB
       // are updated.
-      GcmNetworkManager.getInstance(this).schedule(periodicTask);
+      GcmNetworkManager.getInstance(mContext).schedule(periodicTask);
     }
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+    Utils.goLoader(this, CURSOR_LOADER_ID, this);
   }
 
   public void restoreActionBar() {
@@ -244,7 +241,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     return super.onOptionsItemSelected(item);
   }
 
-  @Override
+
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
     // This narrows the return to only the stocks that are most current.
     return new CursorLoader(
