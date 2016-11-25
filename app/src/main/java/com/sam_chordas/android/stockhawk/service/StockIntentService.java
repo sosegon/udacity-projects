@@ -49,20 +49,5 @@ public class StockIntentService extends IntentService {
               false
       );
     }
-    contactInvoker(intent);
-  }
-
-  // As stated in http://stackoverflow.com/a/7871538/1065981
-  private void contactInvoker(Intent intent) {
-    Messenger messenger = (Messenger) intent.getExtras().get(INVOKER_MESSENGER);
-    Message msg = Message.obtain();
-    Bundle data = new Bundle();
-    data.putString(WORK_DONE, WORK_DONE);
-    msg.setData(data);
-    try {
-      messenger.send(msg);
-    } catch (RemoteException e){
-      Log.e(LOG_TAG, e.getMessage());
-    }
   }
 }
