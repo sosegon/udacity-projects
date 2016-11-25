@@ -205,6 +205,9 @@ public class Utils {
       case AppStatus.STOCK_STATUS_NETWORK_ERROR:
         message += " " + context.getString(R.string.sta_network_error);
         break;
+      case AppStatus.STOCK_STATUS_NO_STOCKS:
+        message += " " + context.getString(R.string.sta_no_stocks_error);
+        break;
       default:
         break;
     }

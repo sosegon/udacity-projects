@@ -135,7 +135,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(data);
     mCursor = data;
     if (data.getCount() == 0) {
-      saveAppStatus(AppStatus.STOCK_STATUS_UNKNOWN);
+      saveAppStatus(AppStatus.STOCK_STATUS_NO_STOCKS);
     }
     Utils.updateStockStatusView(this, txt_message);
   }

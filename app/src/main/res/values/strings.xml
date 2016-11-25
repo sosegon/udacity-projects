@@ -25,6 +25,7 @@
   <string name="sta_unknown">Unknown.</string>
   <string name="sta_internal_error">Internal error</string>
   <string name="sta_network_error">Network error</string>
+  <string name="sta_no_stocks_error">No stocks queried. Add a stock.</string>
 
   <!-- Connection to the server -->
   <string name="query_base_url">https://query.yahooapis.com/v1/public/yql?q=</string>

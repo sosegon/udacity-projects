@@ -20,7 +20,8 @@ public interface AppStatus {
           STOCK_STATUS_INVALID_DATA,
           STOCK_STATUS_INVALID_STOCK,
           STOCK_STATUS_INTERNAL_ERROR,
-          STOCK_STATUS_NETWORK_ERROR
+          STOCK_STATUS_NETWORK_ERROR,
+          STOCK_STATUS_NO_STOCKS
   })
   @interface StockStatus {}
 
@@ -32,5 +33,6 @@ public interface AppStatus {
       STOCK_STATUS_INVALID_DATA = 5,
       STOCK_STATUS_INVALID_STOCK = 6,
       STOCK_STATUS_INTERNAL_ERROR = 7,
-      STOCK_STATUS_NETWORK_ERROR = 8;
+      STOCK_STATUS_NETWORK_ERROR = 8,
+      STOCK_STATUS_NO_STOCKS = 9;
 }
