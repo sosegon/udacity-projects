@@ -224,29 +224,16 @@ public class StockTaskService extends GcmTaskService{
               null
       );
       /*
-          No records in the db? Then construct url for stocks of big tech companies
-       */
-      if (initQueryCursor.getCount() == 0 || initQueryCursor == null){
-        // Init task. Populates DB with quotes for the symbols seen below
-        try {
-          urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_main_stocks), "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
-          Log.d(LOG_TAG, "Invalid encoding");
-          return false;
-        }
-      }
-      /*
           If records, then construct the url based on them
-       */
-      else if (initQueryCursor != null){
-        DatabaseUtils.dumpCursor(initQueryCursor);
+      */
+      if (initQueryCursor != null && initQueryCursor.getCount() > 0){
+        DatabaseUtils.dumpCursor(initQueryCursor); // Prints the records
         initQueryCursor.moveToFirst();
         for (int i = 0; i < initQueryCursor.getCount(); i++){
-          mStoredSymbols.append("\"" + initQueryCursor.getString(initQueryCursor.getColumnIndex("symbol")) + "\",");
+          mStoredSymbols.append("\"" + initQueryCursor.getString(Projections.STOCK_SYMBOL) + "\",");
           initQueryCursor.moveToNext();
         }
-        mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")");
+        mStoredSymbols.replace(mStoredSymbols.length() - 1, mStoredSymbols.length(), ")"); // replace last comma
         try {
           urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -254,6 +241,8 @@ public class StockTaskService extends GcmTaskService{
           Log.d(LOG_TAG, "Invalid encoding");
           return false;
         }
+      } else {
+        return false;
       }
     }
     /*
@@ -267,7 +256,7 @@ public class StockTaskService extends GcmTaskService{
         /*
             Url constructed based on that specific stock
          */
-        urlStringBuilder.append(URLEncoder.encode("\""+stockInput+"\")", "UTF-8"));
+        urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8"));
       } catch (UnsupportedEncodingException e){
         saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
         Log.d(LOG_TAG, "Invalid encoding");

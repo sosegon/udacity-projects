@@ -30,5 +30,4 @@
   <string name="query_base_url">https://query.yahooapis.com/v1/public/yql?q=</string>
   <string name="query_statement_head">select * from yahoo.finance.quotes where symbol in (</string>
   <string name="query_statement_tail">&amp;format=json&amp;diagnostics=true&amp;env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&amp;callback=</string>
-  <string name="query_main_stocks">"YHOO","AAPL","GOOG","MSFT")</string>
 </resources>
