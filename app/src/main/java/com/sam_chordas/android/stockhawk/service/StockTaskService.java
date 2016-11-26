@@ -71,10 +71,6 @@ public class StockTaskService extends GcmTaskService{
     } catch (IOException e) {
       saveAppStatus(AppStatus.STOCK_STATUS_NO_RESPONSE);
       Log.d(LOG_TAG, "Error when connecting to the server.");
-    } finally {
-      if (connection != null) {
-        connection.disconnect();
-      }
     }
 
     try{
@@ -93,6 +89,9 @@ public class StockTaskService extends GcmTaskService{
       saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
       Log.d(LOG_TAG, "Error when reading the stream from the server.");
     } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
       if (reader != null) {
         try {
           reader.close();
