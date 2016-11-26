@@ -22,6 +22,7 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -59,15 +60,24 @@ public class StockTaskService extends GcmTaskService{
     HttpURLConnection connection = null;
     BufferedReader reader = null;
     String stocksJson = null;
+    InputStream stream = null;
 
     try{
       URL stockUrl = new URL(url);
       connection = (HttpURLConnection) stockUrl.openConnection();
       connection.setRequestMethod("GET");
       connection.connect();
+      stream = connection.getInputStream();
+    } catch (IOException e) {
+      saveAppStatus(AppStatus.STOCK_STATUS_NO_RESPONSE);
+      Log.d(LOG_TAG, "Network error");
+    } finally {
+      if (connection != null) {
+        connection.disconnect();
+      }
+    }
 
-      InputStream stream = connection.getInputStream();
-
+    try{
       if (stream != null) {
         reader = new BufferedReader(new InputStreamReader(stream));
         String line;
@@ -75,19 +85,14 @@ public class StockTaskService extends GcmTaskService{
         while ((line = reader.readLine()) != null) {
           output.append(line);
         }
-
         if (output.length() != 0) {
           stocksJson = output.toString();
         }
       }
-
-    } catch (Exception e) {
-      saveAppStatus(AppStatus.STOCK_STATUS_NO_RESPONSE);
-      Log.d(LOG_TAG, "Network error");
+    } catch(IOException e){
+      saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
+      Log.d(LOG_TAG, "Reading stream error");
     } finally {
-      if (connection != null) {
-        connection.disconnect();
-      }
       if (reader != null) {
         try {
           reader.close();
