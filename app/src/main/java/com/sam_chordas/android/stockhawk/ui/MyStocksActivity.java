@@ -81,6 +81,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onResume() {
     super.onResume();
     goLoader();
+    saveAppStatus(AppStatus.STOCK_STATUS_OK); // reset
   }
 
   public void restoreActionBar() {
