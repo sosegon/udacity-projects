@@ -172,7 +172,7 @@ public class Utils {
   }
 
   public static void updateStockStatusView(Context context, TextView txt_status){
-    String message = context.getString(R.string.sta_no_stocks);
+    String message = context.getString(R.string.sta_no_stocks) + " ";
 
     @AppStatus.StockStatus int status = Utils.getStockStatus(context);
 
@@ -181,32 +181,29 @@ public class Utils {
         txt_status.setVisibility(View.GONE);
         return;
       case AppStatus.STOCK_STATUS_UNKNOWN:
-        message += " " + context.getString(R.string.sta_unknown);
+        message += context.getString(R.string.sta_unknown);
         break;
       case AppStatus.STOCK_STATUS_NO_CONNECTION:
-        message += " " + context.getString(R.string.sta_no_connection);
+        message += context.getString(R.string.sta_no_connection);
         break;
       case AppStatus.STOCK_STATUS_NO_RESPONSE:
-        message += " " + context.getString(R.string.sta_no_response);
-        break;
-      case AppStatus.STOCK_STATUS_BAD_REQUEST:
-        message += " " + context.getString(R.string.sta_bad_response);
+        message += context.getString(R.string.sta_no_response);
         break;
       case AppStatus.STOCK_STATUS_INVALID_DATA:
-        message += " " + context.getString(R.string.sta_invalid_data);
+        message += context.getString(R.string.sta_invalid_data);
         break;
       case AppStatus.STOCK_STATUS_INVALID_STOCK:
-        message += " " + context.getString(R.string.sta_invalid_stock, getStockQueried(context));
+        message += context.getString(R.string.sta_invalid_stock, getStockQueried(context));
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         return;
-      case AppStatus.STOCK_STATUS_INTERNAL_ERROR:
-        message += " " + context.getString(R.string.sta_internal_error);
+      case AppStatus.STOCK_STATUS_ENCODING_ERROR:
+        message += context.getString(R.string.sta_encoding_error);
         break;
-      case AppStatus.STOCK_STATUS_NETWORK_ERROR:
-        message += " " + context.getString(R.string.sta_network_error);
+      case AppStatus.STOCK_STATUS_DATABASE_ERROR:
+        message += context.getString(R.string.sta_database_error);
         break;
       case AppStatus.STOCK_STATUS_NO_STOCKS:
-        message += " " + context.getString(R.string.sta_no_stocks_error);
+        message += context.getString(R.string.sta_no_stocks_error);
         break;
       default:
         break;

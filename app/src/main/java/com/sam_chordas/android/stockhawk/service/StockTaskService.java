@@ -70,7 +70,7 @@ public class StockTaskService extends GcmTaskService{
       stream = connection.getInputStream();
     } catch (IOException e) {
       saveAppStatus(AppStatus.STOCK_STATUS_NO_RESPONSE);
-      Log.d(LOG_TAG, "Network error");
+      Log.d(LOG_TAG, "Error when connecting to the server.");
     } finally {
       if (connection != null) {
         connection.disconnect();
@@ -91,13 +91,13 @@ public class StockTaskService extends GcmTaskService{
       }
     } catch(IOException e){
       saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
-      Log.d(LOG_TAG, "Reading stream error");
+      Log.d(LOG_TAG, "Error when reading the stream from the server.");
     } finally {
       if (reader != null) {
         try {
           reader.close();
         } catch (Exception e) {
-          Log.e(LOG_TAG, "Error closing stream");
+          Log.e(LOG_TAG, "Error when closing the stream.");
         }
       }
     }
@@ -120,8 +120,8 @@ public class StockTaskService extends GcmTaskService{
       urlStringBuilder.append(mContext.getString(R.string.query_base_url));
       urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
     } catch (UnsupportedEncodingException e) {
-      saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
-      Log.d(LOG_TAG, "Invalid encoding");
+      saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
+      Log.d(LOG_TAG, "Error when encoding the head of the query url.");
     }
 
     /*
@@ -181,10 +181,10 @@ public class StockTaskService extends GcmTaskService{
          batchOperations = Utils.quoteJsonToContentVals(getResponse);
       } catch (JSONException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
-        Log.d(LOG_TAG, "Invalid json data from the server", e);
+        Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
       } catch (InvalidStockException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_INVALID_STOCK);
-        Log.d(LOG_TAG, "Invalid stock requested", e);
+        Log.d(LOG_TAG, "Error when querying a stock that does not exists.", e);
       }
 
       /*
@@ -200,8 +200,8 @@ public class StockTaskService extends GcmTaskService{
                 batchOperations
         );
       } catch (RemoteException | OperationApplicationException e){
-        saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
-        Log.d(LOG_TAG, "Error applying batch insert", e);
+        saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
+        Log.d(LOG_TAG, "Error when a applying batch insert.", e);
       }
 
       /*
@@ -242,8 +242,8 @@ public class StockTaskService extends GcmTaskService{
         try {
           urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-          saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
-          Log.d(LOG_TAG, "Invalid encoding");
+          saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
+          Log.d(LOG_TAG, "Error when encoding the stocks to update.");
           return false;
         }
       } else {
@@ -263,8 +263,8 @@ public class StockTaskService extends GcmTaskService{
          */
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8"));
       } catch (UnsupportedEncodingException e){
-        saveAppStatus(AppStatus.STOCK_STATUS_INTERNAL_ERROR);
-        Log.d(LOG_TAG, "Invalid encoding");
+        saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
+        Log.d(LOG_TAG, "Error when encoding the new stock to query.");
         return false;
       }
     }
