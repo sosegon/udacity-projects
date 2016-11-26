@@ -276,7 +276,7 @@ public class StockTaskService extends GcmTaskService{
     Utils.setSharedPreference(
             mContext,
             mContext.getString(R.string.pref_key_stock_status),
-            AppStatus.STOCK_STATUS_INTERNAL_ERROR,
+            status,
             false
     );
   }
