@@ -36,4 +36,5 @@ dependencies {
     transitive = true
   }
   compile 'com.android.support:support-annotations:23.0.1'
+  testCompile 'junit:junit:4.12'
 }

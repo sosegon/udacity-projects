@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +20,13 @@ import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -231,5 +237,56 @@ public class Utils {
     } else {
       activity.getSupportLoaderManager().restartLoader(loaderId, null, callbacks);
     }
+  }
+
+  public static String getCurrentDate(){
+    Calendar current = Calendar.getInstance();
+    int year = current.get(Calendar.YEAR);
+    int month = current.get(Calendar.MONTH) + 1;
+    int day = current.get(Calendar.DAY_OF_MONTH);
+
+    return year + "-" + month + "-" + day;
+  }
+
+  public static long getDateInMilliSeconds(String date) {
+
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    //format.setTimeZone(TimeZone.getTimeZone("GMT+0:01")); // one minute ahead
+    try {
+      Date argDate = format.parse(date);
+      return argDate.getTime();
+    } catch (ParseException e) {
+      Log.e(LOG_TAG, "Error when converting date to milliseconds");
+    }
+
+    return -1;
+  }
+
+  public static String getDateInSimpleFormat(long date){
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTimeInMillis(date);
+    return format.format(calendar.getTime());
+  }
+
+  public static String getPreviousWeekDate(String date){
+    long milliseconds = getDateInMilliSeconds(date);
+    long oneWeek = 604800000L; // 7 days
+
+    return getDateInSimpleFormat(milliseconds - oneWeek);
+  }
+
+  public static String getPreviousMonthDate(String date){
+    long milliseconds = getDateInMilliSeconds(date);
+    long oneMonth = 2592000000L; // 30 days
+
+    return getDateInSimpleFormat(milliseconds - oneMonth);
+  }
+
+  public static String getPreviousYearDate(String date){
+    long milliseconds = getDateInMilliSeconds(date);
+    long oneMonth = 31536000000L; // 365 days
+
+    return getDateInSimpleFormat(milliseconds - oneMonth);
   }
 }
