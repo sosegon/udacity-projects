@@ -23,4 +23,16 @@ public interface Projections {
       STOCK_ISUP = 5,
       STOCK_PERCENT_CHANGE = 6,
       STOCK_SYMBOL = 7;
+
+  String HISTORIC[] = {
+          PriceColumns._ID,
+          PriceColumns.PRICE,
+          PriceColumns.DATE,
+          PriceColumns.QUOTE_ID
+  };
+
+  int HISTORIC_ID = 0,
+      HISTORIC_PRICE = 1,
+      HISTORIC_DATE = 2,
+      HISTORIC_QUOTE_ID = 3;
 }
