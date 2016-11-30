@@ -50,6 +50,12 @@ public class QuoteProvider {
 
   @TableEndpoint(table = QuoteDatabase.PRICES)
   public static class Prices{
+    @ContentUri(
+            path = Path.PRICES,
+            type = "vnd.android.cursor.dir/price"
+    )
+    public static final Uri CONTENT_URI = buildUri(Path.PRICES);
+
     @InexactContentUri(
             name = "DATE_RANGE",
             path = Path.QUOTES + "/*/#/#",
