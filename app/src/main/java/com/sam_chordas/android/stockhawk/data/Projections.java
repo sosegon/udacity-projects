@@ -12,7 +12,8 @@ public interface Projections {
           QuoteColumns.ISCURRENT,
           QuoteColumns.ISUP,
           QuoteColumns.PERCENT_CHANGE,
-          QuoteColumns.SYMBOL
+          QuoteColumns.SYMBOL,
+          QuoteColumns.ISTEMP
   };
 
   int STOCK_ID = 0,
@@ -22,7 +23,8 @@ public interface Projections {
       STOCK_ISCURRENT = 4,
       STOCK_ISUP = 5,
       STOCK_PERCENT_CHANGE = 6,
-      STOCK_SYMBOL = 7;
+      STOCK_SYMBOL = 7,
+      STOCK_ISTEMP = 8;
 
   String HISTORIC[] = {
           PriceColumns._ID,
