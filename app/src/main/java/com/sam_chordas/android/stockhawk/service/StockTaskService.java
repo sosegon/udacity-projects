@@ -208,18 +208,7 @@ public class StockTaskService extends GcmTaskService {
         return result;  // No need to set an app status, fetchData method handles that
       }
 
-      // Now, some meaningful data has been received, use it
-      ContentValues contentValues = new ContentValues();
-      // update ISCURRENT to 0 (false) so new data is current
-      if (isUpdate) {
-        contentValues.put(QuoteColumns.ISCURRENT, 0);
-        mContext.getContentResolver().update(
-                QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                null,
-                null
-        );
-      }
-
+      // Do not update records with empty values
       // Create batch operations to feed the db
       // Set app status meaningfully when needed
       ArrayList<ContentProviderOperation> batchOperations = null;
@@ -286,7 +275,7 @@ public class StockTaskService extends GcmTaskService {
         return false;
       }
     } else if (params.getTag().equals("add")) {  // When tag is "add" the user is adding a new stock
-      isUpdate = false;
+      isUpdate = true; // update is true since the record was added before querying the server
       String stockInput = params.getExtras().getString("symbol"); // get symbol from params.getExtra and build query
       try {
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8")); // Url constructed based on that specific stock

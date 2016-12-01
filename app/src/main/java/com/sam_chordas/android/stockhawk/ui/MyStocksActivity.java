@@ -1,8 +1,9 @@
 package com.sam_chordas.android.stockhawk.ui;
 
+import android.content.ContentValues;
 import android.content.Context;
-import android.support.v4.content.CursorLoader;
 import android.content.Intent;
+import android.support.v4.content.CursorLoader;
 import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -205,13 +206,20 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                   .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
+                      if(!Utils.isNetworkAvailable(mContext)){
+                        Toast toast = Toast.makeText(MyStocksActivity.this,mContext.getString(R.string.sta_no_connection), Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                        toast.show();
+                        return;
+                      }
                       // On FAB click, receive user input. Make sure the stock doesn't already exist
                       // in the DB and proceed accordingly
+                      String symbol = input.toString().toUpperCase();
                       Cursor c = getContentResolver().query(
                               QuoteProvider.Quotes.CONTENT_URI,
                               Projections.STOCK,
                               QuoteColumns.SYMBOL + "= ?",
-                              new String[]{input.toString()},
+                              new String[]{symbol},
                               null
                       );
                       if (c.getCount() != 0) {
@@ -220,17 +228,37 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         toast.show();
                         return;
                       } else {
+
+                        // Add new record to the content provider
+                        // This record will be temporary just to display
+                        // an item in the ui, once the service finishes its
+                        // work, the record will be either updated (if the
+                        // server was successful) or deleted (if the server
+                        // failed)
+                        ContentValues cv = new ContentValues();
+                        cv.put(QuoteColumns.SYMBOL, symbol);
+                        cv.put(QuoteColumns.PERCENT_CHANGE, 0);
+                        cv.put(QuoteColumns.CHANGE, 0);
+                        cv.put(QuoteColumns.BIDPRICE, 0);
+                        cv.put(QuoteColumns.ISUP, 0);
+                        cv.put(QuoteColumns.ISCURRENT, 1); //
+                        cv.put(QuoteColumns.ISTEMP, 1);
+
+                        // inser right away, the service will update or delete the record accordingly
+                        mContext.getContentResolver().insert(
+                                QuoteProvider.Quotes.CONTENT_URI,
+                                cv
+                        );
+
                         // Add the stock to DB
                         mServiceIntent.putExtra("tag", "add");
-                        mServiceIntent.putExtra("symbol", input.toString());
+                        mServiceIntent.putExtra("symbol", symbol);
 
-                        /*
-                            Save name of the stock for further use
-                         */
+                        // Save name of the stock for further use
                         Utils.setSharedPreference(
                                 mContext,
                                 mContext.getString(R.string.pref_key_stock_queried),
-                                input.toString(),
+                                symbol,
                                 true);
 
                         startService(mServiceIntent);

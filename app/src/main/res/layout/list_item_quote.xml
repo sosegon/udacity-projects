@@ -22,6 +22,13 @@
       android:layout_weight="1"
       android:gravity="right"
       >
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_gravity="right"
+        android:id="@+id/pgr"
+        />
     <TextView
         android:id="@+id/bid_price"
         style="@style/BidPriceTextStyle"
@@ -29,6 +36,7 @@
         android:layout_height="wrap_content"
         android:paddingRight="10sp"
         tools:text="1000.00"
+        android:visibility="gone"
         />
     <TextView
         android:id="@+id/change"
@@ -39,6 +47,7 @@
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
         tools:text="100%"
+        android:visibility="gone"
         />
   </LinearLayout>
 </LinearLayout>

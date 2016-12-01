@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sam_chordas.android.stockhawk.R;
@@ -70,6 +72,11 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     } else{
       viewHolder.change.setText(cursor.getString(Projections.STOCK_CHANGE));
     }
+
+    boolean isTemp = cursor.getInt(Projections.STOCK_ISTEMP) == 1;
+    viewHolder.pgr.setVisibility(isTemp ? View.VISIBLE : View.GONE);
+    viewHolder.bidPrice.setVisibility(!isTemp ? View.VISIBLE : View.GONE);
+    viewHolder.change.setVisibility(!isTemp ? View.VISIBLE : View.GONE);
   }
 
   @Override public void onItemDismiss(int position) {
@@ -89,12 +96,14 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     public final TextView symbol;
     public final TextView bidPrice;
     public final TextView change;
+    public final ProgressBar pgr;
     public ViewHolder(View itemView){
       super(itemView);
       symbol = (TextView) itemView.findViewById(R.id.stock_symbol);
       symbol.setTypeface(robotoLight);
       bidPrice = (TextView) itemView.findViewById(R.id.bid_price);
       change = (TextView) itemView.findViewById(R.id.change);
+      pgr = (ProgressBar) itemView.findViewById(R.id.pgr);
     }
 
     @Override

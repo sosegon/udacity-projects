@@ -9,6 +9,8 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.Projections;
+import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
 /**
@@ -34,8 +36,9 @@ public class StockIntentService extends IntentService {
     StockTaskService stockTaskService = new StockTaskService(this);
     Bundle args = new Bundle();
     String tag = intent.getStringExtra("tag");
+    String symbol = intent.getStringExtra("symbol");
     if (tag.equals("add") || tag.equals("historic")) {
-      args.putString("symbol", intent.getStringExtra("symbol"));
+      args.putString("symbol", symbol);
       args.putString("stockId", intent.getStringExtra("stockId")); // pass the foreign key
     }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
@@ -47,6 +50,13 @@ public class StockIntentService extends IntentService {
               this.getString(R.string.pref_key_stock_status),
               AppStatus.STOCK_STATUS_OK,
               false
+      );
+    } else if(result != GcmNetworkManager.RESULT_SUCCESS && tag.equals("add")) {
+      // Failure when querying dat for new record, delete it.
+      getContentResolver().delete(
+              QuoteProvider.Quotes.withSymbol(symbol),
+              null,
+              null
       );
     }
   }

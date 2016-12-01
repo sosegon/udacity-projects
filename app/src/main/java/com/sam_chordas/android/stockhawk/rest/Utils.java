@@ -93,15 +93,24 @@ public class Utils {
   }
 
   public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject) {
-    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-            QuoteProvider.Quotes.CONTENT_URI);
+    String symbol; // Get the symbol to create the uri to update the record
+    try {
+      symbol = jsonObject.getString("symbol").toUpperCase();
+    } catch (JSONException e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(
+            QuoteProvider.Quotes.withSymbol(symbol));
     try {
       String change = jsonObject.getString("Change");
-      builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
+      builder.withValue(QuoteColumns.SYMBOL, symbol);
       builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
       builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(jsonObject.getString("ChangeinPercent"), true));
       builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
       builder.withValue(QuoteColumns.ISCURRENT, 1);
+      builder.withValue(QuoteColumns.ISTEMP, 0); // The data has been fetched from the server, record is not longer temp
       if (change.charAt(0) == '-') {
         builder.withValue(QuoteColumns.ISUP, 0);
       } else {
@@ -163,7 +172,10 @@ public class Utils {
           batchOperations.add(cpo);
         }
       } else {
-        batchOperations.add(buildBatchOperation(jsonObject));
+        ContentProviderOperation cpo = buildBatchOperation(jsonObject);
+        if (cpo != null) {
+          batchOperations.add(cpo);
+        }
       }
     } else {
       throw new InvalidStockException("Invalid stock: " + jsonObject.getString("symbol"));
