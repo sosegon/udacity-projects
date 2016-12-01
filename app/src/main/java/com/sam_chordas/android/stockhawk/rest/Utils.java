@@ -1,9 +1,9 @@
 package com.sam_chordas.android.stockhawk.rest;
 
-import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
@@ -17,8 +17,15 @@ import android.widget.Toast;
 import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.InvalidStockException;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.PriceColumns;
+import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.model.HistoricPrice;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,11 +33,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.TimeZone;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -41,10 +43,8 @@ public class Utils {
 
   public static boolean showPercent = true;
 
-  /*
-      Throws exceptions to handle them and show meaningful comments to the user
-   */
-  public static ArrayList quoteJsonToContentVals(String JSON) throws InvalidStockException, JSONException{
+  // Throws exceptions to handle them and show meaningful comments to the user
+  public static ArrayList quoteJsonToContentVals(Context context, String JSON, int stockId) throws InvalidStockException, JSONException {
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
     JSONObject jsonObject = null;
     JSONArray resultsArray = null;
@@ -55,13 +55,13 @@ public class Utils {
       int count = Integer.parseInt(jsonObject.getString("count"));
       if (count == 1) {
         jsonObject = jsonObject.getJSONObject("results").getJSONObject("quote");
-        addToBatchOperations(jsonObject, batchOperations);
+        addToBatchOperations(context, jsonObject, batchOperations, stockId);
       } else {
         resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
         if (resultsArray != null && resultsArray.length() != 0) {
           for (int i = 0; i < resultsArray.length(); i++) {
             jsonObject = resultsArray.getJSONObject(i);
-            addToBatchOperations(jsonObject, batchOperations);
+            addToBatchOperations(context, jsonObject, batchOperations, stockId);
           }
         }
       }
@@ -114,6 +114,27 @@ public class Utils {
     return builder.build();
   }
 
+  public static ContentProviderOperation buildHistoricBatchOperation(Context context, JSONObject jsonObject, int stockId) {
+    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+            QuoteProvider.Prices.CONTENT_URI);
+    try {
+      long date = getDateInMilliSeconds(jsonObject.getString("Date"));
+      float price = Float.valueOf(truncateBidPrice(jsonObject.getString("Open")));
+      String symbol = jsonObject.getString("Symbol");
+      HistoricPrice thePrice = new HistoricPrice(symbol, stockId, date, price);
+      if (priceExists(context, thePrice)) {
+        return null;
+      }
+
+      builder.withValue(PriceColumns.QUOTE_ID, stockId);
+      builder.withValue(PriceColumns.DATE, date);
+      builder.withValue(PriceColumns.PRICE, String.valueOf(price));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return builder.build();
+  }
+
   public static boolean isValidStock(JSONObject jsonQuote) throws JSONException {
     Iterator<String> ite = jsonQuote.keys();
     while (ite.hasNext()) {
@@ -133,56 +154,63 @@ public class Utils {
     return false;
   }
 
-  public static void addToBatchOperations(JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations)
-          throws InvalidStockException, JSONException{
+  public static void addToBatchOperations(Context context, JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations, int stockId)
+          throws InvalidStockException, JSONException {
     if (isValidStock(jsonObject)) {
-      batchOperations.add(buildBatchOperation(jsonObject));
+      if (stockId >= 0) {
+        ContentProviderOperation cpo = buildHistoricBatchOperation(context, jsonObject, stockId);
+        if (cpo != null) {
+          batchOperations.add(cpo);
+        }
+      } else {
+        batchOperations.add(buildBatchOperation(jsonObject));
+      }
     } else {
       throw new InvalidStockException("Invalid stock: " + jsonObject.getString("symbol"));
     }
   }
 
   @SuppressWarnings("ResourceType")
-  public static @AppStatus.StockStatus int getStockStatus(Context context){
+  public static
+  @AppStatus.StockStatus
+  int getStockStatus(Context context) {
     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
     return pref.getInt(context.getString(R.string.pref_key_stock_status), AppStatus.STOCK_STATUS_UNKNOWN);
   }
 
-  public static String getStockQueried(Context context){
+  public static String getStockQueried(Context context) {
     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
     return pref.getString(context.getString(R.string.pref_key_stock_queried), "");
   }
 
-  public static void setSharedPreference(Context context, String key, int value, boolean rightAway){
+  public static void setSharedPreference(Context context, String key, int value, boolean rightAway) {
     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
     SharedPreferences.Editor editor = pref.edit();
     editor.putInt(key, value);
-    if(rightAway){
+    if (rightAway) {
       editor.apply();
-    }
-    else {
+    } else {
       editor.commit();
     }
   }
 
-  public static void setSharedPreference(Context context, String key, String value, boolean rightAway){
+  public static void setSharedPreference(Context context, String key, String value, boolean rightAway) {
     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
     SharedPreferences.Editor editor = pref.edit();
     editor.putString(key, value);
-    if(rightAway){
+    if (rightAway) {
       editor.apply();
-    }
-    else {
+    } else {
       editor.commit();
     }
   }
 
-  public static void updateStockStatusView(Context context, TextView txt_status){
+  public static void updateStockStatusView(Context context, TextView txt_status) {
     String message = context.getString(R.string.sta_no_stocks) + " ";
 
     @AppStatus.StockStatus int status = Utils.getStockStatus(context);
 
-    switch (status){
+    switch (status) {
       case AppStatus.STOCK_STATUS_OK:
         txt_status.setVisibility(View.GONE);
         return;
@@ -239,7 +267,7 @@ public class Utils {
     }
   }
 
-  public static String getCurrentDate(){
+  public static String getCurrentDate() {
     Calendar current = Calendar.getInstance();
     int year = current.get(Calendar.YEAR);
     int month = current.get(Calendar.MONTH) + 1;
@@ -262,31 +290,43 @@ public class Utils {
     return -1;
   }
 
-  public static String getDateInSimpleFormat(long date){
+  public static String getDateInSimpleFormat(long date) {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     Calendar calendar = Calendar.getInstance();
     calendar.setTimeInMillis(date);
     return format.format(calendar.getTime());
   }
 
-  public static String getPreviousWeekDate(String date){
+  public static String getPreviousWeekDate(String date) {
     long milliseconds = getDateInMilliSeconds(date);
     long oneWeek = 604800000L; // 7 days
 
     return getDateInSimpleFormat(milliseconds - oneWeek);
   }
 
-  public static String getPreviousMonthDate(String date){
+  public static String getPreviousMonthDate(String date) {
     long milliseconds = getDateInMilliSeconds(date);
     long oneMonth = 2592000000L; // 30 days
 
     return getDateInSimpleFormat(milliseconds - oneMonth);
   }
 
-  public static String getPreviousYearDate(String date){
+  public static String getPreviousYearDate(String date) {
     long milliseconds = getDateInMilliSeconds(date);
     long oneMonth = 31536000000L; // 365 days
 
     return getDateInSimpleFormat(milliseconds - oneMonth);
+  }
+
+  public static boolean priceExists(Context context, HistoricPrice record) {
+    Cursor c = context.getContentResolver().query(
+            QuoteProvider.Prices.CONTENT_URI,
+            Projections.HISTORIC,
+            PriceColumns.QUOTE_ID + " = ? and " + PriceColumns.DATE + " = ?",
+            new String[]{String.valueOf(record.getStockId()), String.valueOf(record.getDate())},
+            null
+    );
+
+    return c.moveToFirst();
   }
 }

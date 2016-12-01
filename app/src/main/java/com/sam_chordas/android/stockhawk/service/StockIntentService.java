@@ -3,9 +3,6 @@ package com.sam_chordas.android.stockhawk.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -23,7 +20,7 @@ public class StockIntentService extends IntentService {
   public static final String INVOKER_MESSENGER = "ims";
   public static final String WORK_DONE = "wdn";
 
-  public StockIntentService(){
+  public StockIntentService() {
     super(StockIntentService.class.getName());
   }
 
@@ -31,17 +28,20 @@ public class StockIntentService extends IntentService {
     super(name);
   }
 
-  @Override protected void onHandleIntent(Intent intent) {
+  @Override
+  protected void onHandleIntent(Intent intent) {
     Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
     StockTaskService stockTaskService = new StockTaskService(this);
     Bundle args = new Bundle();
-    if (intent.getStringExtra("tag").equals("add")){
+    String tag = intent.getStringExtra("tag");
+    if (tag.equals("add") || tag.equals("historic")) {
       args.putString("symbol", intent.getStringExtra("symbol"));
+      args.putString("stockId", intent.getStringExtra("stockId")); // pass the foreign key
     }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
     // scheduling a task.
     int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
-    if(result == GcmNetworkManager.RESULT_SUCCESS){
+    if (result == GcmNetworkManager.RESULT_SUCCESS) {
       Utils.setSharedPreference(
               this,
               this.getString(R.string.pref_key_stock_status),

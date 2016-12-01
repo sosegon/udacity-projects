@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.RemoteException;
 import android.util.Log;
+
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
  * The GCMTask service is primarily for periodic tasks. However, OnRunTask can be called directly
  * and is used for the initialization and adding task as well.
  */
-public class StockTaskService extends GcmTaskService{
+public class StockTaskService extends GcmTaskService {
   private String LOG_TAG = StockTaskService.class.getSimpleName();
 
   private Context mContext;
@@ -47,9 +48,10 @@ public class StockTaskService extends GcmTaskService{
    */
   private boolean isUpdate;
 
-  public StockTaskService(){}
+  public StockTaskService() {
+  }
 
-  public StockTaskService(Context context){
+  public StockTaskService(Context context) {
     mContext = context;
   }
 
@@ -62,7 +64,7 @@ public class StockTaskService extends GcmTaskService{
     String stocksJson = null;
     InputStream stream = null;
 
-    try{
+    try {
       URL stockUrl = new URL(url);
       connection = (HttpURLConnection) stockUrl.openConnection();
       connection.setRequestMethod("GET");
@@ -73,7 +75,7 @@ public class StockTaskService extends GcmTaskService{
       Log.d(LOG_TAG, "Error when connecting to the server.");
     }
 
-    try{
+    try {
       if (stream != null) {
         reader = new BufferedReader(new InputStreamReader(stream));
         String line;
@@ -85,7 +87,7 @@ public class StockTaskService extends GcmTaskService{
           stocksJson = output.toString();
         }
       }
-    } catch(IOException e){
+    } catch (IOException e) {
       saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
       Log.d(LOG_TAG, "Error when reading the stream from the server.");
     } finally {
@@ -105,79 +107,68 @@ public class StockTaskService extends GcmTaskService{
   }
 
   @Override
-  public int onRunTask(TaskParams params){
-    if (mContext == null){
+  public int onRunTask(TaskParams params) {
+    if (mContext == null) {
       mContext = this;
     }
 
-    /*
-        Create the base url to query the server
-     */
     StringBuilder urlStringBuilder = new StringBuilder();
-    try{
-      // Base URL for the Yahoo query
-      urlStringBuilder.append(mContext.getString(R.string.query_base_url));
-      urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
-      Log.d(LOG_TAG, "Error when encoding the head of the query url.");
+    urlStringBuilder.append(mContext.getString(R.string.query_base_url)); // Base URL for the Yahoo query
+    if (params.getTag().equals("historic")) {
+      int stockId = params.getExtras().getInt("stockId");
+      try {
+        String currentDate = Utils.getCurrentDate(),
+                previousMonthDate = Utils.getPreviousMonthDate(currentDate),
+                symbol = params.getExtras().getString("symbol"),
+                queryString = mContext.getString(
+                        R.string.query_statement_historic,
+                        symbol,
+                        previousMonthDate,
+                        currentDate
+                );
+
+        urlStringBuilder.append(URLEncoder.encode(queryString, "UTF-8"));
+        urlStringBuilder.append(mContext.getString(R.string.query_statement_tail)); // Finalize the URL for the API query
+      } catch (UnsupportedEncodingException e) {
+        saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
+        Log.d(LOG_TAG, "Error when encoding the head of the query url.");
+      }
+
+      return queryServerForHistoric(urlStringBuilder, stockId); // Query the server for historic prices
+    } else {
+      try {
+        urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
+        Log.d(LOG_TAG, "Error when encoding the head of the query url.");
+      }
+
+      if (!constructUrlForStocks(params, urlStringBuilder)) {
+        return GcmNetworkManager.RESULT_FAILURE;
+      }
+
+      urlStringBuilder.append(mContext.getString(R.string.query_statement_tail)); // Finalize the URL for the API query
+
+      return queryServerForStocks(urlStringBuilder); // Query the server for those stocks
     }
-
-    /*
-        Construct the first part of the url based on the stocks: default, in the db, new
-     */
-    if(!constructUrlForStocks(params, urlStringBuilder)){
-      return GcmNetworkManager.RESULT_FAILURE;
-    }
-
-    // finalize the URL for the API query.
-    urlStringBuilder.append(mContext.getString(R.string.query_statement_tail));
-
-    /*
-        Once the url is ready query the server for those stocks
-     */
-    return queryTheServer(urlStringBuilder);
   }
 
-  private int queryTheServer(StringBuilder urlStringBuilder){
+  private int queryServerForHistoric(StringBuilder urlStringBuilder, int stockId) {
     String getResponse;
     int result = GcmNetworkManager.RESULT_FAILURE;
 
-    if (urlStringBuilder != null){
-      /*
-          Fetch the data
-       */
-      getResponse = fetchData(urlStringBuilder.toString());
+    if (urlStringBuilder != null) {
+      getResponse = fetchData(urlStringBuilder.toString()); // Fetch data from server
 
-      /*
-          No valid data from the server for some reason;
-       */
-      if(getResponse == null){
-        // No need to set an app status, fetchData method handles that.
-        return result;
+      if (getResponse == null) {  // No valid data from the server for some reason
+        return result; // No need to set an app status, fetchData method handles that
       }
 
-      /*
-          Now, some meaningful data has been received, use it.
-       */
-      ContentValues contentValues = new ContentValues();
-      // update ISCURRENT to 0 (false) so new data is current
-      if (isUpdate){
-        contentValues.put(QuoteColumns.ISCURRENT, 0);
-        mContext.getContentResolver().update(
-                QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                null,
-                null
-        );
-      }
-
-      /*
-          Create batch operations to feed the db.
-          Set app status meaningfully when needed
-       */
+      // Create batch operations to feed the db.
+      // Set app status meaningfully when needed
       ArrayList<ContentProviderOperation> batchOperations = null;
       try {
-         batchOperations = Utils.quoteJsonToContentVals(getResponse);
+        batchOperations = Utils.quoteJsonToContentVals(mContext, getResponse, stockId);
       } catch (JSONException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
         Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
@@ -186,10 +177,7 @@ public class StockTaskService extends GcmTaskService{
         Log.d(LOG_TAG, "Error when querying a stock that does not exists.", e);
       }
 
-      /*
-          No batch operations gotten
-       */
-      if(batchOperations == null){
+      if (batchOperations == null) { // No batch operations gotten
         return result;
       }
 
@@ -198,27 +186,78 @@ public class StockTaskService extends GcmTaskService{
                 QuoteProvider.AUTHORITY,
                 batchOperations
         );
-      } catch (RemoteException | OperationApplicationException e){
+      } catch (RemoteException | OperationApplicationException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
         Log.d(LOG_TAG, "Error when a applying batch insert.", e);
       }
 
-      /*
-          Everything correct? Then, operation successful.
-       */
-      result = GcmNetworkManager.RESULT_SUCCESS;
+      result = GcmNetworkManager.RESULT_SUCCESS;  // Everything correct? Then, operation successful
     }
 
     return result;
   }
 
-  private boolean constructUrlForStocks(TaskParams params, StringBuilder urlStringBuilder){
+  private int queryServerForStocks(StringBuilder urlStringBuilder) {
+    String getResponse;
+    int result = GcmNetworkManager.RESULT_FAILURE;
+
+    if (urlStringBuilder != null) {
+      getResponse = fetchData(urlStringBuilder.toString()); // Fetch the data
+
+      if (getResponse == null) {  // No valid data from the server for some reason
+        return result;  // No need to set an app status, fetchData method handles that
+      }
+
+      // Now, some meaningful data has been received, use it
+      ContentValues contentValues = new ContentValues();
+      // update ISCURRENT to 0 (false) so new data is current
+      if (isUpdate) {
+        contentValues.put(QuoteColumns.ISCURRENT, 0);
+        mContext.getContentResolver().update(
+                QuoteProvider.Quotes.CONTENT_URI, contentValues,
+                null,
+                null
+        );
+      }
+
+      // Create batch operations to feed the db
+      // Set app status meaningfully when needed
+      ArrayList<ContentProviderOperation> batchOperations = null;
+      try {
+        batchOperations = Utils.quoteJsonToContentVals(mContext, getResponse, -1);
+      } catch (JSONException e) {
+        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
+        Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
+      } catch (InvalidStockException e) {
+        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_STOCK);
+        Log.d(LOG_TAG, "Error when querying a stock that does not exists.", e);
+      }
+
+      if (batchOperations == null) {  // No batch operations gotten
+        return result;
+      }
+
+      try {
+        mContext.getContentResolver().applyBatch(
+                QuoteProvider.AUTHORITY,
+                batchOperations
+        );
+      } catch (RemoteException | OperationApplicationException e) {
+        saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
+        Log.d(LOG_TAG, "Error when a applying batch insert.", e);
+      }
+
+      result = GcmNetworkManager.RESULT_SUCCESS;  // Everything correct? Then, operation successful
+    }
+
+    return result;
+  }
+
+  private boolean constructUrlForStocks(TaskParams params, StringBuilder urlStringBuilder) {
     Cursor initQueryCursor;
-    /*
-        "init" or "periodic" means a connection to the server based on
-        current records in the db
-     */
-    if (params.getTag().equals("init") || params.getTag().equals("periodic")){
+    // "init" or "periodic" means a connection to the server based on
+    // current records in the db
+    if (params.getTag().equals("init") || params.getTag().equals("periodic")) {
       isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(
               QuoteProvider.Quotes.CONTENT_URI,
@@ -227,13 +266,11 @@ public class StockTaskService extends GcmTaskService{
               null,
               null
       );
-      /*
-          If records, then construct the url based on them
-      */
-      if (initQueryCursor != null && initQueryCursor.getCount() > 0){
+      // If records, then construct the url based on them
+      if (initQueryCursor != null && initQueryCursor.getCount() > 0) {
         DatabaseUtils.dumpCursor(initQueryCursor); // Prints the records
         initQueryCursor.moveToFirst();
-        for (int i = 0; i < initQueryCursor.getCount(); i++){
+        for (int i = 0; i < initQueryCursor.getCount(); i++) {
           mStoredSymbols.append("\"" + initQueryCursor.getString(Projections.STOCK_SYMBOL) + "\",");
           initQueryCursor.moveToNext();
         }
@@ -248,20 +285,12 @@ public class StockTaskService extends GcmTaskService{
       } else {
         return false;
       }
-    }
-    /*
-        When tag is "add" the user is adding a new stock
-     */
-    else if (params.getTag().equals("add")){
+    } else if (params.getTag().equals("add")) {  // When tag is "add" the user is adding a new stock
       isUpdate = false;
-      // get symbol from params.getExtra and build query
-      String stockInput = params.getExtras().getString("symbol");
+      String stockInput = params.getExtras().getString("symbol"); // get symbol from params.getExtra and build query
       try {
-        /*
-            Url constructed based on that specific stock
-         */
-        urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8"));
-      } catch (UnsupportedEncodingException e){
+        urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8")); // Url constructed based on that specific stock
+      } catch (UnsupportedEncodingException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
         Log.d(LOG_TAG, "Error when encoding the new stock to query.");
         return false;
@@ -271,7 +300,7 @@ public class StockTaskService extends GcmTaskService{
     return true;
   }
 
-  private void saveAppStatus(@AppStatus.StockStatus int status){
+  private void saveAppStatus(@AppStatus.StockStatus int status) {
     Utils.setSharedPreference(
             mContext,
             mContext.getString(R.string.pref_key_stock_status),
