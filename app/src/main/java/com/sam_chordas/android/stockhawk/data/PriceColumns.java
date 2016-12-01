@@ -27,8 +27,8 @@ public interface PriceColumns {
   @NotNull
   String PRICE = "price";
 
-  @DataType(INTEGER)
+  @DataType(TEXT)
   @NotNull
-  @References(table = QuoteDatabase.QUOTES, column = QuoteColumns._ID)
-  String QUOTE_ID = "quote_id";
+  @References(table = QuoteDatabase.QUOTES, column = QuoteColumns.SYMBOL)
+  String STOCK_SYMBOL = "stock_symbol";
 }

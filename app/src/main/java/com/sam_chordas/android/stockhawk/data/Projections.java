@@ -30,11 +30,11 @@ public interface Projections {
           PriceColumns._ID,
           PriceColumns.PRICE,
           PriceColumns.DATE,
-          PriceColumns.QUOTE_ID
+          PriceColumns.STOCK_SYMBOL
   };
 
   int HISTORIC_ID = 0,
       HISTORIC_PRICE = 1,
       HISTORIC_DATE = 2,
-      HISTORIC_QUOTE_ID = 3;
+      HISTORIC_STOCK_SYMBOL = 3;
 }

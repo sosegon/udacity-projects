@@ -44,7 +44,7 @@ public class Utils {
   public static boolean showPercent = true;
 
   // Throws exceptions to handle them and show meaningful comments to the user
-  public static ArrayList quoteJsonToContentVals(Context context, String JSON, int stockId) throws InvalidStockException, JSONException {
+  public static ArrayList quoteJsonToContentVals(Context context, String JSON, boolean historic) throws InvalidStockException, JSONException {
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
     JSONObject jsonObject = null;
     JSONArray resultsArray = null;
@@ -55,13 +55,13 @@ public class Utils {
       int count = Integer.parseInt(jsonObject.getString("count"));
       if (count == 1) {
         jsonObject = jsonObject.getJSONObject("results").getJSONObject("quote");
-        addToBatchOperations(context, jsonObject, batchOperations, stockId);
+        addToBatchOperations(context, jsonObject, batchOperations, historic);
       } else {
         resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
         if (resultsArray != null && resultsArray.length() != 0) {
           for (int i = 0; i < resultsArray.length(); i++) {
             jsonObject = resultsArray.getJSONObject(i);
-            addToBatchOperations(context, jsonObject, batchOperations, stockId);
+            addToBatchOperations(context, jsonObject, batchOperations, historic);
           }
         }
       }
@@ -123,19 +123,19 @@ public class Utils {
     return builder.build();
   }
 
-  public static ContentProviderOperation buildHistoricBatchOperation(Context context, JSONObject jsonObject, int stockId) {
+  public static ContentProviderOperation buildHistoricBatchOperation(Context context, JSONObject jsonObject) {
     ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
             QuoteProvider.Prices.CONTENT_URI);
     try {
       long date = getDateInMilliSeconds(jsonObject.getString("Date"));
       float price = Float.valueOf(truncateBidPrice(jsonObject.getString("Open")));
       String symbol = jsonObject.getString("Symbol");
-      HistoricPrice thePrice = new HistoricPrice(symbol, stockId, date, price);
+      HistoricPrice thePrice = new HistoricPrice(symbol, -1, date, price);
       if (priceExists(context, thePrice)) {
         return null;
       }
 
-      builder.withValue(PriceColumns.QUOTE_ID, stockId);
+      builder.withValue(PriceColumns.STOCK_SYMBOL, symbol);
       builder.withValue(PriceColumns.DATE, date);
       builder.withValue(PriceColumns.PRICE, String.valueOf(price));
     } catch (JSONException e) {
@@ -163,11 +163,11 @@ public class Utils {
     return false;
   }
 
-  public static void addToBatchOperations(Context context, JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations, int stockId)
+  public static void addToBatchOperations(Context context, JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations, boolean historic)
           throws InvalidStockException, JSONException {
     if (isValidStock(jsonObject)) {
-      if (stockId >= 0) {
-        ContentProviderOperation cpo = buildHistoricBatchOperation(context, jsonObject, stockId);
+      if (historic) {
+        ContentProviderOperation cpo = buildHistoricBatchOperation(context, jsonObject);
         if (cpo != null) {
           batchOperations.add(cpo);
         }
@@ -332,10 +332,10 @@ public class Utils {
 
   public static boolean priceExists(Context context, HistoricPrice record) {
     Cursor c = context.getContentResolver().query(
-            QuoteProvider.Prices.CONTENT_URI,
+            QuoteProvider.Prices.historicPoint(record.getSymbol(), record.getDate()),
             Projections.HISTORIC,
-            PriceColumns.QUOTE_ID + " = ? and " + PriceColumns.DATE + " = ?",
-            new String[]{String.valueOf(record.getStockId()), String.valueOf(record.getDate())},
+            null,
+            null,
             null
     );
 

@@ -37,7 +37,7 @@ public class QuoteProvider {
     public static final Uri CONTENT_URI = buildUri(Path.QUOTES);
 
     @InexactContentUri(
-        name = "QUOTE_ID",
+        name = "STOCK_SYMBOL",
         path = Path.QUOTES + "/*",
         type = "vnd.android.cursor.item/quote",
         whereColumn = QuoteColumns.SYMBOL,
@@ -58,13 +58,24 @@ public class QuoteProvider {
 
     @InexactContentUri(
             name = "DATE_RANGE",
-            path = Path.QUOTES + "/*/#/#",
+            path = Path.PRICES + "/*/#/#",
             type = "vnd.android.cursor.dir/price",
-            whereColumn = PriceColumns.QUOTE_ID,
-            pathSegment = 1
+            whereColumn = {PriceColumns.STOCK_SYMBOL, PriceColumns.DATE + ">", PriceColumns.DATE + "<"},
+            pathSegment = {1, 2, 3}
     )
-    public static Uri historic(String symbol, long startDate, long endDate){
-      return buildUri(Path.QUOTES, symbol, String.valueOf(startDate), String.valueOf(endDate));
+    public static Uri historicRange(String stockName, long startDate, long endDate){
+      return buildUri(Path.PRICES, stockName, String.valueOf(startDate), String.valueOf(endDate));
+    }
+
+    @InexactContentUri(
+            name = "DATE",
+            path = Path.PRICES + "/*/#",
+            type = "vnd.android.cursor.dir/price",
+            whereColumn = {PriceColumns.STOCK_SYMBOL, PriceColumns.DATE},
+            pathSegment = {1, 2}
+    )
+    public static Uri historicPoint(String stockName, long date){
+      return buildUri(Path.PRICES, stockName, String.valueOf(date));
     }
   }
 }

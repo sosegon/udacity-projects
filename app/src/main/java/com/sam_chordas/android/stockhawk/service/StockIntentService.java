@@ -39,7 +39,6 @@ public class StockIntentService extends IntentService {
     String symbol = intent.getStringExtra("symbol");
     if (tag.equals("add") || tag.equals("historic")) {
       args.putString("symbol", symbol);
-      args.putString("stockId", intent.getStringExtra("stockId")); // pass the foreign key
     }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
     // scheduling a task.

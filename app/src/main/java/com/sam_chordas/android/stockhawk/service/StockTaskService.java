@@ -115,7 +115,6 @@ public class StockTaskService extends GcmTaskService {
     StringBuilder urlStringBuilder = new StringBuilder();
     urlStringBuilder.append(mContext.getString(R.string.query_base_url)); // Base URL for the Yahoo query
     if (params.getTag().equals("historic")) {
-      int stockId = params.getExtras().getInt("stockId");
       try {
         String currentDate = Utils.getCurrentDate(),
                 previousMonthDate = Utils.getPreviousMonthDate(currentDate),
@@ -134,7 +133,7 @@ public class StockTaskService extends GcmTaskService {
         Log.d(LOG_TAG, "Error when encoding the head of the query url.");
       }
 
-      return queryServerForHistoric(urlStringBuilder, stockId); // Query the server for historic prices
+      return queryServer(urlStringBuilder, true); // Query the server for historicRange prices
     } else {
       try {
         urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
@@ -149,11 +148,11 @@ public class StockTaskService extends GcmTaskService {
 
       urlStringBuilder.append(mContext.getString(R.string.query_statement_tail)); // Finalize the URL for the API query
 
-      return queryServerForStocks(urlStringBuilder); // Query the server for those stocks
+      return queryServer(urlStringBuilder, false); // Query the server for those stocks
     }
   }
 
-  private int queryServerForHistoric(StringBuilder urlStringBuilder, int stockId) {
+  private int queryServer(StringBuilder urlStringBuilder, boolean historic) {
     String getResponse;
     int result = GcmNetworkManager.RESULT_FAILURE;
 
@@ -168,7 +167,7 @@ public class StockTaskService extends GcmTaskService {
       // Set app status meaningfully when needed
       ArrayList<ContentProviderOperation> batchOperations = null;
       try {
-        batchOperations = Utils.quoteJsonToContentVals(mContext, getResponse, stockId);
+        batchOperations = Utils.quoteJsonToContentVals(mContext, getResponse, historic);
       } catch (JSONException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
         Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
@@ -178,51 +177,6 @@ public class StockTaskService extends GcmTaskService {
       }
 
       if (batchOperations == null) { // No batch operations gotten
-        return result;
-      }
-
-      try {
-        mContext.getContentResolver().applyBatch(
-                QuoteProvider.AUTHORITY,
-                batchOperations
-        );
-      } catch (RemoteException | OperationApplicationException e) {
-        saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
-        Log.d(LOG_TAG, "Error when a applying batch insert.", e);
-      }
-
-      result = GcmNetworkManager.RESULT_SUCCESS;  // Everything correct? Then, operation successful
-    }
-
-    return result;
-  }
-
-  private int queryServerForStocks(StringBuilder urlStringBuilder) {
-    String getResponse;
-    int result = GcmNetworkManager.RESULT_FAILURE;
-
-    if (urlStringBuilder != null) {
-      getResponse = fetchData(urlStringBuilder.toString()); // Fetch the data
-
-      if (getResponse == null) {  // No valid data from the server for some reason
-        return result;  // No need to set an app status, fetchData method handles that
-      }
-
-      // Do not update records with empty values
-      // Create batch operations to feed the db
-      // Set app status meaningfully when needed
-      ArrayList<ContentProviderOperation> batchOperations = null;
-      try {
-        batchOperations = Utils.quoteJsonToContentVals(mContext, getResponse, -1);
-      } catch (JSONException e) {
-        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
-        Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
-      } catch (InvalidStockException e) {
-        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_STOCK);
-        Log.d(LOG_TAG, "Error when querying a stock that does not exists.", e);
-      }
-
-      if (batchOperations == null) {  // No batch operations gotten
         return result;
       }
 
