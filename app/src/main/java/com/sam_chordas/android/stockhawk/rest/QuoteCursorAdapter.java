@@ -47,8 +47,10 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
 
   @Override
   public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
-    viewHolder.symbol.setText(cursor.getString(Projections.STOCK_SYMBOL));
-    viewHolder.bidPrice.setText(cursor.getString(Projections.STOCK_BIDPRICE));
+    String symbol = cursor.getString(Projections.STOCK_SYMBOL);
+    String bidPrice = cursor.getString(Projections.STOCK_BIDPRICE);
+    viewHolder.symbol.setText(symbol);
+    viewHolder.bidPrice.setText(bidPrice);
     int sdk = Build.VERSION.SDK_INT;
     if (cursor.getInt(Projections.STOCK_ISUP) == 1){
       if (sdk < Build.VERSION_CODES.JELLY_BEAN){
@@ -67,16 +69,23 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
             mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
       }
     }
-    if (Utils.showPercent){
-      viewHolder.change.setText(cursor.getString(Projections.STOCK_PERCENT_CHANGE));
-    } else{
-      viewHolder.change.setText(cursor.getString(Projections.STOCK_CHANGE));
-    }
+    String change = Utils.showPercent ? cursor.getString(Projections.STOCK_PERCENT_CHANGE)
+                                      : cursor.getString(Projections.STOCK_CHANGE);
+    viewHolder.change.setText(change);
 
     boolean isTemp = cursor.getInt(Projections.STOCK_ISTEMP) == 1;
     viewHolder.pgr.setVisibility(isTemp ? View.VISIBLE : View.GONE);
     viewHolder.bidPrice.setVisibility(!isTemp ? View.VISIBLE : View.GONE);
     viewHolder.change.setVisibility(!isTemp ? View.VISIBLE : View.GONE);
+
+    String symbolDesc = mContext.getString(R.string.desc_stock_name, Utils.spellWord(symbol));
+    String priceDesc = mContext.getString(R.string.desc_stock_current_price, Utils.spellWord(bidPrice));
+    int descRes = Utils.showPercent ? R.string.desc_stock_percentage_change : R.string.desc_stock_price_change;
+    String changeDesc = mContext.getString(descRes, Utils.spellWord(change));
+
+    viewHolder.symbol.setContentDescription(symbolDesc);
+    viewHolder.bidPrice.setContentDescription(priceDesc);
+    viewHolder.change.setContentDescription(changeDesc);
   }
 
   @Override public void onItemDismiss(int position) {

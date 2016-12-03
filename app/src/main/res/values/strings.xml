@@ -36,4 +36,13 @@
   <string name="today">Today</string>
   <string name="yesterday">Yesterday</string>
   <string name="format_full_friendly_date"><xliff:g id="month">%1$s</xliff:g>, <xliff:g id="day">%2$s</xliff:g></string>
+
+  <!-- Accessibility -->
+  <string name="desc_stock_name">stock name is <xliff:g id="name">%1$s</xliff:g></string>
+  <string name="desc_stock_current_price">current price is <xliff:g id="price">%1$s</xliff:g></string>
+  <string name="desc_stock_percentage_change">percentage change is <xliff:g id="variation">%1$s</xliff:g></string>
+  <string name="desc_stock_price_change">price change is <xliff:g id="variation">%1$s</xliff:g></string>
+  <string name="desc_add_stock">add new stock</string>
+  <string name="desc_stocks_status">status of data stocks</string>
+  <string name="desc_stock_loading">loading stock data</string>
 </resources>

@@ -29,6 +29,7 @@
         android:visibility="visible"
         android:layout_gravity="right"
         android:id="@+id/pgr"
+        android:contentDescription="@string/desc_stock_loading"
         />
     <TextView
         android:id="@+id/bid_price"

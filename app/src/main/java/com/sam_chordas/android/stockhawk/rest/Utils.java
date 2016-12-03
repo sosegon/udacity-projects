@@ -411,4 +411,13 @@ public class Utils {
     String monthDayString = monthDayFormat.format(dateInMillis);
     return monthDayString;
   }
+
+  public static String spellWord(String word){
+    String spell = "";
+    char[] letters =  word.toCharArray();
+    for(char l : letters){
+      spell += l + " ";
+    }
+    return spell;
+  }
 }
