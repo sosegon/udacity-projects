@@ -45,4 +45,9 @@
   <string name="desc_add_stock">add new stock</string>
   <string name="desc_stocks_status">status of data stocks</string>
   <string name="desc_stock_loading">loading stock data</string>
+
+  <string name="desc_stock_max_price"><xliff:g id="name">%1$s</xliff:g> max price is <xliff:g id="value">%2$s</xliff:g></string>
+  <string name="desc_stock_min_price"><xliff:g id="name">%1$s</xliff:g> min price is <xliff:g id="value">%2$s</xliff:g></string>
+  <string name="desc_stock_max_date"><xliff:g id="name">%1$s</xliff:g> max price date is <xliff:g id="value">%2$s</xliff:g></string>
+  <string name="desc_stock_min_date"><xliff:g id="name">%1$s</xliff:g> min price date is <xliff:g id="value">%2$s</xliff:g></string>
 </resources>

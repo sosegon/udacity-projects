@@ -40,6 +40,8 @@ public class HistoricPriceCursorAdapter extends BaseAdapter {
   private ViewHolder mHolder;
   private DataSetObserver mDataSetObserver;
   private Context mContext;
+  private String mStockName;
+  private String mStockNameSpell;
 
   private Cursor mCursor;
 
@@ -116,11 +118,19 @@ public class HistoricPriceCursorAdapter extends BaseAdapter {
       max = val > max ? val : max;
     }
 
-    mHolder.txt_stock_high.setText(String.valueOf(max));
+    String value = String.valueOf(max);
     mCursor.moveToPosition(c);
-    mHolder.txt_date_high.setText(
-            Utils.getFriendlyDayString(mContext, mCursor.getLong(Projections.HISTORIC_DATE))
+    String date = Utils.getFriendlyDayString(mContext, mCursor.getLong(Projections.HISTORIC_DATE));
+    mHolder.txt_stock_high.setText(value);
+    mHolder.txt_date_high.setText(date);
+
+    mHolder.txt_stock_high.setContentDescription(
+            mContext.getString(R.string.desc_stock_max_price, mStockNameSpell, value)
     );
+    mHolder.txt_date_high.setContentDescription(
+            mContext.getString(R.string.desc_stock_max_date, mStockNameSpell, date)
+    );
+
   }
 
   private void updateMinPrice() {
@@ -133,23 +143,35 @@ public class HistoricPriceCursorAdapter extends BaseAdapter {
       min = val < min ? val : min;
     }
 
-    mHolder.txt_stock_low.setText(String.valueOf(min));
+    String value = String.valueOf(min);
     mCursor.moveToPosition(c);
-    mHolder.txt_date_low.setText(
-            Utils.getFriendlyDayString(mContext, mCursor.getLong(Projections.HISTORIC_DATE))
+    String date = Utils.getFriendlyDayString(mContext, mCursor.getLong(Projections.HISTORIC_DATE));
+    mHolder.txt_stock_low.setText(value);
+    mHolder.txt_date_low.setText(date);
+
+    mHolder.txt_stock_low.setContentDescription(
+            mContext.getString(R.string.desc_stock_min_price, mStockNameSpell, value)
+    );
+    mHolder.txt_date_low.setContentDescription(
+            mContext.getString(R.string.desc_stock_min_date, mStockNameSpell, date)
     );
   }
 
   private void updateStockName() {
     mCursor.moveToFirst();
-    mHolder.txt_stock_name.setText(mCursor.getString(Projections.HISTORIC_STOCK_SYMBOL));
+    mStockName = (mCursor.getString(Projections.HISTORIC_STOCK_SYMBOL));
+    mStockNameSpell = Utils.spellWord(mStockName);
+    mHolder.txt_stock_name.setText(mStockName);
+    mHolder.txt_stock_name.setContentDescription(
+            mContext.getString(R.string.desc_stock_name, mStockNameSpell)
+    );
   }
 
   private void updateView(){
     // Update the text views with the data from the cursor
+    updateStockName();
     updateMaxPrice();
     updateMinPrice();
-    updateStockName();
 
     // TODO: Check this so the number of points when swapping cursors is the same
     // This leads to errors when the app loads data from the content provider, then
