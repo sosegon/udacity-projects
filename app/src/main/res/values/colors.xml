@@ -10,6 +10,6 @@
   <color name="colorPrimaryLight">#B0BEC5</color>
   <color name="colorTextIcons">#FFFFFF</color>
   <color name="colorAccent">#FF5722</color>
-  <color name="colorPrimaryText">#F5F5F5</color>
+  <color name="colorPrimaryText">#E0E0E0</color>
   <color name="colorSecondaryText">#9E9E9E</color>
 </resources>

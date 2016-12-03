@@ -180,8 +180,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override
               public void onItemClick(View v, int position) {
-                //TODO:
-                // do something on item click
+                mCursor.moveToPosition(position);
+                String stockName = mCursor.getString(Projections.STOCK_SYMBOL);
+                Intent intent = new Intent(MyStocksActivity.this, LineGraphActivity.class);
+                intent.putExtra("stockName", stockName);
+                startActivity(intent);
               }
             }));
 

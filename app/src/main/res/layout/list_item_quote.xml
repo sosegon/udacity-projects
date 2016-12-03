@@ -11,6 +11,7 @@
   <TextView
       android:id="@+id/stock_symbol"
       style="@style/StockSymbolTextStyle"
+      android:textColor="@color/colorPrimaryText"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:gravity="left|center_vertical"
@@ -37,6 +38,7 @@
         android:paddingRight="10sp"
         tools:text="1000.00"
         android:visibility="gone"
+        android:textColor="@color/colorSecondaryText"
         />
     <TextView
         android:id="@+id/change"
@@ -48,6 +50,7 @@
         android:paddingRight="3dp"
         tools:text="100%"
         android:visibility="gone"
+        android:textColor="@color/colorPrimaryText"
         />
   </LinearLayout>
 </LinearLayout>

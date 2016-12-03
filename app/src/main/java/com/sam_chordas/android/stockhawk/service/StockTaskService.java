@@ -114,7 +114,8 @@ public class StockTaskService extends GcmTaskService {
 
     StringBuilder urlStringBuilder = new StringBuilder();
     urlStringBuilder.append(mContext.getString(R.string.query_base_url)); // Base URL for the Yahoo query
-    if (params.getTag().equals("historic")) {
+    boolean isHistoric = params.getTag().equals("historic");
+    if (isHistoric) {
       try {
         String currentDate = Utils.getCurrentDate(),
                 previousMonthDate = Utils.getPreviousMonthDate(currentDate),
@@ -132,8 +133,6 @@ public class StockTaskService extends GcmTaskService {
         saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
         Log.d(LOG_TAG, "Error when encoding the head of the query url.");
       }
-
-      return queryServer(urlStringBuilder, true); // Query the server for historicRange prices
     } else {
       try {
         urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
@@ -147,9 +146,8 @@ public class StockTaskService extends GcmTaskService {
       }
 
       urlStringBuilder.append(mContext.getString(R.string.query_statement_tail)); // Finalize the URL for the API query
-
-      return queryServer(urlStringBuilder, false); // Query the server for those stocks
     }
+    return queryServer(urlStringBuilder, isHistoric); // Query the server for those stocks
   }
 
   private int queryServer(StringBuilder urlStringBuilder, boolean historic) {

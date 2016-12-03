@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:columnCount="3">
+
+    <TextView
+        android:id="@+id/txt_stock_high"
+        style="@style/txt_detailed_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:layout_columnWeight="1"/>
+
+    <TextView
+        android:id="@+id/txt_stock_name"
+        style="@style/txt_detailed_info"
+        android:textColor="@color/colorPrimaryText"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_gravity="center"
+        app:layout_columnWeight="2"
+        app:layout_rowSpan="2"/>
+
+    <TextView
+        android:id="@+id/txt_stock_low"
+        style="@style/txt_detailed_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_columnWeight="1"/>
+
+    <TextView
+        android:id="@+id/txt_date_high"
+        style="@style/txt_detailed_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_columnWeight="1"/>
+
+    <TextView
+        android:id="@+id/txt_date_low"
+        style="@style/txt_detailed_info"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_columnWeight="1"/>
 
     <com.db.chart.view.LineChartView
         xmlns:chart="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/linechart"
+        android:id="@+id/lch_history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        app:layout_rowWeight="1"
+        chart:layout_columnSpan="3"/>
 
-</FrameLayout>
+</android.support.v7.widget.GridLayout>
