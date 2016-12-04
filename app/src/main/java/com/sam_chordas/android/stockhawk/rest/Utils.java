@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -419,5 +422,33 @@ public class Utils {
       spell += l + " ";
     }
     return spell;
+  }
+
+  // update current stocks isTemp and isCurrent values for UI purposes
+  // The idea is that when the application starts or resumes, the records
+  // in the db are updated right away with values of temp and current that are
+  // used to modify the view, so the users gets an idea of what is going on.
+  // When temp is 1, then a progress bar is displayed
+  // When current is 0, the value of the stock price is italic
+  public static  ArrayList<ContentProviderOperation> updateStocksUIPurpose(Cursor c, int temp, int current) {
+    ArrayList<ContentProviderOperation> cpo = new ArrayList<>();
+
+    if(c == null || c.getCount() == 0) {
+      return cpo;
+    }
+
+    while(c.moveToNext()) {
+      String symbol = c.getString(Projections.STOCK_SYMBOL);
+      ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(
+              QuoteProvider.Quotes.withSymbol(symbol)
+      );
+
+      builder.withValue(QuoteColumns.ISTEMP, temp);
+      builder.withValue(QuoteColumns.ISCURRENT, current);
+
+      cpo.add(builder.build());
+    }
+
+    return cpo;
   }
 }
