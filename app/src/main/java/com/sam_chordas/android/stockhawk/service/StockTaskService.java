@@ -68,6 +68,7 @@ public class StockTaskService extends GcmTaskService {
       URL stockUrl = new URL(url);
       connection = (HttpURLConnection) stockUrl.openConnection();
       connection.setRequestMethod("GET");
+      connection.setConnectTimeout(10000); // ten seconds to connect
       connection.connect();
       stream = connection.getInputStream();
     } catch (IOException e) {
