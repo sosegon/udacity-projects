@@ -143,7 +143,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     if (data.getCount() == 0) {
       saveAppStatus(AppStatus.STOCK_STATUS_NO_STOCKS);
     }
-    Utils.updateStockStatusView(this, txt_message);
+    Utils.updateStockStatusView(this, txt_message, mCursor.getCount() > 0);
   }
 
   @Override
@@ -258,7 +258,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                   .show();
         } else {
           saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
-          Utils.updateStockStatusView(mContext, txt_message);
+          Utils.updateStockStatusView(mContext, txt_message, false);
         }
       }
     });

@@ -18,10 +18,11 @@
   <!-- Status messages -->
   <string name="sta_no_stocks">No stocks available.</string>
   <string name="sta_no_connection">No connection.</string>
+  <string name="sta_no_latest">Shown data may not be the latest.</string>
   <string name="sta_no_response">Server not responding.</string>
   <string name="sta_invalid_data">Invalid data.</string>
   <string name="sta_invalid_stock">Invalid stock: <xliff:g id="data">%1$s</xliff:g></string>
-  <string name="sta_unknown">Unknown.</string>
+  <string name="sta_unknown">Unknown error.</string>
   <string name="sta_encoding_error">Encoding error.</string>
   <string name="sta_database_error">Database error.</string>
   <string name="sta_no_stocks_error">No stocks queried. Add a stock.</string>

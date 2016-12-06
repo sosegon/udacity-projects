@@ -221,31 +221,36 @@ public class Utils {
     }
   }
 
-  public static void updateStockStatusView(Context context, TextView txt_status) {
-    String message = context.getString(R.string.sta_no_stocks) + " ";
+  public static void updateStockStatusView(Context context, TextView txt_status, boolean stocksInDb) {
+    String message = "";
 
     @AppStatus.StockStatus int status = Utils.getStockStatus(context);
 
+    txt_status.setVisibility(View.GONE);
     switch (status) {
       case AppStatus.STOCK_STATUS_OK:
-        txt_status.setVisibility(View.GONE);
         return;
       case AppStatus.STOCK_STATUS_UNKNOWN:
         message += context.getString(R.string.sta_unknown);
         break;
       case AppStatus.STOCK_STATUS_NO_CONNECTION:
         message += context.getString(R.string.sta_no_connection);
+        if(stocksInDb){
+          message += " " + context.getString(R.string.sta_no_latest);
+        }
         break;
       case AppStatus.STOCK_STATUS_NO_RESPONSE:
         message += context.getString(R.string.sta_no_response);
+        if(stocksInDb){
+          message += " " + context.getString(R.string.sta_no_latest);
+        }
         break;
       case AppStatus.STOCK_STATUS_INVALID_DATA:
         message += context.getString(R.string.sta_invalid_data);
         break;
       case AppStatus.STOCK_STATUS_INVALID_STOCK:
         message += context.getString(R.string.sta_invalid_stock, getStockQueried(context));
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-        return;
+        break;
       case AppStatus.STOCK_STATUS_ENCODING_ERROR:
         message += context.getString(R.string.sta_encoding_error);
         break;
@@ -254,13 +259,14 @@ public class Utils {
         break;
       case AppStatus.STOCK_STATUS_NO_STOCKS:
         message += context.getString(R.string.sta_no_stocks_error);
-        break;
+        txt_status.setText(message);
+        txt_status.setVisibility(View.VISIBLE);
+        return;
       default:
         break;
     }
 
-    txt_status.setText(message);
-    txt_status.setVisibility(View.VISIBLE);
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show();
   }
 
   public static boolean isNetworkAvailable(Context context) {
