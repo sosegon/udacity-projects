@@ -9,7 +9,6 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.R;
-import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
@@ -19,8 +18,6 @@ import com.sam_chordas.android.stockhawk.rest.Utils;
 public class StockIntentService extends IntentService {
 
   public final static String LOG_TAG = StockIntentService.class.getSimpleName();
-  public static final String INVOKER_MESSENGER = "ims";
-  public static final String WORK_DONE = "wdn";
 
   public StockIntentService() {
     super(StockIntentService.class.getName());
@@ -50,13 +47,20 @@ public class StockIntentService extends IntentService {
               AppStatus.STOCK_STATUS_OK,
               false
       );
-    } else if(result != GcmNetworkManager.RESULT_SUCCESS && tag.equals("add")) {
+    } else if (result != GcmNetworkManager.RESULT_SUCCESS && tag.equals("add")) {
       // Failure when querying dat for new record, delete it.
       getContentResolver().delete(
               QuoteProvider.Quotes.withSymbol(symbol),
               null,
               null
       );
+    } else if (result != GcmNetworkManager.RESULT_SUCCESS && (tag.equals("init") || tag.equals("periodic"))) {
+      Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
+      contentProviderIntent.putExtra(
+              ContentProviderService.CP_SERVICE_OPERATION,
+              ContentProviderService.CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE
+      );
+      startService(contentProviderIntent);
     }
   }
 }

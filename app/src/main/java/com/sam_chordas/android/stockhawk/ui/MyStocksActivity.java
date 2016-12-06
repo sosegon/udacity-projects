@@ -3,6 +3,7 @@ package com.sam_chordas.android.stockhawk.ui;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v4.content.CursorLoader;
 import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
@@ -30,6 +31,8 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.service.ContentProviderReceiver;
+import com.sam_chordas.android.stockhawk.service.ContentProviderService;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.google.android.gms.gcm.GcmNetworkManager;
@@ -74,6 +77,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     configAddButton();
     configPeriodicTask();
     goLoader();
+    updateStocks();
 
     mServiceIntent = new Intent(this, StockIntentService.class);
   }
@@ -126,8 +130,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             this,
             QuoteProvider.Quotes.CONTENT_URI,
             Projections.STOCK,
-            QuoteColumns.ISCURRENT + " = ?",
-            new String[]{"1"},
+            null,
+            null,
             null
     );
   }
@@ -154,23 +158,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             status,
             true
     );
-  }
-
-  private void connectToServer() {
-    // Run the initialize task service so that some stocks appear upon an empty database
-    mServiceIntent.putExtra("tag", "init");
-    if (isConnected) {
-        /*
-           TODO: Why is the service started here?
-           Once the loader has finished and no data have been found,
-           the service should be started. If data is found, then the
-           service should start to update the db
-         */
-      startService(mServiceIntent);
-    } else {
-      saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
-      Utils.updateStockStatusView(this, txt_message);
-    }
   }
 
   private void configRecycler() {
@@ -301,5 +288,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   private void goLoader() {
     Utils.goLoader(this, CURSOR_LOADER_ID, this);
+  }
+
+  private void updateStocks(){
+    Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
+    contentProviderIntent.putExtra(
+            ContentProviderService.CP_SERVICE_OPERATION,
+            ContentProviderService.CP_SERVICE_UPDATE_TO_QUERY_SERVER
+    );
+
+    startService(contentProviderIntent);
   }
 }

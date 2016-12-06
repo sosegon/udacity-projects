@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -77,6 +76,10 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     viewHolder.pgr.setVisibility(isTemp ? View.VISIBLE : View.GONE);
     viewHolder.bidPrice.setVisibility(!isTemp ? View.VISIBLE : View.GONE);
     viewHolder.change.setVisibility(!isTemp ? View.VISIBLE : View.GONE);
+
+    boolean isCurrent = cursor.getInt(Projections.STOCK_ISCURRENT) == 1;
+    viewHolder.bidPrice.setTypeface(null, isCurrent ? Typeface.BOLD : Typeface.ITALIC);
+    viewHolder.change.setTypeface(null, isCurrent ? Typeface.BOLD : Typeface.ITALIC);
 
     String symbolDesc = mContext.getString(R.string.desc_stock_name, Utils.spellWord(symbol));
     String priceDesc = mContext.getString(R.string.desc_stock_current_price, Utils.spellWord(bidPrice));

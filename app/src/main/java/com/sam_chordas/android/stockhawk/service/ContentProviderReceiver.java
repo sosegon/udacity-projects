@@ -16,6 +16,7 @@ public class ContentProviderReceiver extends ResultReceiver {
     void onResolveResult(int resultCode, Bundle resultData);
   }
 
+  public final static String TAG = "content_provider_receiver";
   private Resolver mResolver;
 
   public ContentProviderReceiver(Handler handler) {

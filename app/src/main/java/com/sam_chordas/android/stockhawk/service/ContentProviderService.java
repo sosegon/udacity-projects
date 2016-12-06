@@ -26,17 +26,12 @@ import java.util.ArrayList;
  */
 public class ContentProviderService extends IntentService {
   @Retention(RetentionPolicy.SOURCE)
-  @IntDef({CP_SERVICE_INSERT, CP_SERVICE_UPDATE, CP_SERVICE_QUERY, CP_SERVICE_DELETE, CP_SERVICE_BULK_INSERT, CP_SERVICE_UPDATE_TO_QUERY_SERVER})
+  @IntDef({CP_SERVICE_UPDATE_TO_QUERY_SERVER, CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE})
   public @interface DbOperations{}
 
-  public static final String CP_SERVICE_OPERATION = "dbso";
-  public static final String CP_SERVICE_VALUE = "dbsv";
-  public static final int CP_SERVICE_INSERT = 0;
-  public static final int CP_SERVICE_UPDATE = 1;
-  public static final int CP_SERVICE_QUERY = 2;
-  public static final int CP_SERVICE_DELETE = 3;
-  public static final int CP_SERVICE_BULK_INSERT = 4;
-  public static final int CP_SERVICE_UPDATE_TO_QUERY_SERVER = 5;
+  public static final String CP_SERVICE_OPERATION = "cpso";
+  public static final int CP_SERVICE_UPDATE_TO_QUERY_SERVER = 0;
+  public static final int CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE = 1;
 
   private final static String LOG_TAG = ContentProviderService.class.getSimpleName();
 
@@ -46,10 +41,11 @@ public class ContentProviderService extends IntentService {
 
   @Override
   protected void onHandleIntent(Intent intent) {
-
+    Cursor c;
+    ArrayList<ContentProviderOperation> batchOperations;
     switch (intent.getIntExtra(CP_SERVICE_OPERATION, -1)) {
       case CP_SERVICE_UPDATE_TO_QUERY_SERVER:
-        Cursor c = getContentResolver().query(
+        c = getContentResolver().query(
                 QuoteProvider.Quotes.CONTENT_URI,
                 Projections.STOCK,
                 null,
@@ -57,7 +53,7 @@ public class ContentProviderService extends IntentService {
                 null
         );
 
-        ArrayList<ContentProviderOperation> batchOperations = Utils.updateStocksToQueryServerOperation(c);
+        batchOperations = Utils.updateStocksUIPurpose(c, 1, 0);
 
         try {
           getContentResolver().applyBatch(
@@ -65,19 +61,38 @@ public class ContentProviderService extends IntentService {
                   batchOperations
           );
 
-          ResultReceiver receiver = intent.getParcelableExtra("receiver");
-          Bundle args = new Bundle();
-          args.putString("cpOperation", "done");
-          receiver.send(0, args);
+          // connect to the server and query new data
+          Intent service = new Intent(this, StockIntentService.class);
+          service.putExtra("tag", "init");
+          startService(service);
         } catch (RemoteException | OperationApplicationException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
           Log.d(LOG_TAG, "Error when a applying batch insert.", e);
         }
-
         break;
-            /*
-                TODO: add the rest of DB operations
-             */
+
+      case CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE:
+        c = getContentResolver().query(
+                QuoteProvider.Quotes.CONTENT_URI,
+                Projections.STOCK,
+                null,
+                null,
+                null
+        );
+
+        batchOperations = Utils.updateStocksUIPurpose(c, 0, 0);
+
+        try {
+          getContentResolver().applyBatch(
+                  QuoteProvider.AUTHORITY,
+                  batchOperations
+          );
+        } catch (RemoteException | OperationApplicationException e) {
+          saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
+          Log.d(LOG_TAG, "Error when a applying batch insert.", e);
+        }
+        break;
+
       default:
         break;
     }
