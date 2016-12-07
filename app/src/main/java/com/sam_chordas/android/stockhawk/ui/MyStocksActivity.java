@@ -55,7 +55,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private QuoteCursorAdapter mCursorAdapter;
   private Context mContext;
   private Cursor mCursor;
-  boolean isConnected;
 
   private TextView txt_message;
   private RecyclerView recycler_view;
@@ -68,7 +67,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     mContext = this;
     mTitle = getTitle();
-    isConnected = Utils.isNetworkAvailable(mContext);
     txt_message = (TextView) findViewById(R.id.txt_status);
 
     configRecycler();
@@ -187,7 +185,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        if (isConnected) {
+        if (Utils.isNetworkAvailable(MyStocksActivity.this)) {
           new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
                   .content(R.string.content_test)
                   .inputType(InputType.TYPE_CLASS_TEXT)
@@ -263,7 +261,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   }
 
   private void configPeriodicTask() {
-    if (isConnected) {
+    if (Utils.isNetworkAvailable(this)) {
       long period = 3600L;
       long flex = 10L;
       String periodicTag = "periodic";
