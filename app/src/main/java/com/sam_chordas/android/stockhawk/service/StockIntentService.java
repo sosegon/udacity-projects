@@ -96,7 +96,7 @@ public class StockIntentService extends IntentService {
       startService(contentProviderIntent);
     }
     // Delete dumb record to restart the loader and update ui properly
-    else if(tag.equals("historic")){
+    if(tag.equals("historic")){
       Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 0, true);
       Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
       contentProviderIntent.putExtra(

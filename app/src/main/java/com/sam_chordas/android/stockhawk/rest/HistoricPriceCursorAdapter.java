@@ -180,6 +180,7 @@ public class HistoricPriceCursorAdapter extends BaseAdapter {
     LineSet lineSet = new LineSet();
     lineSet.setColor(mContext.getResources().getColor(R.color.colorPrimaryText));
     int c = 0;
+    mCursor.moveToFirst();
     while (mCursor.moveToNext()) {
       lineSet.addPoint(String.valueOf(c), mCursor.getFloat(Projections.HISTORIC_PRICE));
       c++;
