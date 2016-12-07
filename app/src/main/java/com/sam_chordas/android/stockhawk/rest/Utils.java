@@ -96,34 +96,45 @@ public class Utils {
     return change;
   }
 
-  public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject) {
+  public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject) throws JSONException {
     String symbol; // Get the symbol to create the uri to update the record
+    String change, bidPrice, percentChange;
     try {
       symbol = jsonObject.getString("symbol").toUpperCase();
+      change = jsonObject.getString("Change");
+      bidPrice = jsonObject.getString("Bid");
+      percentChange = jsonObject.getString("ChangeinPercent");
     } catch (JSONException e) {
       e.printStackTrace();
       return null;
     }
 
+    if(symbol == null || symbol.equals("null") ||
+            change == null || change.equals("null") ||
+            bidPrice == null || bidPrice.equals("null") ||
+            percentChange == null || percentChange.equals("null") ||
+            change == null || change.equals("null")) {
+      // When any of the useful values of the stock is null,
+      // then the information is incomplete. Therefore, the data
+      // is invalid, even though the data is well parsed by the
+      // json interpreter
+      throw new JSONException("Invalid fields in stock");
+    }
+
     ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(
             QuoteProvider.Quotes.withSymbol(symbol));
-    try {
-      String change = jsonObject.getString("Change");
-      builder.withValue(QuoteColumns.SYMBOL, symbol);
-      builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
-      builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(jsonObject.getString("ChangeinPercent"), true));
-      builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
-      builder.withValue(QuoteColumns.ISCURRENT, 1);
-      builder.withValue(QuoteColumns.ISTEMP, 0); // The data has been fetched from the server, record is not longer temp
-      if (change.charAt(0) == '-') {
-        builder.withValue(QuoteColumns.ISUP, 0);
-      } else {
-        builder.withValue(QuoteColumns.ISUP, 1);
-      }
-
-    } catch (JSONException e) {
-      e.printStackTrace();
+    builder.withValue(QuoteColumns.SYMBOL, symbol);
+    builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(bidPrice));
+    builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(percentChange, true));
+    builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
+    builder.withValue(QuoteColumns.ISCURRENT, 1);
+    builder.withValue(QuoteColumns.ISTEMP, 0); // The data has been fetched from the server, record is not longer temp
+    if (change.charAt(0) == '-') {
+      builder.withValue(QuoteColumns.ISUP, 0);
+    } else {
+      builder.withValue(QuoteColumns.ISUP, 1);
     }
+
     return builder.build();
   }
 
