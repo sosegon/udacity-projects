@@ -34,6 +34,29 @@ public class StockIntentService extends IntentService {
     Bundle args = new Bundle();
     String tag = intent.getStringExtra("tag");
     String symbol = intent.getStringExtra("symbol");
+
+    if(!Utils.isNetworkAvailable(this)){
+      saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
+
+      if(tag.equals("init") || tag.equals("periodic")){
+        Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
+        contentProviderIntent.putExtra(
+                ContentProviderService.CP_SERVICE_OPERATION,
+                ContentProviderService.CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE
+        );
+        startService(contentProviderIntent);
+      } else if(tag.equals("historic")){
+        Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 0, true);
+        Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
+        contentProviderIntent.putExtra(
+                ContentProviderService.CP_SERVICE_OPERATION,
+                ContentProviderService.CP_SERVICE_DELETE_DUMB_HISTORIC
+        );
+        startService(contentProviderIntent);
+      }
+      return;
+    }
+
     if (tag.equals("add") || tag.equals("historic")) {
       args.putString("symbol", symbol);
     }
@@ -82,5 +105,14 @@ public class StockIntentService extends IntentService {
       );
       startService(contentProviderIntent);
     }
+  }
+
+  private void saveAppStatus(@AppStatus.StockStatus int status) {
+    Utils.setSharedPreference(
+            this,
+            getString(R.string.pref_key_stock_status),
+            status,
+            true
+    );
   }
 }
