@@ -69,6 +69,7 @@ public class StockTaskService extends GcmTaskService {
       connection = (HttpURLConnection) stockUrl.openConnection();
       connection.setRequestMethod("GET");
       connection.setConnectTimeout(10000); // ten seconds to connect
+      connection.setReadTimeout(10000); // see http://stackoverflow.com/a/24554486/1065981
       connection.connect();
       stream = connection.getInputStream();
     } catch (IOException e) {
