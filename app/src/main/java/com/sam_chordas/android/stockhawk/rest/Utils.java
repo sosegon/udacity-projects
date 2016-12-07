@@ -1,7 +1,6 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -35,8 +34,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -210,6 +207,11 @@ public class Utils {
     return pref.getString(context.getString(R.string.pref_key_stock_queried), "");
   }
 
+  public static int getQueryingHistoric(Context context) {
+    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+    return pref.getInt(context.getString(R.string.pref_key_querying_historic), 0);
+  }
+
   public static void setSharedPreference(Context context, String key, int value, boolean rightAway) {
     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
     SharedPreferences.Editor editor = pref.edit();
@@ -268,8 +270,8 @@ public class Utils {
       case AppStatus.STOCK_STATUS_DATABASE_ERROR:
         message += context.getString(R.string.sta_database_error);
         break;
-      case AppStatus.STOCK_STATUS_NO_STOCKS:
-        message += context.getString(R.string.sta_no_stocks_error);
+      case AppStatus.STOCK_STATUS_NO_DATA:
+        message += context.getString(R.string.sta_no_data);
         txt_status.setText(message);
         txt_status.setVisibility(View.VISIBLE);
         return;

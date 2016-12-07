@@ -14,9 +14,10 @@
   <!-- Shared preferences -->
   <string name="pref_key_stock_status">stock_status</string>
   <string name="pref_key_stock_queried">stock_queried</string>
+  <string name="pref_key_querying_historic">querying_historic</string>
 
   <!-- Status messages -->
-  <string name="sta_no_stocks">No stocks available.</string>
+  <string name="sta_no_data">No data available.</string>
   <string name="sta_no_connection">No connection.</string>
   <string name="sta_no_latest">Shown data may not be the latest.</string>
   <string name="sta_no_response">Server not responding.</string>

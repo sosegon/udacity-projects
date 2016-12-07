@@ -3,7 +3,6 @@ package com.sam_chordas.android.stockhawk.ui;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v4.content.CursorLoader;
 import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
@@ -31,7 +30,6 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.sam_chordas.android.stockhawk.rest.Utils;
-import com.sam_chordas.android.stockhawk.service.ContentProviderReceiver;
 import com.sam_chordas.android.stockhawk.service.ContentProviderService;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
@@ -141,7 +139,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mCursorAdapter.swapCursor(data);
     mCursor = data;
     if (data.getCount() == 0) {
-      saveAppStatus(AppStatus.STOCK_STATUS_NO_STOCKS);
+      saveAppStatus(AppStatus.STOCK_STATUS_NO_DATA);
     }
     Utils.updateStockStatusView(this, txt_message, mCursor.getCount() > 0);
   }

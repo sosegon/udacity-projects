@@ -37,6 +37,16 @@ public class StockIntentService extends IntentService {
     if (tag.equals("add") || tag.equals("historic")) {
       args.putString("symbol", symbol);
     }
+
+    // Insert dumb record to restart the loader and update ui properly
+    if(tag.equals("historic")){
+      Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
+      contentProviderIntent.putExtra(
+              ContentProviderService.CP_SERVICE_OPERATION,
+              ContentProviderService.CP_SERVICE_INSERT_DUMB_HISTORIC
+      );
+      startService(contentProviderIntent);
+    }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
     // scheduling a task.
     int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
@@ -59,6 +69,16 @@ public class StockIntentService extends IntentService {
       contentProviderIntent.putExtra(
               ContentProviderService.CP_SERVICE_OPERATION,
               ContentProviderService.CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE
+      );
+      startService(contentProviderIntent);
+    }
+    // Delete dumb record to restart the loader and update ui properly
+    else if(tag.equals("historic")){
+      Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 0, true);
+      Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
+      contentProviderIntent.putExtra(
+              ContentProviderService.CP_SERVICE_OPERATION,
+              ContentProviderService.CP_SERVICE_DELETE_DUMB_HISTORIC
       );
       startService(contentProviderIntent);
     }

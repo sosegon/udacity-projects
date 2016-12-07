@@ -2,9 +2,11 @@ package com.sam_chordas.android.stockhawk.service;
 
 import android.app.IntentService;
 import android.content.ContentProviderOperation;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.IntDef;
@@ -13,6 +15,7 @@ import android.util.Log;
 
 import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.PriceColumns;
 import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
@@ -32,6 +35,10 @@ public class ContentProviderService extends IntentService {
   public static final String CP_SERVICE_OPERATION = "cpso";
   public static final int CP_SERVICE_UPDATE_TO_QUERY_SERVER = 0;
   public static final int CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE = 1;
+  public static final int CP_SERVICE_INSERT_DUMB_HISTORIC = 2;
+  public static final int CP_SERVICE_DELETE_DUMB_HISTORIC = 3;
+
+  private final String DUMB_HISTORIC_STOCK_NAME = "stock_dumb_historic";
 
   private final static String LOG_TAG = ContentProviderService.class.getSimpleName();
 
@@ -91,6 +98,28 @@ public class ContentProviderService extends IntentService {
           saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
           Log.d(LOG_TAG, "Error when a applying batch insert.", e);
         }
+        break;
+
+      case CP_SERVICE_INSERT_DUMB_HISTORIC:
+        ContentValues dumb = new ContentValues();
+        dumb.put(PriceColumns.DATE, 0);
+        dumb.put(PriceColumns.PRICE, 0);
+        dumb.put(PriceColumns.STOCK_SYMBOL, DUMB_HISTORIC_STOCK_NAME);
+
+        Uri u = getContentResolver().insert(
+                QuoteProvider.Prices.CONTENT_URI,
+                dumb
+        );
+
+        Log.e("uri", u.toString());
+        break;
+
+      case CP_SERVICE_DELETE_DUMB_HISTORIC:
+        getContentResolver().delete(
+                QuoteProvider.Prices.CONTENT_URI,
+                PriceColumns.STOCK_SYMBOL + " = ?",
+                new String[]{DUMB_HISTORIC_STOCK_NAME}
+        );
         break;
 
       default:
