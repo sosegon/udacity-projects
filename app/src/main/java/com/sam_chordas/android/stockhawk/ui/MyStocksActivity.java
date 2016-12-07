@@ -201,6 +201,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                       // On FAB click, receive user input. Make sure the stock doesn't already exist
                       // in the DB and proceed accordingly
                       String symbol = input.toString().toUpperCase();
+
+                      if(symbol.isEmpty()){
+                        Toast toast = Toast.makeText(MyStocksActivity.this, getString(R.string.sta_invalid_stock, ""), Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                        toast.show();
+                        return;
+                      }
+
                       Cursor c = getContentResolver().query(
                               QuoteProvider.Quotes.CONTENT_URI,
                               Projections.STOCK,
