@@ -45,6 +45,16 @@
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:name="com.sam_chordas.android.stockhawk.data.generated.QuoteProvider"
             android:exported="false"/>
+        <!--Widget-->
+        <receiver
+            android:name=".widget.StockWidgetProvider"
+            android:label="@string/lbl_w_stock">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                       android:resource="@xml/widget_info_stock"/>
+        </receiver>
     </application>
 
 </manifest>

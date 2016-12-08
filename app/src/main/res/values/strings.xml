@@ -52,4 +52,7 @@
   <string name="desc_stock_min_price"><xliff:g id="name">%1$s</xliff:g> min price is <xliff:g id="value">%2$s</xliff:g></string>
   <string name="desc_stock_max_date"><xliff:g id="name">%1$s</xliff:g> max price date is <xliff:g id="value">%2$s</xliff:g></string>
   <string name="desc_stock_min_date"><xliff:g id="name">%1$s</xliff:g> min price date is <xliff:g id="value">%2$s</xliff:g></string>
+
+  <!--widget-->
+  <string name="lbl_w_stock">Stock widget</string>
 </resources>
