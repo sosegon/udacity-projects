@@ -18,17 +18,12 @@ import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
  * Created by sebastian on 12/3/16.
  */
 public class ContentProviderService extends IntentService {
-  @Retention(RetentionPolicy.SOURCE)
-  @IntDef({CP_SERVICE_UPDATE_TO_QUERY_SERVER, CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE})
-  public @interface DbOperations{}
 
   public static final String CP_SERVICE_OPERATION = "cpso";
   public static final int CP_SERVICE_UPDATE_TO_QUERY_SERVER = 0;
@@ -104,12 +99,11 @@ public class ContentProviderService extends IntentService {
         dumb.put(PriceColumns.PRICE, 0);
         dumb.put(PriceColumns.STOCK_SYMBOL, DUMB_HISTORIC_STOCK_NAME);
 
-        Uri u = getContentResolver().insert(
+        getContentResolver().insert(
                 QuoteProvider.Prices.CONTENT_URI,
                 dumb
         );
 
-        Log.e("uri", u.toString());
         break;
 
       case CP_SERVICE_DELETE_DUMB_HISTORIC:
