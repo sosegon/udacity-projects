@@ -245,7 +245,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         );
 
                         // Add the stock to DB
-                        mServiceIntent.putExtra("tag", "add");
+                        mServiceIntent.putExtra("tag", StockTaskService.STS_ADD);
                         mServiceIntent.putExtra("symbol", symbol);
 
                         // Save name of the stock for further use
@@ -272,7 +272,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     if (Utils.isNetworkAvailable(this)) {
       long period = 3600L;
       long flex = 10L;
-      String periodicTag = "periodic";
+      String periodicTag = StockTaskService.STS_PERIODIC;
 
       // create a periodic task to pull stocks once every hour after the app has been opened. This
       // is so Widget data stays up to date.

@@ -23,6 +23,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.HistoricPriceCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
+import com.sam_chordas.android.stockhawk.service.StockTaskService;
 
 /**
  * Created by sebastian on 11/26/16.
@@ -74,7 +75,7 @@ public class LineGraphActivity extends AppCompatActivity implements LoaderManage
 //      why the shared preference "querying_historic" is used.
       Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 1, true);
 
-      mServiceIntent.putExtra("tag", "historic");
+      mServiceIntent.putExtra("tag", StockTaskService.STS_HISTORIC);
       mServiceIntent.putExtra("symbol", mStockName);
       startService(mServiceIntent);
     }

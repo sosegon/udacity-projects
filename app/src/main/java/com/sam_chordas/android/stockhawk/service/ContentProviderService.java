@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.IntDef;
-import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 
 import com.sam_chordas.android.stockhawk.AppStatus;
@@ -70,7 +68,7 @@ public class ContentProviderService extends IntentService {
 
           // connect to the server and query new data
           Intent service = new Intent(this, StockIntentService.class);
-          service.putExtra("tag", "init");
+          service.putExtra("tag", StockTaskService.STS_INIT);
           startService(service);
         } catch (RemoteException | OperationApplicationException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);

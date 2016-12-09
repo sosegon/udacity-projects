@@ -34,18 +34,22 @@ public class StockIntentService extends IntentService {
     Bundle args = new Bundle();
     String tag = intent.getStringExtra("tag");
     String symbol = intent.getStringExtra("symbol");
+    boolean isHistoric = tag.equals(StockTaskService.STS_HISTORIC);
+    boolean isInit = tag.equals(StockTaskService.STS_INIT);
+    boolean isAdd = tag.equals(StockTaskService.STS_ADD);
+    boolean isPeriodic = tag.equals(StockTaskService.STS_PERIODIC);
 
     if(!Utils.isNetworkAvailable(this)){
       saveAppStatus(AppStatus.STOCK_STATUS_NO_CONNECTION);
 
-      if(tag.equals("init") || tag.equals("periodic")){
+      if(isInit || isPeriodic){
         Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
         contentProviderIntent.putExtra(
                 ContentProviderService.CP_SERVICE_OPERATION,
                 ContentProviderService.CP_SERVICE_UPDATE_AFTER_QUERY_SERVER_FAILURE
         );
         startService(contentProviderIntent);
-      } else if(tag.equals("historic")){
+      } else if(isHistoric){
         Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 0, true);
         Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
         contentProviderIntent.putExtra(
@@ -57,12 +61,12 @@ public class StockIntentService extends IntentService {
       return;
     }
 
-    if (tag.equals("add") || tag.equals("historic")) {
+    if (isAdd || isHistoric) {
       args.putString("symbol", symbol);
     }
 
     // Insert dumb record to restart the loader and update ui properly
-    if(tag.equals("historic")){
+    if(isHistoric){
       Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
       contentProviderIntent.putExtra(
               ContentProviderService.CP_SERVICE_OPERATION,
@@ -80,14 +84,14 @@ public class StockIntentService extends IntentService {
               AppStatus.STOCK_STATUS_OK,
               false
       );
-    } else if (result != GcmNetworkManager.RESULT_SUCCESS && tag.equals("add")) {
+    } else if (result != GcmNetworkManager.RESULT_SUCCESS && isAdd) {
       // Failure when querying dat for new record, delete it.
       getContentResolver().delete(
               QuoteProvider.Quotes.withSymbol(symbol),
               null,
               null
       );
-    } else if (result != GcmNetworkManager.RESULT_SUCCESS && (tag.equals("init") || tag.equals("periodic"))) {
+    } else if (result != GcmNetworkManager.RESULT_SUCCESS && (isInit || isPeriodic)) {
       Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
       contentProviderIntent.putExtra(
               ContentProviderService.CP_SERVICE_OPERATION,
@@ -96,7 +100,7 @@ public class StockIntentService extends IntentService {
       startService(contentProviderIntent);
     }
     // Delete dumb record to restart the loader and update ui properly
-    if(tag.equals("historic")){
+    if(isHistoric){
       Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 0, true);
       Intent contentProviderIntent = new Intent(this, ContentProviderService.class);
       contentProviderIntent.putExtra(

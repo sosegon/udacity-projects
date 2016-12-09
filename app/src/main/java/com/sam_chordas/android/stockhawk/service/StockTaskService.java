@@ -1,7 +1,6 @@
 package com.sam_chordas.android.stockhawk.service;
 
 import android.content.ContentProviderOperation;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
@@ -16,7 +15,6 @@ import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.InvalidStockException;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.Projections;
-import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
@@ -38,6 +36,12 @@ import java.util.ArrayList;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService {
+
+  public static final String STS_ADD = "add";
+  public static final String STS_INIT = "init";
+  public static final String STS_PERIODIC = "periodic";
+  public static final String STS_HISTORIC = "historic";
+
   private String LOG_TAG = StockTaskService.class.getSimpleName();
 
   private Context mContext;
@@ -46,7 +50,7 @@ public class StockTaskService extends GcmTaskService {
   /*
       Used to update a record in the db
    */
-  private boolean isUpdate;
+  private boolean isUpdate, isHistoric, isInit, isAdd, isPeriodic;
 
   public StockTaskService() {
   }
@@ -116,7 +120,10 @@ public class StockTaskService extends GcmTaskService {
 
     StringBuilder urlStringBuilder = new StringBuilder();
     urlStringBuilder.append(mContext.getString(R.string.query_base_url)); // Base URL for the Yahoo query
-    boolean isHistoric = params.getTag().equals("historic");
+    isHistoric = params.getTag().equals(STS_HISTORIC);
+    isInit = params.getTag().equals(StockTaskService.STS_INIT);
+    isAdd = params.getTag().equals(StockTaskService.STS_ADD);
+    isPeriodic = params.getTag().equals(StockTaskService.STS_PERIODIC);
     if (isHistoric) {
       try {
         String currentDate = Utils.getCurrentDate(),
@@ -200,7 +207,7 @@ public class StockTaskService extends GcmTaskService {
     Cursor initQueryCursor;
     // "init" or "periodic" means a connection to the server based on
     // current records in the db
-    if (params.getTag().equals("init") || params.getTag().equals("periodic")) {
+    if (isInit || isPeriodic) {
       isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(
               QuoteProvider.Quotes.CONTENT_URI,
@@ -228,7 +235,7 @@ public class StockTaskService extends GcmTaskService {
       } else {
         return false;
       }
-    } else if (params.getTag().equals("add")) {  // When tag is "add" the user is adding a new stock
+    } else if (isAdd) {  // When tag is "add" the user is adding a new stock
       isUpdate = true; // update is true since the record was added before querying the server
       String stockInput = params.getExtras().getString("symbol"); // get symbol from params.getExtra and build query
       try {
