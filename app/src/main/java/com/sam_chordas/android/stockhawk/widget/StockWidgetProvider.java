@@ -1,14 +1,13 @@
 package com.sam_chordas.android.stockhawk.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.RemoteViews;
+import android.os.Bundle;
 
-import com.sam_chordas.android.stockhawk.R;
-import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
+import com.sam_chordas.android.stockhawk.service.StockTaskService;
+import com.sam_chordas.android.stockhawk.service.StockWidgetIntentService;
 
 /**
  * Created by sebastian on 12/8/16.
@@ -17,15 +16,19 @@ public class StockWidgetProvider extends AppWidgetProvider{
 
   @Override
   public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-    super.onUpdate(context, appWidgetManager, appWidgetIds);
-    for(int appWidgetId : appWidgetIds){
-      RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_stock);
+    context.startService(new Intent(context, StockWidgetIntentService.class));
+  }
 
-      Intent launchIntent = new Intent(context, MyStocksActivity.class);
-      PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launchIntent, 0);
-      views.setOnClickPendingIntent(R.id.ll_w, pendingIntent);
+  @Override
+  public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+    context.startService(new Intent(context, StockWidgetIntentService.class));
+  }
 
-      appWidgetManager.updateAppWidget(appWidgetId, views);
+  @Override
+  public void onReceive(Context context, Intent intent) {
+    super.onReceive(context, intent);
+    if(StockTaskService.ACTION_DATA_UPDATED.equals(intent.getAction())){
+      context.startService(new Intent(context, StockWidgetIntentService.class));
     }
   }
 }

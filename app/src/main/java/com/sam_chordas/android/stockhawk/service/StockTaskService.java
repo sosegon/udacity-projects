@@ -2,6 +2,7 @@ package com.sam_chordas.android.stockhawk.service;
 
 import android.content.ContentProviderOperation;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -42,6 +43,8 @@ public class StockTaskService extends GcmTaskService {
   public static final String STS_PERIODIC = "periodic";
   public static final String STS_HISTORIC = "historic";
 
+  public static final String ACTION_DATA_UPDATED = "com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED";
+
   private String LOG_TAG = StockTaskService.class.getSimpleName();
 
   private Context mContext;
@@ -50,7 +53,7 @@ public class StockTaskService extends GcmTaskService {
   /*
       Used to update a record in the db
    */
-  private boolean isUpdate, isHistoric, isInit, isAdd, isPeriodic;
+  private boolean isHistoric, isInit, isAdd, isPeriodic;
 
   public StockTaskService() {
   }
@@ -200,7 +203,15 @@ public class StockTaskService extends GcmTaskService {
       result = GcmNetworkManager.RESULT_SUCCESS;  // Everything correct? Then, operation successful
     }
 
+    updateWidgets(); // At this point everything is ok
+
     return result;
+  }
+
+  private void updateWidgets(){
+    Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+    dataUpdatedIntent.setPackage(mContext.getPackageName());
+    mContext.sendBroadcast(dataUpdatedIntent);
   }
 
   private boolean constructUrlForStocks(TaskParams params, StringBuilder urlStringBuilder) {
@@ -208,7 +219,6 @@ public class StockTaskService extends GcmTaskService {
     // "init" or "periodic" means a connection to the server based on
     // current records in the db
     if (isInit || isPeriodic) {
-      isUpdate = true;
       initQueryCursor = mContext.getContentResolver().query(
               QuoteProvider.Quotes.CONTENT_URI,
               Projections.STOCK,
@@ -236,7 +246,6 @@ public class StockTaskService extends GcmTaskService {
         return false;
       }
     } else if (isAdd) {  // When tag is "add" the user is adding a new stock
-      isUpdate = true; // update is true since the record was added before querying the server
       String stockInput = params.getExtras().getString("symbol"); // get symbol from params.getExtra and build query
       try {
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8")); // Url constructed based on that specific stock

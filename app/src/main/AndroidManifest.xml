@@ -41,6 +41,7 @@
         </service>
         <service android:name="com.sam_chordas.android.stockhawk.service.StockIntentService" />
         <service android:name="com.sam_chordas.android.stockhawk.service.ContentProviderService" />
+        <service android:name="com.sam_chordas.android.stockhawk.service.StockWidgetIntentService" />
         <provider
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:name="com.sam_chordas.android.stockhawk.data.generated.QuoteProvider"
@@ -51,6 +52,7 @@
             android:label="@string/lbl_w_stock">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_info_stock"/>
