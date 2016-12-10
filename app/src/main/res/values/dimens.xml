@@ -9,8 +9,8 @@
 
   <!--widget-->
   <dimen name="widget_margin">0dp</dimen>
-  <dimen name="widget_stock_default_width">110dp</dimen>
+  <dimen name="widget_stock_default_width">180dp</dimen>
   <dimen name="widget_stock_default_height">40dp</dimen>
-  <dimen name="widget_stock_min_resize_width">@dimen/widget_stock_default_width</dimen>
+  <dimen name="widget_stock_min_resize_width">110dp</dimen>
   <dimen name="widget_stock_min_resize_height">@dimen/widget_stock_default_height</dimen>
 </resources>
