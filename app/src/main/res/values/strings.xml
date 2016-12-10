@@ -55,4 +55,5 @@
 
   <!--widget-->
   <string name="lbl_w_stock">Stock widget</string>
+  <string name="lbl_w_stock_list">Stock list widget</string>
 </resources>

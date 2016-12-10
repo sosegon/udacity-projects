@@ -41,12 +41,12 @@
         </service>
         <service android:name="com.sam_chordas.android.stockhawk.service.StockIntentService" />
         <service android:name="com.sam_chordas.android.stockhawk.service.ContentProviderService" />
-        <service android:name="com.sam_chordas.android.stockhawk.service.StockWidgetIntentService" />
         <provider
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:name="com.sam_chordas.android.stockhawk.data.generated.QuoteProvider"
             android:exported="false"/>
-        <!--Widget-->
+        <!-- Simple widget-->
+        <service android:name="com.sam_chordas.android.stockhawk.service.StockWidgetIntentService" />
         <receiver
             android:name=".widget.StockWidgetProvider"
             android:label="@string/lbl_w_stock">
@@ -56,6 +56,19 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_info_stock"/>
+        </receiver>
+        <!--List widget-->
+        <service android:name=".service.StockListWidgetRemoteViewsService"
+                 android:permission="android.permission.BIND_REMOTEVIEWS"
+                 android:exported="false" />
+        <receiver android:name=".widget.StockListWidgetProvider"
+                  android:label="@string/lbl_w_stock_list">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                       android:resource="@xml/widget_info_stock_list" />
         </receiver>
     </application>
 
