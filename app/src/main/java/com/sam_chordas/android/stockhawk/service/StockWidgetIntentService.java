@@ -19,6 +19,7 @@ import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.rest.Utils;
 import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 import com.sam_chordas.android.stockhawk.widget.StockWidgetProvider;
 
@@ -98,6 +99,13 @@ public class StockWidgetIntentService extends IntentService {
         }
       }
 
+      // Content Descriptions for RemoteViews were only added in ICS MR1
+      if (sdk >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+        views.setContentDescription(R.id.txt_w_name, getString(R.string.desc_stock_name, Utils.spellWord(stockName)));
+        views.setContentDescription(R.id.txt_w_price, getString(R.string.desc_stock_current_price, Utils.spellWord(stockPrice)));
+        views.setContentDescription(R.id.txt_w_change, getString(R.string.desc_stock_percentage_change, Utils.spellWord(changePercentage)));
+      }
+
       Intent launchIntent = new Intent(this, MyStocksActivity.class);
       PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
       views.setOnClickPendingIntent(R.id.ll_w, pendingIntent);
@@ -131,4 +139,5 @@ public class StockWidgetIntentService extends IntentService {
 
     return  getResources().getDimensionPixelSize(R.dimen.widget_stock_default_width);
   }
+
 }
