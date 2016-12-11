@@ -11,7 +11,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="54dp"
+            android:layout_height="@dimen/dist_lrg"
             android:background="@color/colorPrimary"
             android:gravity="center"
             android:text="@string/app_name"

@@ -21,7 +21,7 @@
     <item name="android:textAllCaps">true</item>
   </style>
   <style name="txt_detailed_info">
-    <item name="android:layout_height">64dp</item>
+    <item name="android:layout_height">@dimen/dist_lrg</item>
     <item name="android:layout_width">wrap_content</item>
     <item name="android:gravity">center</item>
     <item name="android:layout_gravity">center</item>
