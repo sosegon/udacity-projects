@@ -7,6 +7,8 @@
     android:orientation="horizontal"
     android:paddingLeft="@dimen/dist_sma"
     android:paddingRight="@dimen/dist_sma"
+    android:paddingStart="@dimen/dist_sma"
+    android:paddingEnd="@dimen/dist_sma"
     >
   <TextView
       android:id="@+id/stock_symbol"
@@ -14,20 +16,17 @@
       android:textColor="@color/colorPrimaryText"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:gravity="left|center_vertical"
       tools:text="GOOG"
       />
   <LinearLayout
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:gravity="right"
-      >
+      android:gravity="end">
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:layout_gravity="right"
+        android:visibility="gone"
         android:id="@+id/pgr"
         android:contentDescription="@string/desc_stock_loading"
         />
@@ -37,8 +36,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="@dimen/dist_sma"
+        android:paddingEnd="@dimen/dist_sma"
         tools:text="1000.00"
-        android:visibility="gone"
+        android:visibility="visible"
         android:textColor="@color/colorSecondaryText"
         />
     <TextView
@@ -49,8 +49,10 @@
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/dist_mic"
         android:paddingRight="@dimen/dist_mic"
+        android:paddingStart="@dimen/dist_mic"
+        android:paddingEnd="@dimen/dist_mic"
         tools:text="100%"
-        android:visibility="gone"
+        android:visibility="visible"
         android:textColor="@color/colorPrimaryText"
         />
   </LinearLayout>
