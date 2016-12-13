@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.db.chart.model.ChartSet;
 import com.db.chart.model.LineSet;
 import com.db.chart.view.ChartView;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.Projections;
+
+import java.util.ArrayList;
 
 /**
  * Created by sebastian on 11/30/16.
@@ -186,7 +189,11 @@ public class HistoricPriceCursorAdapter extends BaseAdapter {
       c++;
     }
 
-    mHolder.lch_history.addData(lineSet);
+    // This is a workaround to avoid errors when adding new data
+    ArrayList<ChartSet> cs = new ArrayList<>();
+    cs.add(lineSet);
+
+    mHolder.lch_history.addData(cs);
     mHolder.lch_history.show();
   }
 }
