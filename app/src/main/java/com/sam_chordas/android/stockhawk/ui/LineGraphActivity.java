@@ -40,6 +40,8 @@ public class LineGraphActivity extends AppCompatActivity implements LoaderManage
   private GridLayout grl_line;
   private TextView txt_line;
 
+  public static final String STOCK_NAME_TAG = "stockName";
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -54,7 +56,7 @@ public class LineGraphActivity extends AppCompatActivity implements LoaderManage
 
     mServiceIntent = new Intent(this, StockIntentService.class);
     if(getIntent() != null){
-      mStockName = getIntent().getStringExtra("stockName");
+      mStockName = getIntent().getStringExtra(STOCK_NAME_TAG);
 
       goLoader();
 
@@ -75,8 +77,8 @@ public class LineGraphActivity extends AppCompatActivity implements LoaderManage
 //      why the shared preference "querying_historic" is used.
       Utils.setSharedPreference(this, getString(R.string.pref_key_querying_historic), 1, true);
 
-      mServiceIntent.putExtra("tag", StockTaskService.STS_HISTORIC);
-      mServiceIntent.putExtra("symbol", mStockName);
+      mServiceIntent.putExtra(StockTaskService.TAG_TAG, StockTaskService.STS_HISTORIC);
+      mServiceIntent.putExtra(StockTaskService.SYMBOL_TAG, mStockName);
       startService(mServiceIntent);
     }
   }

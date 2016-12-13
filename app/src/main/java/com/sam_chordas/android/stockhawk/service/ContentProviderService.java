@@ -63,7 +63,7 @@ public class ContentProviderService extends IntentService {
 
           // connect to the server and query new data
           Intent service = new Intent(this, StockIntentService.class);
-          service.putExtra("tag", StockTaskService.STS_INIT);
+          service.putExtra(StockTaskService.TAG_TAG, StockTaskService.STS_INIT);
           startService(service);
         } catch (RemoteException | OperationApplicationException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);

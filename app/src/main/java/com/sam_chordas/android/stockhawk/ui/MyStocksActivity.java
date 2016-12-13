@@ -166,7 +166,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 mCursor.moveToPosition(position);
                 String stockName = mCursor.getString(Projections.STOCK_SYMBOL);
                 Intent intent = new Intent(MyStocksActivity.this, LineGraphActivity.class);
-                intent.putExtra("stockName", stockName);
+                intent.putExtra(LineGraphActivity.STOCK_NAME_TAG, stockName);
                 startActivity(intent);
               }
             }));
@@ -186,10 +186,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
       @Override
       public void onClick(View v) {
         if (Utils.isNetworkAvailable(MyStocksActivity.this)) {
-          new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
-                  .content(R.string.content_test)
+          new MaterialDialog.Builder(mContext).title(R.string.lbl_symbol_search)
+                  .content(R.string.lbl_content_test)
                   .inputType(InputType.TYPE_CLASS_TEXT)
-                  .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
+                  .input(R.string.lbl_input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                       if(!Utils.isNetworkAvailable(mContext)){
@@ -217,7 +217,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                               null
                       );
                       if (c.getCount() != 0) {
-                        Toast toast = Toast.makeText(MyStocksActivity.this, "This stock is already saved!", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(MyStocksActivity.this, getString(R.string.msg_stock_exists), Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                         toast.show();
                         return;
@@ -245,8 +245,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         );
 
                         // Add the stock to DB
-                        mServiceIntent.putExtra("tag", StockTaskService.STS_ADD);
-                        mServiceIntent.putExtra("symbol", symbol);
+                        mServiceIntent.putExtra(StockTaskService.TAG_TAG, StockTaskService.STS_ADD);
+                        mServiceIntent.putExtra(StockTaskService.SYMBOL_TAG, symbol);
 
                         // Save name of the stock for further use
                         Utils.setSharedPreference(

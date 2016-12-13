@@ -43,6 +43,9 @@ public class StockTaskService extends GcmTaskService {
   public static final String STS_PERIODIC = "periodic";
   public static final String STS_HISTORIC = "historic";
 
+  public final static String SYMBOL_TAG = "symbol";
+  public final static String TAG_TAG = "tag";
+
   public static final String ACTION_DATA_UPDATED = "com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATED";
 
   private String LOG_TAG = StockTaskService.class.getSimpleName();
@@ -131,7 +134,7 @@ public class StockTaskService extends GcmTaskService {
       try {
         String currentDate = Utils.getCurrentDate(),
                 previousMonthDate = Utils.getPreviousMonthDate(currentDate),
-                symbol = params.getExtras().getString("symbol"),
+                symbol = params.getExtras().getString(StockTaskService.SYMBOL_TAG),
                 queryString = mContext.getString(
                         R.string.query_statement_historic,
                         symbol,
@@ -246,7 +249,7 @@ public class StockTaskService extends GcmTaskService {
         return false;
       }
     } else if (isAdd) {  // When tag is "add" the user is adding a new stock
-      String stockInput = params.getExtras().getString("symbol"); // get symbol from params.getExtra and build query
+      String stockInput = params.getExtras().getString(StockTaskService.SYMBOL_TAG); // get symbol from params.getExtra and build query
       try {
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8")); // Url constructed based on that specific stock
       } catch (UnsupportedEncodingException e) {

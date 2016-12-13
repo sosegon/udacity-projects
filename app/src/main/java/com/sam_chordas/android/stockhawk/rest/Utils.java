@@ -40,6 +40,20 @@ import java.util.Iterator;
  */
 public class Utils {
 
+  private interface JsonFields {
+    String QUERY = "query",
+           COUNT = "count",
+           RESULTS = "results",
+           QUOTE = "quote",
+           SYMBOL = "Symbol",
+           CHANGE = "Change",
+           BID = "Bid",
+           PERCENT_CHANGE = "ChangeinPercent",
+           DATE = "Date",
+           OPEN = "Open";
+
+
+  }
   private static String LOG_TAG = Utils.class.getSimpleName();
 
   public static boolean showPercent = true;
@@ -52,13 +66,13 @@ public class Utils {
 
     jsonObject = new JSONObject(JSON);
     if (jsonObject != null && jsonObject.length() != 0) {
-      jsonObject = jsonObject.getJSONObject("query");
-      int count = Integer.parseInt(jsonObject.getString("count"));
+      jsonObject = jsonObject.getJSONObject(JsonFields.QUERY);
+      int count = Integer.parseInt(jsonObject.getString(JsonFields.COUNT));
       if (count == 1) {
-        jsonObject = jsonObject.getJSONObject("results").getJSONObject("quote");
+        jsonObject = jsonObject.getJSONObject(JsonFields.RESULTS).getJSONObject(JsonFields.QUOTE);
         addToBatchOperations(context, jsonObject, batchOperations, historic);
       } else {
-        resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+        resultsArray = jsonObject.getJSONObject(JsonFields.RESULTS).getJSONArray(JsonFields.QUOTE);
         if (resultsArray != null && resultsArray.length() != 0) {
           for (int i = 0; i < resultsArray.length(); i++) {
             jsonObject = resultsArray.getJSONObject(i);
@@ -97,10 +111,10 @@ public class Utils {
     String symbol; // Get the symbol to create the uri to update the record
     String change, bidPrice, percentChange;
     try {
-      symbol = jsonObject.getString("symbol").toUpperCase();
-      change = jsonObject.getString("Change");
-      bidPrice = jsonObject.getString("Bid");
-      percentChange = jsonObject.getString("ChangeinPercent");
+      symbol = jsonObject.getString(JsonFields.SYMBOL.toLowerCase()).toUpperCase();
+      change = jsonObject.getString(JsonFields.CHANGE);
+      bidPrice = jsonObject.getString(JsonFields.BID);
+      percentChange = jsonObject.getString(JsonFields.PERCENT_CHANGE);
     } catch (JSONException e) {
       e.printStackTrace();
       return null;
@@ -139,9 +153,9 @@ public class Utils {
     ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
             QuoteProvider.Prices.CONTENT_URI);
     try {
-      long date = getDateInMilliSeconds(jsonObject.getString("Date"));
-      float price = Float.valueOf(truncateBidPrice(jsonObject.getString("Open")));
-      String symbol = jsonObject.getString("Symbol");
+      long date = getDateInMilliSeconds(jsonObject.getString(JsonFields.DATE));
+      float price = Float.valueOf(truncateBidPrice(jsonObject.getString(JsonFields.OPEN)));
+      String symbol = jsonObject.getString(JsonFields.SYMBOL);
       HistoricPrice thePrice = new HistoricPrice(symbol, -1, date, price);
       if (priceExists(context, thePrice)) {
         return null;
@@ -160,7 +174,7 @@ public class Utils {
     Iterator<String> ite = jsonQuote.keys();
     while (ite.hasNext()) {
       String currentKey = ite.next();
-      if (currentKey.toLowerCase().equals("symbol")) { // To lower case 'cause there are 'symbol' and 'Symbol'
+      if (currentKey.toLowerCase().equals(JsonFields.SYMBOL.toLowerCase())) { // To lower case 'cause there are 'symbol' and 'Symbol'
         continue;
       }
       String currentValue = jsonQuote.getString(currentKey);
@@ -190,7 +204,7 @@ public class Utils {
         }
       }
     } else {
-      throw new InvalidStockException("Invalid stock: " + jsonObject.getString("symbol"));
+      throw new InvalidStockException("Invalid stock: " + jsonObject.getString(JsonFields.SYMBOL.toLowerCase()));
     }
   }
 

@@ -19,6 +19,7 @@ public class StockIntentService extends IntentService {
 
   public final static String LOG_TAG = StockIntentService.class.getSimpleName();
 
+
   public StockIntentService() {
     super(StockIntentService.class.getName());
   }
@@ -32,8 +33,8 @@ public class StockIntentService extends IntentService {
     Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
     StockTaskService stockTaskService = new StockTaskService(this);
     Bundle args = new Bundle();
-    String tag = intent.getStringExtra("tag");
-    String symbol = intent.getStringExtra("symbol");
+    String tag = intent.getStringExtra(StockTaskService.TAG_TAG);
+    String symbol = intent.getStringExtra(StockTaskService.SYMBOL_TAG);
     boolean isHistoric = tag.equals(StockTaskService.STS_HISTORIC);
     boolean isInit = tag.equals(StockTaskService.STS_INIT);
     boolean isAdd = tag.equals(StockTaskService.STS_ADD);
@@ -62,7 +63,7 @@ public class StockIntentService extends IntentService {
     }
 
     if (isAdd || isHistoric) {
-      args.putString("symbol", symbol);
+      args.putString(StockTaskService.SYMBOL_TAG, symbol);
     }
 
     // Insert dumb record to restart the loader and update ui properly
@@ -76,7 +77,7 @@ public class StockIntentService extends IntentService {
     }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
     // scheduling a task.
-    int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
+    int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra(StockTaskService.TAG_TAG), args));
     if (result == GcmNetworkManager.RESULT_SUCCESS) {
       Utils.setSharedPreference(
               this,
