@@ -37,9 +37,6 @@ public class StockWidgetIntentService extends IntentService {
   @Override
   protected void onHandleIntent(Intent intent) {
 
-    StockTaskService stockTaskService = new StockTaskService(this);
-    int result = stockTaskService.onRunTask(new TaskParams("init", new Bundle()));
-
     Cursor c = getContentResolver().query(
             QuoteProvider.Quotes.CONTENT_URI,
             Projections.STOCK,
