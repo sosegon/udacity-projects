@@ -466,11 +466,11 @@ public class Utils {
   public static  ArrayList<ContentProviderOperation> updateStocksUIPurpose(Cursor c, int temp, int current) {
     ArrayList<ContentProviderOperation> cpo = new ArrayList<>();
 
-    if(c == null || c.getCount() == 0) {
+    if (c == null || c.getCount() == 0) {
       return cpo;
     }
 
-    while(c.moveToNext()) {
+    while (c.moveToNext()) {
       String symbol = c.getString(Projections.STOCK_SYMBOL);
       ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(
               QuoteProvider.Quotes.withSymbol(symbol)
@@ -483,5 +483,10 @@ public class Utils {
     }
 
     return cpo;
+  }
+
+  // Checks if a stock symbol has alphanumeric characters only
+  public static boolean isValidStockSymbol(String symbol){
+    return symbol != null && symbol.matches("^[a-zA-Z0-9]*$") && !symbol.isEmpty();
   }
 }

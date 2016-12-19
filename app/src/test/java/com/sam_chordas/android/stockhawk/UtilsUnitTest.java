@@ -3,6 +3,8 @@ package com.sam_chordas.android.stockhawk;
 import com.sam_chordas.android.stockhawk.rest.Utils;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -40,5 +42,26 @@ public class UtilsUnitTest {
     assertTrue(prevYear.equals("2015-11-28"));
   }
 
+  @Test
+  public void isValidStockSymbol(){
+    String s1 = "YSDHS";
+    String s2 = "23123";
+    String s3 = "WE323";
+    String s4 = "WEWE-";
+    String s5 = "2133~";
+    String s6 = "SDÈSD";
+    String s7 = "SD SD";
+    String s8 = "";
+    String s9 = null;
 
+    assertEquals(Utils.isValidStockSymbol(s1), true);
+    assertEquals(Utils.isValidStockSymbol(s2), true);
+    assertEquals(Utils.isValidStockSymbol(s3), true);
+    assertEquals(Utils.isValidStockSymbol(s4), false);
+    assertEquals(Utils.isValidStockSymbol(s5), false);
+    assertEquals(Utils.isValidStockSymbol(s6), false);
+    assertEquals(Utils.isValidStockSymbol(s7), false);
+    assertEquals(Utils.isValidStockSymbol(s8), false);
+    assertEquals(Utils.isValidStockSymbol(s9), false);
+  }
 }
