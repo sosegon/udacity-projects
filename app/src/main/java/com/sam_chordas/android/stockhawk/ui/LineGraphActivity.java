@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.db.chart.view.LineChartView;
 import com.sam_chordas.android.stockhawk.AppStatus;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.PriceColumns;
 import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.HistoricPriceCursorAdapter;
@@ -97,7 +98,7 @@ public class LineGraphActivity extends AppCompatActivity implements LoaderManage
             Projections.HISTORIC,
             null,
             null,
-            null
+            PriceColumns.DATE + " ASC"
     );
   }
 

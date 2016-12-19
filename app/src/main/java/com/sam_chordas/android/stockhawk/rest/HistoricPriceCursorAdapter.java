@@ -176,18 +176,14 @@ public class HistoricPriceCursorAdapter extends BaseAdapter {
     updateMaxPrice();
     updateMinPrice();
 
-    // TODO: Check this so the number of points when swapping cursors is the same
-    // This leads to errors when the app loads data from the content provider, then
-    // queries the server and updates the content provider. The solution may be empty
-    // the line set before adding new data.
     LineSet lineSet = new LineSet();
     lineSet.setColor(mContext.getResources().getColor(R.color.colorPrimaryText));
     int c = 0;
     mCursor.moveToFirst();
-    while (mCursor.moveToNext()) {
+    do {
       lineSet.addPoint(String.valueOf(c), mCursor.getFloat(Projections.HISTORIC_PRICE));
       c++;
-    }
+    } while (mCursor.moveToNext());
 
     // This is a workaround to avoid errors when adding new data
     ArrayList<ChartSet> cs = new ArrayList<>();
