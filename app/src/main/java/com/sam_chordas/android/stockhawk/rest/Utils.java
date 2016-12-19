@@ -16,7 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sam_chordas.android.stockhawk.AppStatus;
-import com.sam_chordas.android.stockhawk.InvalidStockException;
+import com.sam_chordas.android.stockhawk.IncompleteDataStockException;
+import com.sam_chordas.android.stockhawk.NonExistingStockException;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.PriceColumns;
 import com.sam_chordas.android.stockhawk.data.Projections;
@@ -59,7 +60,7 @@ public class Utils {
   public static boolean showPercent = true;
 
   // Throws exceptions to handle them and show meaningful comments to the user
-  public static ArrayList quoteJsonToContentVals(Context context, String JSON, boolean historic) throws InvalidStockException, JSONException {
+  public static ArrayList quoteJsonToContentVals(Context context, String JSON, boolean historic) throws NonExistingStockException, JSONException {
     ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
     JSONObject jsonObject = null;
     JSONArray resultsArray = null;
@@ -107,37 +108,49 @@ public class Utils {
     return change;
   }
 
-  public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject) throws JSONException {
-    String symbol; // Get the symbol to create the uri to update the record
-    String change, bidPrice, percentChange;
-    try {
-      symbol = jsonObject.getString(JsonFields.SYMBOL.toLowerCase()).toUpperCase();
-      change = jsonObject.getString(JsonFields.CHANGE);
-      bidPrice = jsonObject.getString(JsonFields.BID);
-      percentChange = jsonObject.getString(JsonFields.PERCENT_CHANGE);
-    } catch (JSONException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public static ContentProviderOperation buildBatchOperation(Context context, JSONObject jsonObject) throws JSONException {
+    String symbol = jsonObject.getString(JsonFields.SYMBOL.toLowerCase()).toUpperCase(),
+           change = jsonObject.getString(JsonFields.CHANGE),
+           bidPrice = jsonObject.getString(JsonFields.BID),
+           percentChange = jsonObject.getString(JsonFields.PERCENT_CHANGE);
 
-    if(symbol == null || symbol.equals("null") ||
-            change == null || change.equals("null") ||
-            bidPrice == null || bidPrice.equals("null") ||
-            percentChange == null || percentChange.equals("null") ||
-            change == null || change.equals("null")) {
-      // When any of the useful values of the stock is null,
+    if(symbol == null || symbol.equals("null")) {
+      // If the stock is null, then is a non existing
       // then the information is incomplete. Therefore, the data
       // is invalid, even though the data is well parsed by the
       // json interpreter
-      throw new JSONException("Invalid fields in stock");
+      throw new JSONException("Invalid stock");
+    }
+
+    // Some information may be missing, still the application must
+    // display the available data
+    String vBidPrice = !bidPrice.toLowerCase().equals("null") ? truncateBidPrice(bidPrice) : "-";
+    String vPercentChange = !percentChange.toLowerCase().equals("null") ? truncateChange(percentChange, true) : "-";
+    String vChange = !change.toLowerCase().equals("null") ? truncateChange(change, false) : "-";
+
+    if(vBidPrice.equals("-") || vPercentChange.equals("-") || vChange.equals("-")){
+      // Clever way to store the available information of the
+      // stock and let the application know that the information
+      // is not complete
+      // seen in http://stackoverflow.com/a/9827206/1065981
+      try {
+        throw new IncompleteDataStockException("Some fields have not valid data");
+      } catch (IncompleteDataStockException e){
+        Utils.setSharedPreference(
+                context,
+                context.getString(R.string.pref_key_stock_status),
+                AppStatus.STOCK_STATUS_INCOMPLETE_STOCK_DATA,
+                false
+        );
+      }
     }
 
     ContentProviderOperation.Builder builder = ContentProviderOperation.newUpdate(
             QuoteProvider.Quotes.withSymbol(symbol));
     builder.withValue(QuoteColumns.SYMBOL, symbol);
-    builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(bidPrice));
-    builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(percentChange, true));
-    builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
+    builder.withValue(QuoteColumns.BIDPRICE, vBidPrice);
+    builder.withValue(QuoteColumns.PERCENT_CHANGE, vPercentChange);
+    builder.withValue(QuoteColumns.CHANGE, vChange);
     builder.withValue(QuoteColumns.ISCURRENT, 1);
     builder.withValue(QuoteColumns.ISTEMP, 0); // The data has been fetched from the server, record is not longer temp
     if (change.charAt(0) == '-') {
@@ -170,7 +183,7 @@ public class Utils {
     return builder.build();
   }
 
-  public static boolean isValidStock(JSONObject jsonQuote) throws JSONException {
+  public static boolean isExistingStock(JSONObject jsonQuote) throws JSONException {
     Iterator<String> ite = jsonQuote.keys();
     while (ite.hasNext()) {
       String currentKey = ite.next();
@@ -190,21 +203,21 @@ public class Utils {
   }
 
   public static void addToBatchOperations(Context context, JSONObject jsonObject, ArrayList<ContentProviderOperation> batchOperations, boolean historic)
-          throws InvalidStockException, JSONException {
-    if (isValidStock(jsonObject)) {
+          throws NonExistingStockException, JSONException {
+    if (isExistingStock(jsonObject)) {
       if (historic) {
         ContentProviderOperation cpo = buildHistoricBatchOperation(context, jsonObject);
         if (cpo != null) {
           batchOperations.add(cpo);
         }
       } else {
-        ContentProviderOperation cpo = buildBatchOperation(jsonObject);
+        ContentProviderOperation cpo = buildBatchOperation(context, jsonObject);
         if (cpo != null) {
           batchOperations.add(cpo);
         }
       }
     } else {
-      throw new InvalidStockException("Invalid stock: " + jsonObject.getString(JsonFields.SYMBOL.toLowerCase()));
+      throw new NonExistingStockException("Invalid stock: " + jsonObject.getString(JsonFields.SYMBOL.toLowerCase()));
     }
   }
 
@@ -289,6 +302,9 @@ public class Utils {
         txt_status.setText(message);
         txt_status.setVisibility(View.VISIBLE);
         return;
+      case AppStatus.STOCK_STATUS_INCOMPLETE_STOCK_DATA:
+        message += context.getString(R.string.sta_incomplete_stock_data);
+        break;
       default:
         break;
     }

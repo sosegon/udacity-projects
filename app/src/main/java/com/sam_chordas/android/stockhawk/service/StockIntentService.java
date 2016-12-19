@@ -79,12 +79,10 @@ public class StockIntentService extends IntentService {
     // scheduling a task.
     int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra(StockTaskService.TAG_TAG), args));
     if (result == GcmNetworkManager.RESULT_SUCCESS) {
-      Utils.setSharedPreference(
-              this,
-              this.getString(R.string.pref_key_stock_status),
-              AppStatus.STOCK_STATUS_OK,
-              false
-      );
+      // Succesful result? Not quite likely, even though the operation
+      // throws a successful result some things may have been went wrong
+      // like incomplete data from server, which has been already handled
+      // by the task service. So basically, don't set status to STOCK_STATUS_OK
     } else if (result != GcmNetworkManager.RESULT_SUCCESS && isAdd) {
       // Failure when querying dat for new record, delete it.
       getContentResolver().delete(

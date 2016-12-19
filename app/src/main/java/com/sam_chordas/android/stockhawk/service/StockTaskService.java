@@ -13,7 +13,7 @@ import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
 import com.sam_chordas.android.stockhawk.AppStatus;
-import com.sam_chordas.android.stockhawk.InvalidStockException;
+import com.sam_chordas.android.stockhawk.NonExistingStockException;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
@@ -184,7 +184,7 @@ public class StockTaskService extends GcmTaskService {
       } catch (JSONException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
         Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
-      } catch (InvalidStockException e) {
+      } catch (NonExistingStockException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_INVALID_STOCK);
         Log.d(LOG_TAG, "Error when querying a stock that does not exists.", e);
       }

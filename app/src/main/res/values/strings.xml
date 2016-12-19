@@ -26,6 +26,7 @@
   <string name="sta_encoding_error">Encoding error.</string>
   <string name="sta_database_error">Database error.</string>
   <string name="sta_no_stocks_error">No stocks queried. Add a stock.</string>
+  <string name="sta_incomplete_stock_data">Some stock information is missing.</string>
 
   <!-- Connection to the server -->
   <string name="query_base_url" translatable="false">https://query.yahooapis.com/v1/public/yql?q=</string>
