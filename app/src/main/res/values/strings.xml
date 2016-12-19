@@ -21,6 +21,7 @@
   <string name="sta_no_response">Server not responding.</string>
   <string name="sta_invalid_data">Invalid data.</string>
   <string name="sta_invalid_stock">Invalid stock: <xliff:g id="data">%1$s</xliff:g></string>
+  <string name="sta_invalid_stock_symbol">Invalid stock symbol: <xliff:g id="data">%1$s</xliff:g>\nOnly alphanumeric characters allowed.</string>
   <string name="sta_unknown">Unknown error.</string>
   <string name="sta_encoding_error">Encoding error.</string>
   <string name="sta_database_error">Database error.</string>

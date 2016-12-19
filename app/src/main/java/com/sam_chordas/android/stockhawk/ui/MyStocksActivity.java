@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,6 +39,8 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+
+import java.text.Normalizer;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -200,10 +203,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                       }
                       // On FAB click, receive user input. Make sure the stock doesn't already exist
                       // in the DB and proceed accordingly
-                      String symbol = input.toString().toUpperCase();
+                      String symbol = input.toString().toUpperCase().trim(); // get rid of white spaces
+                      // from http://stackoverflow.com/a/3322174/1065981
+                      symbol = Normalizer.normalize(symbol, Normalizer.Form.NFD);
+                      symbol = symbol.replaceAll("[^\\p{ASCII}]", ""); // get rid of accents
 
-                      if(symbol.isEmpty()){
-                        Toast toast = Toast.makeText(MyStocksActivity.this, getString(R.string.sta_invalid_stock, ""), Toast.LENGTH_LONG);
+                      // Check if the stock to query is a valid one.
+                      // Only stocks with alphanumeric characters are allowed
+                      if(!Utils.isValidStockSymbol(symbol)){
+                        Toast toast = Toast.makeText(MyStocksActivity.this, getString(R.string.sta_invalid_stock_symbol, symbol), Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                         toast.show();
                         return;
