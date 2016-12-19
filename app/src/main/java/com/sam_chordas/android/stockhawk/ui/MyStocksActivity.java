@@ -7,6 +7,7 @@ import android.support.v4.content.CursorLoader;
 import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallb
 
 import java.text.Normalizer;
 
-public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener {
 
   /**
    * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -62,6 +63,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private TextView txt_message;
   private RecyclerView recycler_view;
   private FloatingActionButton fab;
+  private SwipeRefreshLayout srl_stocks;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     configPeriodicTask();
     goLoader();
     updateStocks();
+    configSwipeRefreshLayout();
 
     mServiceIntent = new Intent(this, StockIntentService.class);
   }
@@ -148,6 +151,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
     mCursorAdapter.swapCursor(null);
+  }
+
+  @Override
+  public void onRefresh() {
+    srl_stocks.setRefreshing(false); // hide the spinner, each item has its own.
+    updateStocks();
   }
 
   private void saveAppStatus(@AppStatus.StockStatus int status) {
@@ -310,5 +319,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     );
 
     startService(contentProviderIntent);
+  }
+
+  private void configSwipeRefreshLayout(){
+    srl_stocks = (SwipeRefreshLayout) findViewById(R.id.srl_stocks);
+    srl_stocks.setOnRefreshListener(this);
   }
 }
