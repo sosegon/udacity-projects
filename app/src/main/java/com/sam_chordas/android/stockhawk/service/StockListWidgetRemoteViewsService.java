@@ -14,6 +14,7 @@ import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.Projections;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.ui.LineGraphActivity;
 
 /**
  * Created by sebastian on 12/10/16.
@@ -115,8 +116,7 @@ public class StockListWidgetRemoteViewsService extends RemoteViewsService {
         // Here, the unique part (uri) is set so the list item acts properly
         // when clicking on it
         final Intent fillInIntent = new Intent();
-        Uri stockUri = QuoteProvider.Quotes.withSymbol(stockName);
-        fillInIntent.setData(stockUri);
+        fillInIntent.putExtra(LineGraphActivity.STOCK_NAME_TAG, stockName);
 
         views.setOnClickFillInIntent(R.id.gro_w_stock_item, fillInIntent);
         return views;
