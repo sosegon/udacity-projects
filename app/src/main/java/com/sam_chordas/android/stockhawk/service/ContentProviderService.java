@@ -67,7 +67,7 @@ public class ContentProviderService extends IntentService {
           startService(service);
         } catch (RemoteException | OperationApplicationException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
-          Log.d(LOG_TAG, "Error when a applying batch insert.", e);
+          Log.d(LOG_TAG, "Error applying batch insert to update stock records to make the app query the server.", e);
         }
         break;
 
@@ -89,7 +89,7 @@ public class ContentProviderService extends IntentService {
           );
         } catch (RemoteException | OperationApplicationException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
-          Log.d(LOG_TAG, "Error when a applying batch insert.", e);
+          Log.d(LOG_TAG, "Error applying batch insert after querying the server to update records has failed.", e);
         }
         break;
 

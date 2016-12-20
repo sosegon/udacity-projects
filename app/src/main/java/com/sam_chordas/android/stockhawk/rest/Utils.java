@@ -136,6 +136,7 @@ public class Utils {
       try {
         throw new IncompleteDataStockException("Some fields have not valid data");
       } catch (IncompleteDataStockException e){
+        Log.d(LOG_TAG, "Error processing stock data, some fields have no data");
         Utils.setSharedPreference(
                 context,
                 context.getString(R.string.pref_key_stock_status),
@@ -178,7 +179,8 @@ public class Utils {
       builder.withValue(PriceColumns.DATE, date);
       builder.withValue(PriceColumns.PRICE, String.valueOf(price));
     } catch (JSONException e) {
-      e.printStackTrace();
+      Log.d(LOG_TAG, "Error parsing json data for historic prices");
+      return null;
     }
     return builder.build();
   }
@@ -288,8 +290,11 @@ public class Utils {
       case AppStatus.STOCK_STATUS_INVALID_DATA:
         message += context.getString(R.string.sta_invalid_data);
         break;
-      case AppStatus.STOCK_STATUS_INVALID_STOCK:
-        message += context.getString(R.string.sta_invalid_stock, getStockQueried(context));
+      case AppStatus.STOCK_STATUS_INVALID_JSON_DATA:
+        message += context.getString(R.string.sta_invalid_json_data);
+        break;
+      case AppStatus.STOCK_STATUS_NON_EXISTING_STOCK:
+        message += context.getString(R.string.sta_non_existing_stock, getStockQueried(context));
         break;
       case AppStatus.STOCK_STATUS_ENCODING_ERROR:
         message += context.getString(R.string.sta_encoding_error);
@@ -313,7 +318,6 @@ public class Utils {
 
     // Status has been handled accordingly, reset it
     Utils.resetAppStatus(context);
-
   }
 
   public static boolean isNetworkAvailable(Context context) {
@@ -353,7 +357,7 @@ public class Utils {
       Date argDate = format.parse(date);
       return argDate.getTime();
     } catch (ParseException e) {
-      Log.e(LOG_TAG, "Error when converting date to milliseconds");
+      Log.d(LOG_TAG, "Error converting date to milliseconds");
     }
 
     return -1;

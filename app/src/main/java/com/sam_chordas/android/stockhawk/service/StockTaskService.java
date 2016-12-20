@@ -84,7 +84,7 @@ public class StockTaskService extends GcmTaskService {
       stream = connection.getInputStream();
     } catch (IOException e) {
       saveAppStatus(AppStatus.STOCK_STATUS_NO_RESPONSE);
-      Log.d(LOG_TAG, "Error when connecting to the server.");
+      Log.d(LOG_TAG, "Error connecting to the server to query for stocks");
     }
 
     try {
@@ -101,7 +101,7 @@ public class StockTaskService extends GcmTaskService {
       }
     } catch (IOException e) {
       saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
-      Log.d(LOG_TAG, "Error when reading the stream from the server.");
+      Log.d(LOG_TAG, "Error reading the stream from the server.");
     } finally {
       if (connection != null) {
         connection.disconnect();
@@ -110,7 +110,7 @@ public class StockTaskService extends GcmTaskService {
         try {
           reader.close();
         } catch (Exception e) {
-          Log.e(LOG_TAG, "Error when closing the stream.");
+          Log.d(LOG_TAG, "Error closing the stream.");
         }
       }
     }
@@ -146,14 +146,14 @@ public class StockTaskService extends GcmTaskService {
         urlStringBuilder.append(mContext.getString(R.string.query_statement_tail)); // Finalize the URL for the API query
       } catch (UnsupportedEncodingException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
-        Log.d(LOG_TAG, "Error when encoding the head of the query url.");
+        Log.d(LOG_TAG, "Error encoding the head of the query url.");
       }
     } else {
       try {
         urlStringBuilder.append(URLEncoder.encode(mContext.getString(R.string.query_statement_head), "UTF-8"));
       } catch (UnsupportedEncodingException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
-        Log.d(LOG_TAG, "Error when encoding the head of the query url.");
+        Log.d(LOG_TAG, "Error encoding the head of the query url.");
       }
 
       if (!constructUrlForStocks(params, urlStringBuilder)) {
@@ -182,11 +182,11 @@ public class StockTaskService extends GcmTaskService {
       try {
         batchOperations = Utils.quoteJsonToContentVals(mContext, getResponse, historic);
       } catch (JSONException e) {
-        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_DATA);
-        Log.d(LOG_TAG, "Error when processing the json data from the server.", e);
+        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_JSON_DATA);
+        Log.d(LOG_TAG, "Error processing the json data from the server.", e);
       } catch (NonExistingStockException e) {
-        saveAppStatus(AppStatus.STOCK_STATUS_INVALID_STOCK);
-        Log.d(LOG_TAG, "Error when querying a stock that does not exists.", e);
+        saveAppStatus(AppStatus.STOCK_STATUS_NON_EXISTING_STOCK);
+        Log.d(LOG_TAG, "Error querying a stock that does not exists.", e);
       }
 
       if (batchOperations == null) { // No batch operations gotten
@@ -200,7 +200,7 @@ public class StockTaskService extends GcmTaskService {
         );
       } catch (RemoteException | OperationApplicationException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_DATABASE_ERROR);
-        Log.d(LOG_TAG, "Error when a applying batch insert.", e);
+        Log.d(LOG_TAG, "Error applying batch insert with results from server.", e);
       }
 
       result = GcmNetworkManager.RESULT_SUCCESS;  // Everything correct? Then, operation successful
@@ -242,7 +242,7 @@ public class StockTaskService extends GcmTaskService {
           urlStringBuilder.append(URLEncoder.encode(mStoredSymbols.toString(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
           saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
-          Log.d(LOG_TAG, "Error when encoding the stocks to update.");
+          Log.d(LOG_TAG, "Error encoding the stocks to update.");
           return false;
         }
       } else {
@@ -254,7 +254,7 @@ public class StockTaskService extends GcmTaskService {
         urlStringBuilder.append(URLEncoder.encode("\"" + stockInput + "\")", "UTF-8")); // Url constructed based on that specific stock
       } catch (UnsupportedEncodingException e) {
         saveAppStatus(AppStatus.STOCK_STATUS_ENCODING_ERROR);
-        Log.d(LOG_TAG, "Error when encoding the new stock to query.");
+        Log.d(LOG_TAG, "Error encoding the new stock to query.");
         return false;
       }
     }
