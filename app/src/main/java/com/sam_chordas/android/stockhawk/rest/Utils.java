@@ -310,6 +310,10 @@ public class Utils {
     }
 
     Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+    // Status has been handled accordingly, reset it
+    Utils.resetAppStatus(context);
+
   }
 
   public static boolean isNetworkAvailable(Context context) {
@@ -504,5 +508,15 @@ public class Utils {
   // Checks if a stock symbol has alphanumeric characters only
   public static boolean isValidStockSymbol(String symbol){
     return symbol != null && symbol.matches("^[a-zA-Z0-9]*$") && !symbol.isEmpty();
+  }
+
+  // Sets the app status to ok
+  public static void resetAppStatus(Context context){
+    Utils.setSharedPreference(
+            context,
+            context.getString(R.string.pref_key_stock_status),
+            AppStatus.STOCK_STATUS_OK,
+            true
+    );
   }
 }
