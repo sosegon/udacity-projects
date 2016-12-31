@@ -6,6 +6,11 @@
                  android:supportsRtl="true"
     >
 
+        <activity
+            android:name="com.keemsa.android.jokes.JokeActivity"
+            >
+        </activity>
+
     </application>
 
 </manifest>
