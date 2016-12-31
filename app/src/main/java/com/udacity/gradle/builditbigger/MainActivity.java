@@ -1,6 +1,5 @@
 package com.udacity.gradle.builditbigger;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -8,14 +7,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.keemsa.android.jokes.JokeActivity;
-
 
 public class MainActivity extends ActionBarActivity implements RetrieveJokeAsyncTask.RetrievesJokesAsyncTaskReceiver {
 
-    public interface ProgressBarBin {
+    public interface MainFragment {
         void setProgressBarVisibility(int value);
+        void handleJoke(String joke);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,18 +45,12 @@ public class MainActivity extends ActionBarActivity implements RetrieveJokeAsync
 
     @Override
     public void useJoke(String joke) {
-        ProgressBarBin frg = (ProgressBarBin) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        frg.setProgressBarVisibility(ProgressBar.GONE);
-        if(joke.equals(RetrieveJokeAsyncTask.DEFAULT_JOKE)){
-            joke = getString(R.string.default_joke);
-        }
-        Intent intent = new Intent(this, JokeActivity.class);
-        intent.putExtra(JokeActivity.JOKE_TAG, joke);
-        startActivity(intent);
+        MainFragment frg = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        frg.handleJoke(joke);
     }
 
     public void tellJoke(View view) {
-        ProgressBarBin frg = (ProgressBarBin) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        MainFragment frg = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
         frg.setProgressBarVisibility(ProgressBar.VISIBLE);
 
         RetrieveJokeAsyncTask task = new RetrieveJokeAsyncTask(this);
