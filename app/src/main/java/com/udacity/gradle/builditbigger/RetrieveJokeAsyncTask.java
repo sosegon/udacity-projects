@@ -57,6 +57,8 @@ public class RetrieveJokeAsyncTask extends AsyncTask<Void, Void, String> {
 
   @Override
   protected void onPostExecute(String s) {
-    mReceiver.useJoke(s);
+    if(mReceiver != null) {
+      mReceiver.useJoke(s);
+    }
   }
 }
