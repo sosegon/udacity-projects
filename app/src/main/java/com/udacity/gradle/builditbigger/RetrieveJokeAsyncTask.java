@@ -20,6 +20,7 @@ public class RetrieveJokeAsyncTask extends AsyncTask<Void, Void, String> {
     void useJoke(String joke);
   }
 
+  public static final String DEFAULT_JOKE = "dj";
   private static MyApi myApiService = null;
   private RetrievesJokesAsyncTaskReceiver mReceiver;
 
@@ -51,7 +52,7 @@ public class RetrieveJokeAsyncTask extends AsyncTask<Void, Void, String> {
     try {
       return myApiService.throwJoke().execute().getContent();
     } catch (IOException e) {
-      return e.getMessage(); // TODO handle this to avoid the error message being displayed as a joke
+      return DEFAULT_JOKE;
     }
   }
 

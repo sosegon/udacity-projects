@@ -13,7 +13,7 @@ import android.widget.TextView;
 public class JokeActivity extends AppCompatActivity {
 
   private static String LOG_TAG = JokeActivity.class.getSimpleName();
-
+  public static final String JOKE_TAG = "joke";
   private TextView txt_joke;
 
   @Override
@@ -25,7 +25,7 @@ public class JokeActivity extends AppCompatActivity {
 
     Intent intent = getIntent();
     if(intent != null){
-      String joke = intent.getStringExtra("joke");
+      String joke = intent.getStringExtra(JOKE_TAG);
       txt_joke.setText(joke);
     }
   }

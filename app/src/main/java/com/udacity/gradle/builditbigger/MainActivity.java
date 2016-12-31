@@ -42,8 +42,11 @@ public class MainActivity extends ActionBarActivity implements RetrieveJokeAsync
 
     @Override
     public void useJoke(String joke) {
+        if(joke.equals(RetrieveJokeAsyncTask.DEFAULT_JOKE)){
+            joke = getString(R.string.default_joke);
+        }
         Intent intent = new Intent(this, JokeActivity.class);
-        intent.putExtra("joke", joke); // TODO use a key value from strings.xml
+        intent.putExtra(JokeActivity.JOKE_TAG, joke);
         startActivity(intent);
     }
 
