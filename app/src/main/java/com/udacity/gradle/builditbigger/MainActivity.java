@@ -6,12 +6,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.keemsa.android.jokes.JokeActivity;
 
 
 public class MainActivity extends ActionBarActivity implements RetrieveJokeAsyncTask.RetrievesJokesAsyncTaskReceiver {
 
+    public interface ProgressBarBin {
+        void setProgressBarVisibility(int value);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,8 @@ public class MainActivity extends ActionBarActivity implements RetrieveJokeAsync
 
     @Override
     public void useJoke(String joke) {
+        ProgressBarBin frg = (ProgressBarBin) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        frg.setProgressBarVisibility(ProgressBar.GONE);
         if(joke.equals(RetrieveJokeAsyncTask.DEFAULT_JOKE)){
             joke = getString(R.string.default_joke);
         }
@@ -51,6 +57,9 @@ public class MainActivity extends ActionBarActivity implements RetrieveJokeAsync
     }
 
     public void tellJoke(View view) {
+        ProgressBarBin frg = (ProgressBarBin) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        frg.setProgressBarVisibility(ProgressBar.VISIBLE);
+
         RetrieveJokeAsyncTask task = new RetrieveJokeAsyncTask(this);
         task.execute();
     }

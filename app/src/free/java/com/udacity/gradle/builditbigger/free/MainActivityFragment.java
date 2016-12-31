@@ -5,18 +5,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.udacity.gradle.builditbigger.MainActivity;
 import com.udacity.gradle.builditbigger.R;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements MainActivity.ProgressBarBin{
 
     private static String LOG_TAG = MainActivityFragment.class.getSimpleName();
+
+    private ProgressBar pgr;
 
     public MainActivityFragment() {
     }
@@ -26,6 +30,8 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
+        pgr = (ProgressBar) root.findViewById(R.id.pgr);
+
         boolean addAd = root.findViewById(R.id.adView) != null;
 
         if(addAd) {
@@ -33,6 +39,13 @@ public class MainActivityFragment extends Fragment {
         }
 
         return root;
+    }
+
+    @Override
+    public void setProgressBarVisibility(int value) {
+        if (pgr != null) {
+            pgr.setVisibility(value);
+        }
     }
 
     private void configAd(View root) {

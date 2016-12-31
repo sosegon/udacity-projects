@@ -24,6 +24,14 @@
         android:onClick="tellJoke"
         />
 
+    <ProgressBar
+        android:id="@+id/pgr"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        style="?android:attr/progressBarStyleLarge"
+        android:visibility="gone"/>
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
