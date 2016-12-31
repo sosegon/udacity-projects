@@ -1,21 +1,22 @@
 package com.udacity.gradle.builditbigger;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
+import com.keemsa.android.jokes.JokeActivity;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements RetrieveJokeAsyncTask.RetrievesJokesAsyncTaskReceiver {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -39,9 +40,16 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view) {
-        Toast.makeText(this, "derp", Toast.LENGTH_SHORT).show();
+    @Override
+    public void useJoke(String joke) {
+        Intent intent = new Intent(this, JokeActivity.class);
+        intent.putExtra("joke", joke); // TODO use a key value from strings.xml
+        startActivity(intent);
     }
 
+    public void tellJoke(View view) {
+        RetrieveJokeAsyncTask task = new RetrieveJokeAsyncTask(this);
+        task.execute();
+    }
 
 }
