@@ -21,8 +21,8 @@ THE SOFTWARE.
 Usage:  In a linux terminal, go to the location of the script
 		and type the following: 
 
-		python conv.py "image_name" size_of_filter number_of_convolutions
-		example: python conv.py cat.jpg 16 3
+		python conv.py "image_name" size_of_filter stride padding number_of_convolutions
+		example: python conv.py cat.jpg 16 1 0 3
 
 		The script will process the image and will create the image files
 		for the convolutions. In the above example, the following files are
@@ -37,10 +37,11 @@ from skimage import io
 import sys
 from datetime import datetime as dt
 
-def conv(img_name, filter_size, stride, convs_number=1):
+def conv(img_name, filter_size, stride, padding=0, convs_number=1):
 	filter_size = int(filter_size)
 	convs_number = int(convs_number)
 	stride = int(stride)
+	padding = int(padding)
 	if convs_number > 6: # 6 convs at most, to avoid to much computation
 		convs_number = 6
 	if convs_number < 1: # at least one conv
@@ -52,7 +53,7 @@ def conv(img_name, filter_size, stride, convs_number=1):
 	for c in range(1, convs_number + 1):
 		start = dt.now()
 
-		image = conv_array(image, filter_size, stride)
+		image = conv_array(image, filter_size, stride, padding)
 
 		if image is None:
 			print("Stopped. Can't create more convolutions")
@@ -67,10 +68,12 @@ def conv(img_name, filter_size, stride, convs_number=1):
 
 		print("Convolution " + str(c) + ": " + str(total) + " seconds")
 
-def conv_array(image_array, filter_size, stride):
+def conv_array(image_array, filter_size, stride, padding):
+	image_array = add_padding(image_array, padding)
+
 	shape = image_array.shape
 	
-	# filter can be greater than the image
+	# filter can not be greater than the image
 	if filter_size > shape[0] | filter_size > shape[1]:
 		return None
 
@@ -86,8 +89,6 @@ def conv_array(image_array, filter_size, stride):
 	# TODO: Any other idea for the weights and biases?
 	weights = np.random.normal(0, 1, (filters_number, filter_depth, filter_height, filter_width))
 	biases = np.random.normal(0, 1, (filters_number, 1))
-
-	# TODO: Add padding
 
 	# convolve
 	# TODO: I am sure there are numpy functions or tricks to avoid the while loops
@@ -163,4 +164,23 @@ def image_name_no_ext(img_name):
 	n = r[r.index(".") + 1:]    # reverse name extensionless
 	return n[::-1]
 
-conv(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+# base code from http://stackoverflow.com/a/31636601/1065981
+def add_padding(image_array, pad):
+	shape = image_array.shape # H x W x D
+	image_array = image_array.transpose(2, 0, 1).reshape(shape[2], shape[0], shape[1])
+	img_arr = np.ndarray((3, shape[0] + 2 * pad, shape[1] + 2 * pad), np.float) 
+	shape2 = img_arr.shape # D x H x W
+
+	leftPad = round(float((shape2[2] - shape[1])) / 2)
+	rightPad = round(float(shape2[2] - shape[1]) - leftPad)
+	topPad = round(float((shape2[1] - shape[0])) / 2)
+	bottomPad = round(float(shape2[1] - shape[0]) - topPad)
+	pads = ((leftPad,rightPad),(topPad,bottomPad))
+
+	for i,x in enumerate(image_array):
+		x_p = np.pad(x, pads, 'constant', constant_values=(0))
+		img_arr[i,:,:] = x_p
+
+	return np.array(img_arr).transpose(1, 2, 0)
+
+conv(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
