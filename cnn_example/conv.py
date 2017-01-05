@@ -37,9 +37,10 @@ from skimage import io
 import sys
 from datetime import datetime as dt
 
-def conv(img_name, filter_size, convs_number=1):
+def conv(img_name, filter_size, stride, convs_number=1):
 	filter_size = int(filter_size)
 	convs_number = int(convs_number)
+	stride = int(stride)
 	if convs_number > 6: # 6 convs at most, to avoid to much computation
 		convs_number = 6
 	if convs_number < 1: # at least one conv
@@ -50,9 +51,13 @@ def conv(img_name, filter_size, convs_number=1):
 	for c in range(1, convs_number + 1):
 		start = dt.now()
 
-		image = conv_array(image, filter_size)
+		image = conv_array(image, filter_size, stride)
 
-		# rescale to be a valid RGB value [0 - 1] to save in disk
+		if image is None:
+			print("Stopped. Can't create more convolutions")
+			return
+
+		# rescale to be a valid RGB value [-1,  1] to save in disk
 		image = rescale_rgb(image)
 		save_image(image, image_name_no_ext(img_name) + "_conv" + str(c) + ".jpg")
 		
@@ -62,10 +67,15 @@ def conv(img_name, filter_size, convs_number=1):
 
 		print("Convolution " + str(c) + ": " + str(total) + " seconds")
 
-def conv_array(image_array, filter_size):
-	# rescale to be a valid RGB value [0 - 255] for better precision
-	image_array = rescale_rgb(image_array, False)
+def conv_array(image_array, filter_size, stride):
 	shape = image_array.shape
+	
+	# filter can be greater than the image
+	if filter_size > shape[0] | filter_size > shape[1]:
+		return None
+
+	# rescale to be a valid RGB value [0, 255] for better precision
+	image_array = rescale_rgb(image_array, False)
 
 	filter_width = filter_size
 	filter_height = filter_size
@@ -77,7 +87,6 @@ def conv_array(image_array, filter_size):
 	weights = np.random.normal(0, 1, (filters_number, filter_depth, filter_height, filter_width))
 	biases = np.random.normal(0, 1, (filters_number, 1))
 
-	stride = 1 # witdh and height
 	# TODO: Add padding
 
 	# convolve
@@ -85,12 +94,12 @@ def conv_array(image_array, filter_size):
 	output_height = []
 
 	height_counter = 0 # Moving vertically
-	while height_counter < shape[0] - filter_height:
+	while height_counter + filter_height < shape[0]:
 		
 		output_width = []
 
 		width_counter = 0 # Moving horizontally
-		while width_counter < shape[1] - filter_width:
+		while width_counter + filter_width < shape[1]:
 			
 			output_depth = [] # elements of the new features map
 
@@ -98,7 +107,7 @@ def conv_array(image_array, filter_size):
 			while depth_counter < shape[2]:
 				
 				patch = image_array[height_counter:height_counter + filter_height, width_counter:width_counter + filter_width, depth_counter]
-				output_element = 0 # each filter results in an element in the depth direction
+				output_element = 0 # applying each filter results in an element in the depth direction
 
 				filter_counter = 0 # applying filters
 				while filter_counter < filters_number:
@@ -112,10 +121,13 @@ def conv_array(image_array, filter_size):
 				depth_counter += 1
 
 			output_width.append(output_depth)
-			width_counter += 1
+			width_counter += stride
 
 		output_height.append(output_width)
-		height_counter += 1
+		height_counter += stride
+
+	if len(output_height) == 0:
+		return None
 
 	output = np.array(output_height)
 	return output
@@ -141,4 +153,4 @@ def image_name_no_ext(img_name):
 	n = r[r.index(".") + 1:]    # reverse name extensionless
 	return n[::-1]
 
-conv(sys.argv[1], sys.argv[2], sys.argv[3])
+conv(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
