@@ -19,14 +19,14 @@ THE SOFTWARE.
 
 '''
 Usage:  In a linux terminal, go to the location of the script
-    	and type the following: 
+		and type the following: 
 
-    	python conv.py "image_name" size_of_filter number_of_convolutions
-    	example: python conv.py cat.jpg 16 3
+		python conv.py "image_name" size_of_filter number_of_convolutions
+		example: python conv.py cat.jpg 16 3
 
-    	The script will process the image and will create the image files
-    	for the convolutions. In the above example, the following files are
-    	created: cat_conv1.jpg, cat_conv2.jpg, cat_conv3.jpg
+		The script will process the image and will create the image files
+		for the convolutions. In the above example, the following files are
+		created: cat_conv1.jpg, cat_conv2.jpg, cat_conv3.jpg
 
 '''
 
@@ -47,6 +47,7 @@ def conv(img_name, filter_size, stride, convs_number=1):
 		convs_number = 1
 
 	image = mpimg.imread(img_name)
+	image = int_to_float_rgb(image) # RGB values [0,  1]
 
 	for c in range(1, convs_number + 1):
 		start = dt.now()
@@ -56,9 +57,8 @@ def conv(img_name, filter_size, stride, convs_number=1):
 		if image is None:
 			print("Stopped. Can't create more convolutions")
 			return
-
-		# rescale to be a valid RGB value [-1,  1] to save in disk
-		image = rescale_rgb(image)
+		
+		image = rescale_rgb(image) # rescale to be a valid RGB value [0,  1]
 		save_image(image, image_name_no_ext(img_name) + "_conv" + str(c) + ".jpg")
 		
 		end = dt.now()
@@ -133,10 +133,11 @@ def conv_array(image_array, filter_size, stride):
 	return output
 
 def rescale_rgb(x, isfloat=True):
+	x = x.astype(float)
 	max_i = np.max(x)
 	min_i = np.min(x)
 	max_o = 1
-	min_o = -1
+	min_o = 0
 
 	if isfloat is False:
 		max_o = 255
@@ -144,8 +145,17 @@ def rescale_rgb(x, isfloat=True):
 
 	return ((x - min_i) * (max_o - min_o) / (max_i - min_i)) + min_o
 
+def int_to_float_rgb(x):
+	x = x.astype(float)
+	max_i = 255
+	min_i = 0
+	max_o = 1
+	min_o = 0
+
+	return ((x - min_i) * (max_o - min_o) / (max_i - min_i)) + min_o
+
 def save_image(pixels_array, file_name):
-   	io.imsave(file_name, pixels_array)
+	io.imsave(file_name, pixels_array)
 
 def image_name_no_ext(img_name):
 	name = str(img_name)
