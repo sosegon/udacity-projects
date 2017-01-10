@@ -1,0 +1,83 @@
+
+
+EPOCH 1 ...
+Validation Accuracy = 0.288
+Time: 24.46 seconds
+
+EPOCH 2 ...
+Validation Accuracy = 0.429
+Time: 24.73 seconds
+
+EPOCH 3 ...
+Validation Accuracy = 0.497
+Time: 24.72 seconds
+
+EPOCH 4 ...
+Validation Accuracy = 0.551
+Time: 24.67 seconds
+
+EPOCH 5 ...
+Validation Accuracy = 0.557
+Time: 24.65 seconds
+
+EPOCH 6 ...
+Validation Accuracy = 0.582
+Time: 24.74 seconds
+
+EPOCH 7 ...
+Validation Accuracy = 0.622
+Time: 24.63 seconds
+
+EPOCH 8 ...
+Validation Accuracy = 0.648
+Time: 24.8 seconds
+
+EPOCH 9 ...
+Validation Accuracy = 0.656
+Time: 24.72 seconds
+
+EPOCH 10 ...
+Validation Accuracy = 0.677
+Time: 24.76 seconds
+
+EPOCH 11 ...
+Validation Accuracy = 0.684
+Time: 24.65 seconds
+
+EPOCH 12 ...
+Validation Accuracy = 0.686
+Time: 25.12 seconds
+
+EPOCH 13 ...
+Validation Accuracy = 0.696
+Time: 25.2 seconds
+
+EPOCH 14 ...
+Validation Accuracy = 0.711
+Time: 25.24 seconds
+
+EPOCH 15 ...
+Validation Accuracy = 0.731
+Time: 25.23 seconds
+
+EPOCH 16 ...
+Validation Accuracy = 0.743
+Time: 25.31 seconds
+
+EPOCH 17 ...
+Validation Accuracy = 0.741
+Time: 25.07 seconds
+
+EPOCH 18 ...
+Validation Accuracy = 0.730
+Time: 25.34 seconds
+
+EPOCH 19 ...
+Validation Accuracy = 0.738
+Time: 25.23 seconds
+
+EPOCH 20 ...
+Validation Accuracy = 0.750
+Time: 25.3 seconds
+
+Total time: 499.43 seconds
