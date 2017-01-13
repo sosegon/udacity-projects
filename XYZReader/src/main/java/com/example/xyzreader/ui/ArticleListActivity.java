@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -14,8 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.TypedValue;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -51,6 +50,15 @@ public class ArticleListActivity extends ActionBarActivity implements
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        // Divider to separate articles in the recycler view
+        Drawable verticalDivider = getResources().getDrawable(R.drawable.vertical_divider);
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(
+                mRecyclerView.getContext(),
+                verticalDivider,
+                DividerItemDecoration.VERTICAL_LIST);
+        mRecyclerView.addItemDecoration(verticalDecoration);
+
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
