@@ -3,3 +3,5 @@
 .idea/
 XYZReader/build/
 local.properties
+*.iml
+build/
