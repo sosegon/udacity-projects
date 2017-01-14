@@ -240,12 +240,6 @@ parser.add_argument('-f', dest='filter_size', type=int, default=4)
 parser.add_argument('-s', dest='stride', type=int, default=1)
 parser.add_argument('-p', dest='padding', type=int, default=1)
 parser.add_argument('-n', dest='number_convolutions', type=int, default=1)
-parser.add_argument('-u', dest='number_filters', type=int, default=1)
-# parser.add_argument('integers', metavar='N', type=int, nargs='+',
-#                     help='an integer for the accumulator')
-# parser.add_argument('--sum', dest='accumulate', action='store_const',
-#                     const=sum, default=max,
-#                     help='sum the integers (default: find the max)')
 
 args = parser.parse_args()
 file_name = args.file_name
