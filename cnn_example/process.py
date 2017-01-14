@@ -16,26 +16,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
-
-'''
-Usage:  In a linux terminal, go to the location of the script
-		and type the following: 
-
-		python conv.py "image_name" size_of_filter stride padding number_of_convolutions
-		example: python conv.py cat.jpg 16 1 0 3
-
-		The script will process the image and will create the image files
-		for the convolutions. In the above example, the following files are
-		created: cat_conv1.jpg, cat_conv2.jpg, cat_conv3.jpg
-
-'''
-
 import numpy as np
-#from skimage import io
 import sys
-#import random
 from datetime import datetime as dt
 import cv2
+import argparse
 
 
 def read_file(file_name):
@@ -190,10 +175,21 @@ def padding(image_array, pad):
 def process_pooling(file_name, filter_size, stride):
 	filter_size = int(filter_size)
 	stride = int(stride)
+
+	start = dt.now()
 	image_array = read_file(file_name)
 	image_array = normalize(image_array)
 	image_array = max_pooling(image_array, filter_size, stride)
-	save_image(image_array, file_name_no_ext(file_name) + "_pool" + ".jpg")
+	image_array = rescale(image_array, 0, 255) # valid range to save image [0, 255]
+	new_file_name = file_name_no_ext(file_name) + "_pool" + ".jpg"
+	save_image(image_array, new_file_name)
+	print("File " + new_file_name + " created")
+
+	end = dt.now()
+	delta = end - start
+	total = round(delta.seconds + delta.microseconds/1E6, 2) # from http://stackoverflow.com/a/2880735/1065981
+
+	print("Max pooling: " + str(total) + " seconds")
 
 def process_convolution(file_name, filters_number, filter_size, stride, pad=0, convs_number=1):
 	filter_size = int(filter_size)
@@ -218,7 +214,6 @@ def process_convolution(file_name, filters_number, filter_size, stride, pad=0, c
 		start = dt.now()
 		image_array = padding(image_array, pad)
 		image_array = convolute(image_array, filters_number, filter_size, stride)
-		print(image_array.shape)
 
 		if image_array is None:
 			print("Stopped. Can't create more convolutions")
@@ -226,8 +221,10 @@ def process_convolution(file_name, filters_number, filter_size, stride, pad=0, c
 		
 		image_array = rescale(image_array, 0, 255) # valid range to save image [0, 255]
 		image_array = image_array[:,:,:3]
-		save_image(image_array, file_name_no_ext(file_name) + "_conv" + str(c) + ".jpg")
-		
+		new_file_name = file_name_no_ext(file_name) + "_conv" + str(c) + ".jpg"
+		save_image(image_array, new_file_name)
+		print("File " + new_file_name + " created")
+
 		image_array = rescale(image_array, 0, 1) # rescale to be a valid RGB value [0,  1] for next conv
 		
 		end = dt.now()
@@ -236,5 +233,27 @@ def process_convolution(file_name, filters_number, filter_size, stride, pad=0, c
 
 		print("Convolution " + str(c) + ": " + str(total) + " seconds")
 
-# process_pooling(sys.argv[1], sys.argv[2], sys.argv[3])
-# process_convolution(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+parser = argparse.ArgumentParser(description='Process an image.')
+parser.add_argument('file_name', type=str, help="File name of the image (jpg only)")
+parser.add_argument('-o', dest='operation', type=str, default='max_pooling', help="Operation to perform in the image (convolution, max_pooling)")
+parser.add_argument('-f', dest='filter_size', type=int, default=4)
+parser.add_argument('-s', dest='stride', type=int, default=1)
+parser.add_argument('-p', dest='padding', type=int, default=1)
+parser.add_argument('-n', dest='number_convolutions', type=int, default=1)
+parser.add_argument('-u', dest='number_filters', type=int, default=1)
+# parser.add_argument('integers', metavar='N', type=int, nargs='+',
+#                     help='an integer for the accumulator')
+# parser.add_argument('--sum', dest='accumulate', action='store_const',
+#                     const=sum, default=max,
+#                     help='sum the integers (default: find the max)')
+
+args = parser.parse_args()
+file_name = args.file_name
+operation = args.operation
+
+if operation == "max_pooling":
+	process_pooling(file_name, args.filter_size, args.stride)
+elif operation == "convolution":
+	process_convolution(file_name, args.number_filters, args.filter_size, args.stride, args.padding, args.number_convolutions)
+else:
+	print("Invalid operation: " + operation)
