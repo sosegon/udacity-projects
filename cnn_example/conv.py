@@ -31,56 +31,22 @@ Usage:  In a linux terminal, go to the location of the script
 '''
 
 import numpy as np
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt 
-from skimage import io
+#from skimage import io
 import sys
-import random
+#import random
 from datetime import datetime as dt
 import cv2
 
-def conv(img_name, filter_size, stride, padding=0, convs_number=1):
-	filter_size = int(filter_size)
-	convs_number = int(convs_number)
-	stride = int(stride)
-	padding = int(padding)
-	if convs_number > 6: # 6 convs at most, to avoid to much computation
-		convs_number = 6
-	if convs_number < 1: # at least one conv
-		convs_number = 1
 
-	image = mpimg.imread(img_name)
-	image = int_to_float_rgb(image) # RGB values [0,  1]
+def read_file(file_name):
+	return cv2.imread(file_name)
 
-	for c in range(1, convs_number + 1):
-		start = dt.now()
-
-		image = conv_array(image, filter_size, stride, padding)
-
-		if image is None:
-			print("Stopped. Can't create more convolutions")
-			return
-		
-		image = rescale(image, 0, 1) # rescale to be a valid RGB value [0,  1]
-		save_image(image, image_name_no_ext(img_name) + "_conv" + str(c) + ".jpg")
-		
-		end = dt.now()
-		delta = end - start
-		total = round(delta.seconds + delta.microseconds/1E6, 2) # from http://stackoverflow.com/a/2880735/1065981
-
-		print("Convolution " + str(c) + ": " + str(total) + " seconds")
-
-def read_img_file(image_file_name):
-	return cv2.imread(image_file_name)
-
-def to_grayscale(image_array):
-	gray_scale = conv2.cvtColor(image_array, cv2_COLORBGR2GRAY)
+def grayscale(image_array):
+	gray_scale = cv2.cvtColor(image_array, cv2.COLOR_BGR2GRAY)
 	gray_scale = np.expand_dims(gray_scale, axis = 2) # shape is h x w x 1
 	return gray_scale
 
-def conv_array(image_array, filter_size, stride, padding):
-	image_array = add_padding(image_array, padding)
-
+def convolute(image_array, filters_number, filter_size, stride):
 	shape = image_array.shape
 	
 	# filter can not be greater than the image
@@ -90,16 +56,60 @@ def conv_array(image_array, filter_size, stride, padding):
 	filter_width = filter_size
 	filter_height = filter_size
 	filter_depth = shape[2]
-	filters_number = 3 # To display the output as image
 
 	# Weights and biases for the filters
 	# TODO: Any other idea for the weights and biases?
-	weights = np.random.normal(0, 0.1, (filters_number, filter_depth, filter_height, filter_width))
-	# weights = np.random.pareto(1, (filters_number, filter_depth, filter_height, filter_width))
-	biases = np.random.normal(0, 0.01, (filters_number, 1))
+	weights = np.random.normal(0, 1, (filters_number, filter_height, filter_width, filter_depth))
+	biases = np.random.normal(0, 1, (filters_number, 1))
 
 	# convolve
 	# TODO: I am sure there are numpy functions or tricks to avoid the while loops
+	output_height = []
+
+	height_counter = 0 # Moving vertically
+	while height_counter + filter_height < shape[0]:
+		
+		output_width = []
+
+		width_counter = 0 # Moving horizontally
+		while width_counter + filter_width < shape[1]:
+			
+			output_depth = [] # elements of the new features map
+
+			filter_counter = 0
+			while filter_counter < filters_number: # apply filters
+				current_weight = weights[filter_counter]
+				current_bias = biases[filter_counter][0]
+				patch = image_array[height_counter:height_counter + filter_height, width_counter:width_counter + filter_width, :]
+				output_element = np.max(patch * current_weight) + current_bias
+				output_depth.append(output_element)
+				filter_counter += 1
+			
+
+			output_width.append(output_depth)
+			width_counter += stride
+
+		output_height.append(output_width)
+		height_counter += stride
+
+	if len(output_height) == 0:
+		return None
+
+	output = np.array(output_height)
+	return output
+
+def max_pooling(image_array, filter_size, stride):
+	shape = image_array.shape
+
+	# filter can not be greater than the image
+	if filter_size > shape[0] | filter_size > shape[1]:
+		return None
+
+	filter_width = filter_size
+	filter_height = filter_size
+
+	# max_pool
+	# TODO: simplify the loops
 	output_height = []
 
 	height_counter = 0 # Moving vertically
@@ -116,16 +126,8 @@ def conv_array(image_array, filter_size, stride, padding):
 			while depth_counter < shape[2]:
 				
 				patch = image_array[height_counter:height_counter + filter_height, width_counter:width_counter + filter_width, depth_counter]
-				output_element = 0 # applying each filter results in an element in the depth direction
-
-				filter_counter = 0 # applying filters
-				while filter_counter < filters_number:
-					filter_ = weights[filter_counter, depth_counter, :, :]
-					output_element += np.sum(patch * filter_) + biases[filter_counter][0]
-
-					filter_counter += 1
-
-				output_depth.append(output_element)
+				pool_value = np.max(patch)
+				output_depth.append(pool_value)
 
 				depth_counter += 1
 
@@ -148,7 +150,7 @@ def rescale(x, min_o, max_o):
 
 	return ((x - min_i) * (max_o - min_o) / (max_i - min_i)) + min_o
 
-def int_to_float_rgb(x):
+def normalize(x):
 	x = x.astype(float)
 	max_i = 255
 	min_i = 0
@@ -157,17 +159,17 @@ def int_to_float_rgb(x):
 
 	return ((x - min_i) * (max_o - min_o) / (max_i - min_i)) + min_o
 
-def save_image(pixels_array, file_name):
-	io.imsave(file_name, pixels_array)
+def save_image(image_array, file_name):
+	cv2.imwrite(file_name, image_array)
 
-def image_name_no_ext(img_name):
-	name = str(img_name)
+def file_name_no_ext(image_file_name):
+	name = str(image_file_name)
 	r = name[::-1]       		# reverse name
 	n = r[r.index(".") + 1:]    # reverse name extensionless
 	return n[::-1]
 
 # base code from http://stackoverflow.com/a/31636601/1065981
-def add_padding(image_array, pad):
+def padding(image_array, pad):
 	shape = image_array.shape # H x W x D
 	image_array = image_array.transpose(2, 0, 1).reshape(shape[2], shape[0], shape[1])
 	img_arr = np.ndarray((3, shape[0] + 2 * pad, shape[1] + 2 * pad), np.float) 
@@ -185,4 +187,54 @@ def add_padding(image_array, pad):
 
 	return np.array(img_arr).transpose(1, 2, 0)
 
-conv(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
+def process_pooling(file_name, filter_size, stride):
+	filter_size = int(filter_size)
+	stride = int(stride)
+	image_array = read_file(file_name)
+	image_array = normalize(image_array)
+	image_array = max_pooling(image_array, filter_size, stride)
+	save_image(image_array, file_name_no_ext(file_name) + "_pool" + ".jpg")
+
+def process_convolution(file_name, filters_number, filter_size, stride, pad=0, convs_number=1):
+	filter_size = int(filter_size)
+	convs_number = int(convs_number)
+	stride = int(stride)
+	pad = int(pad)
+	filters_number = int(filters_number)
+
+	if convs_number > 6: # 6 convs at most, to avoid to much computation
+		convs_number = 6
+	if convs_number < 1: # at least one conv
+		convs_number = 1
+
+	if filters_number < 3: # at least 3 filters for RGB purposes
+		filters_number = 3
+
+	image_array = read_file(file_name)
+	image_array = normalize(image_array)
+
+	for c in range(1, convs_number + 1):
+
+		start = dt.now()
+		image_array = padding(image_array, pad)
+		image_array = convolute(image_array, filters_number, filter_size, stride)
+		print(image_array.shape)
+
+		if image_array is None:
+			print("Stopped. Can't create more convolutions")
+			return
+		
+		image_array = rescale(image_array, 0, 255) # valid range to save image [0, 255]
+		image_array = image_array[:,:,:3]
+		save_image(image_array, file_name_no_ext(file_name) + "_conv" + str(c) + ".jpg")
+		
+		image_array = rescale(image_array, 0, 1) # rescale to be a valid RGB value [0,  1] for next conv
+		
+		end = dt.now()
+		delta = end - start
+		total = round(delta.seconds + delta.microseconds/1E6, 2) # from http://stackoverflow.com/a/2880735/1065981
+
+		print("Convolution " + str(c) + ": " + str(total) + " seconds")
+
+# process_pooling(sys.argv[1], sys.argv[2], sys.argv[3])
+# process_convolution(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
