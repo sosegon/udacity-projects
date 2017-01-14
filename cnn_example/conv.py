@@ -35,7 +35,9 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt 
 from skimage import io
 import sys
+import random
 from datetime import datetime as dt
+import cv2
 
 def conv(img_name, filter_size, stride, padding=0, convs_number=1):
 	filter_size = int(filter_size)
@@ -59,7 +61,7 @@ def conv(img_name, filter_size, stride, padding=0, convs_number=1):
 			print("Stopped. Can't create more convolutions")
 			return
 		
-		image = rescale_rgb(image) # rescale to be a valid RGB value [0,  1]
+		image = rescale(image, 0, 1) # rescale to be a valid RGB value [0,  1]
 		save_image(image, image_name_no_ext(img_name) + "_conv" + str(c) + ".jpg")
 		
 		end = dt.now()
@@ -67,6 +69,14 @@ def conv(img_name, filter_size, stride, padding=0, convs_number=1):
 		total = round(delta.seconds + delta.microseconds/1E6, 2) # from http://stackoverflow.com/a/2880735/1065981
 
 		print("Convolution " + str(c) + ": " + str(total) + " seconds")
+
+def read_img_file(image_file_name):
+	return cv2.imread(image_file_name)
+
+def to_grayscale(image_array):
+	gray_scale = conv2.cvtColor(image_array, cv2_COLORBGR2GRAY)
+	gray_scale = np.expand_dims(gray_scale, axis = 2) # shape is h x w x 1
+	return gray_scale
 
 def conv_array(image_array, filter_size, stride, padding):
 	image_array = add_padding(image_array, padding)
@@ -77,9 +87,6 @@ def conv_array(image_array, filter_size, stride, padding):
 	if filter_size > shape[0] | filter_size > shape[1]:
 		return None
 
-	# rescale to be a valid RGB value [0, 255] for better precision
-	image_array = rescale_rgb(image_array, False)
-
 	filter_width = filter_size
 	filter_height = filter_size
 	filter_depth = shape[2]
@@ -87,8 +94,9 @@ def conv_array(image_array, filter_size, stride, padding):
 
 	# Weights and biases for the filters
 	# TODO: Any other idea for the weights and biases?
-	weights = np.random.normal(0, 1, (filters_number, filter_depth, filter_height, filter_width))
-	biases = np.random.normal(0, 1, (filters_number, 1))
+	weights = np.random.normal(0, 0.1, (filters_number, filter_depth, filter_height, filter_width))
+	# weights = np.random.pareto(1, (filters_number, filter_depth, filter_height, filter_width))
+	biases = np.random.normal(0, 0.01, (filters_number, 1))
 
 	# convolve
 	# TODO: I am sure there are numpy functions or tricks to avoid the while loops
@@ -133,16 +141,10 @@ def conv_array(image_array, filter_size, stride, padding):
 	output = np.array(output_height)
 	return output
 
-def rescale_rgb(x, isfloat=True):
+def rescale(x, min_o, max_o):
 	x = x.astype(float)
 	max_i = np.max(x)
 	min_i = np.min(x)
-	max_o = 1
-	min_o = 0
-
-	if isfloat is False:
-		max_o = 255
-		min_o = 0
 
 	return ((x - min_i) * (max_o - min_o) / (max_i - min_i)) + min_o
 
