@@ -172,24 +172,33 @@ def padding(image_array, pad):
 
 	return np.array(img_arr).transpose(1, 2, 0)
 
-def process_pooling(file_name, filter_size, stride):
+def process_pooling(file_name, filter_size, stride, passes):
 	filter_size = int(filter_size)
 	stride = int(stride)
+	passes = int(passes)
 
-	start = dt.now()
 	image_array = read_file(file_name)
 	image_array = normalize(image_array)
-	image_array = max_pooling(image_array, filter_size, stride)
-	image_array = rescale(image_array, 0, 255) # valid range to save image [0, 255]
-	new_file_name = file_name_no_ext(file_name) + "_pool" + ".jpg"
-	save_image(image_array, new_file_name)
-	print("File " + new_file_name + " created")
 
-	end = dt.now()
-	delta = end - start
-	total = round(delta.seconds + delta.microseconds/1E6, 2) # from http://stackoverflow.com/a/2880735/1065981
+	for c in range(1, passes + 1):
+		start = dt.now()
 
-	print("Max pooling: " + str(total) + " seconds")
+		image_array = max_pooling(image_array, filter_size, stride)
+
+		if image_array is None:
+			print("Stopped. Can not apply more max pooling operations.")
+			return
+
+		image_array = rescale(image_array, 0, 255) # valid range to save image [0, 255]
+		new_file_name = file_name_no_ext(file_name) + "_pool" + str(c) + ".jpg"
+		save_image(image_array, new_file_name)
+		print("File " + new_file_name + " created")
+
+		end = dt.now()
+		delta = end - start
+		total = round(delta.seconds + delta.microseconds/1E6, 2) # from http://stackoverflow.com/a/2880735/1065981
+
+		print("Max pooling: " + str(total) + " seconds")
 
 def process_convolution(file_name, filters_number, filter_size, stride, pad=0, convs_number=1):
 	filter_size = int(filter_size)
@@ -216,7 +225,7 @@ def process_convolution(file_name, filters_number, filter_size, stride, pad=0, c
 		image_array = convolute(image_array, filters_number, filter_size, stride)
 
 		if image_array is None:
-			print("Stopped. Can't create more convolutions")
+			print("Stopped. Can not apply more convolution operations")
 			return
 		
 		image_array = rescale(image_array, 0, 255) # valid range to save image [0, 255]
@@ -238,16 +247,20 @@ parser.add_argument('file_name', type=str, help="File name of the image (jpg onl
 parser.add_argument('-o', dest='operation', type=str, default='max_pooling', help="Operation to perform in the image (convolution, max_pooling)")
 parser.add_argument('-f', dest='filter_size', type=int, default=4)
 parser.add_argument('-s', dest='stride', type=int, default=1)
-parser.add_argument('-p', dest='padding', type=int, default=1)
-parser.add_argument('-n', dest='number_convolutions', type=int, default=1)
+parser.add_argument('-p', dest='padding', type=int, default=0)
+parser.add_argument('-n', dest='number_passes', type=int, default=1)
+parser.add_argument('-u', dest='number_filters', type=int, default=1)
 
 args = parser.parse_args()
 file_name = args.file_name
 operation = args.operation
+passes = args.number_passes
+filter_size = args.filter_size
+stride = args.stride
 
 if operation == "max_pooling":
-	process_pooling(file_name, args.filter_size, args.stride)
+	process_pooling(file_name, filter_size, stride, passes)
 elif operation == "convolution":
-	process_convolution(file_name, args.number_filters, args.filter_size, args.stride, args.padding, args.number_convolutions)
+	process_convolution(file_name, args.number_filters, filter_size, stride, args.padding, passes)
 else:
 	print("Invalid operation: " + operation)
