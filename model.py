@@ -21,6 +21,7 @@ flags.DEFINE_integer('epochs', 5, 'Number of epochs.')
 flags.DEFINE_integer('samples_epoch', 500, 'Samples in every epoch.')
 flags.DEFINE_integer('batch_size', 50, 'Size of batch in training.')
 flags.DEFINE_integer('zeros_drop', 90, 'Percentage of zero steering to drop.')
+flags.DEFINE_float('learning', 0.001, 'Learning rate.')
 
 flags.DEFINE_string('draw_images', 'yes', 'Draw images in process')
 
@@ -123,7 +124,7 @@ def extract_saturation(image):
 	img = np.expand_dims(img, axis=2)
 	return img
 
-def get_model():
+def get_model(learning):
 
 	image_shape = (final_height, final_width, final_depth)
 
@@ -158,7 +159,7 @@ def get_model():
 
 	model.add(Dense(1))
 
-	optimizer = Adam(lr=0.001)
+	optimizer = Adam(lr=learning)
 	model.compile(optimizer=optimizer, loss="mse")
 
 	return model
@@ -248,7 +249,7 @@ def main(_):
 
 	print("Number of images: " + str(len(Xpath)))
 
-	model = get_model()
+	model = get_model(FLAGS.learning)
 	print(model.summary())
 	history = model.fit_generator(
 		generator(Xpath, y, FLAGS.batch_size),
