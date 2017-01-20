@@ -175,8 +175,9 @@ public class ArticleListActivity extends ActionBarActivity implements
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
             // Unique transition name based on _ID of movie
+            // Use function getItemId to get value of movie _ID
             // http://stackoverflow.com/a/31072112/1065981
-            ViewCompat.setTransitionName(holder.thumbnailView, mCursor.getString(ArticleLoader.Query._ID));
+            ViewCompat.setTransitionName(holder.thumbnailView, String.valueOf(getItemId(position)));
         }
 
         @Override

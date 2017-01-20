@@ -126,6 +126,8 @@ public class ArticleDetailFragment extends Fragment implements
         });
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+        // Set name of shared element
+        ViewCompat.setTransitionName(mPhotoView, String.valueOf(getArguments().getLong(ARG_ITEM_ID)));
         mPhotoContainerView = mRootView.findViewById(R.id.photo_container);
 
         mStatusBarColorDrawable = new ColorDrawable(0);
@@ -208,13 +210,11 @@ public class ArticleDetailFragment extends Fragment implements
                                 Palette p = Palette.generate(bitmap, 12);
                                 mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                // Set name of shared element
-                                ViewCompat.setTransitionName(mPhotoView, mCursor.getString(ArticleLoader.Query._ID));
                                 mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                                     @Override
                                     public boolean onPreDraw() {
                                         mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
-                                        // Resume transitio once the view is ready
+                                        // Resume transition once the view is ready
                                         // http://stackoverflow.com/a/38974659
                                         getActivity().startPostponedEnterTransition();
                                         return true;
