@@ -25,6 +25,20 @@ app = Flask(__name__)
 model = None
 prev_image_array = None
 
+from model import crop_top_bottom
+from model import resize
+from model import final_width
+from model import final_height
+from model import crop_top_percentage
+from model import crop_bottom_percentage
+
+def crop_camera(img):
+    img = crop_top_bottom(img, crop_top_percentage, crop_bottom_percentage)
+    img = resize(img, final_width, final_height)
+
+    return img
+
+
 @sio.on('telemetry')
 def telemetry(sid, data):
     # The current steering angle of the car
@@ -37,11 +51,12 @@ def telemetry(sid, data):
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
     image_array = np.asarray(image)
+    image_array = crop_camera(image_array)
     transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle = 0.2
+    throttle = 0.5
     print(steering_angle, throttle)
     send_control(steering_angle, throttle)
 
@@ -68,10 +83,10 @@ if __name__ == '__main__':
         # NOTE: if you saved the file by calling json.dump(model.to_json(), ...)
         # then you will have to call:
         #
-        #   model = model_from_json(json.loads(jfile.read()))\
+        model = model_from_json(json.loads(jfile.read()))\
         #
         # instead.
-        model = model_from_json(jfile.read())
+        #model = model_from_json(jfile.read())
 
 
     model.compile("adam", "mse")
