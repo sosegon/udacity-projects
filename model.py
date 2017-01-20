@@ -2,6 +2,7 @@
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, ELU, Lambda
 from keras.layers.convolutional import Convolution2D
+from keras.optimizers import Adam
 import pandas
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +13,31 @@ import tensorflow as tf
 from sklearn.utils import shuffle
 from sklearn.cross_validation import train_test_split
 
-def generator(Xpath, y, batch_size, validation=False):
+flags = tf.app.flags
+FLAGS = flags.FLAGS
+
+flags.DEFINE_integer('epochs', 5, 'Number of epochs.')
+
+flags.DEFINE_integer('samples_epoch', 500, 'Samples in every epoch.')
+flags.DEFINE_integer('batch_size', 50, 'Size of batch in training.')
+flags.DEFINE_integer('zeros_drop', 90, 'Percentage of zero steering to drop.')
+
+flags.DEFINE_string('draw_images', 'yes', 'Draw images in process')
+
+recovery_threshold = 0.25
+brightness_ex = None
+nbrightness_ex = None
+nflip_ex = None
+flip_ex = None
+
+final_width = 200
+final_height = 66
+final_depth = 3
+
+crop_top_percentage = 35
+crop_bottom_percentage = 15
+
+def generator(Xpath, y, batch_size, draw=False):
 	total_input = len(Xpath)
 
 	global brightness_ex
@@ -23,10 +48,12 @@ def generator(Xpath, y, batch_size, validation=False):
 	while True:
 		features, targets = [], []
 		i = 0
-		
+		#index = 0
+		#Xpath = shuffle(Xpath)
 		while len(features) < batch_size:
 			index = randrange(0, total_input)
 			path = Xpath[index]
+			#index += 1
 			
 			angle = y[index]
 			image = read_image(path)
@@ -38,33 +65,32 @@ def generator(Xpath, y, batch_size, validation=False):
 			targets.append(angle)
 			i += 1
 
-			if validation is False:
-				if i % 3 == 0:
-					if nbrightness_ex is None:
-						nbrightness_ex = np.copy(image)
-						save_image(nbrightness_ex, "normal_brightness.jpg")
-					
-					image = change_brightness(image)
-					
-					if brightness_ex is None:
-						brightness_ex = np.copy(image)
-						save_image(brightness_ex, "change_brightness.jpg")
+			if i % 3 == 0:
+				if nbrightness_ex is None and draw is True:
+					nbrightness_ex = np.copy(image)
+					save_image(nbrightness_ex, "normal_brightness.jpg")
 				
-				elif i % 3 == 1:
-					if nflip_ex is None:
-						nflip_ex = np.copy(image)
-						save_image(nflip_ex, "normal_flip.jpg")
-
-					image = flip_image(image)
-					angle *= -1
-
-					if flip_ex is None:
-						flip_ex = np.copy(image)
-						save_image(flip_ex, "change_flip.jpg")
+				image = change_brightness(image)
 				
-				features.append(image)
-				targets.append(angle)
-				i += 1
+				if brightness_ex is None and draw is True:
+					brightness_ex = np.copy(image)
+					save_image(brightness_ex, "change_brightness.jpg")
+			
+			elif i % 3 == 1:
+				if nflip_ex is None and draw is True:
+					nflip_ex = np.copy(image)
+					save_image(nflip_ex, "normal_flip.jpg")
+
+				image = flip_image(image)
+				angle *= -1
+
+				if flip_ex is None and draw is True:
+					flip_ex = np.copy(image)
+					save_image(flip_ex, "change_flip.jpg")
+			
+			features.append(image)
+			targets.append(angle)
+			i += 1
 
 		yield (np.array(features), np.array(targets))
 
@@ -99,7 +125,7 @@ def extract_saturation(image):
 
 def get_model():
 
-	image_shape = (final_height, final_width, 3)
+	image_shape = (final_height, final_width, final_depth)
 
 	model = Sequential()
 	model.add(Lambda(lambda x: x/127.5 - 1., input_shape=image_shape, output_shape=image_shape))
@@ -132,7 +158,8 @@ def get_model():
 
 	model.add(Dense(1))
 
-	model.compile(optimizer="adam", loss="mse", metrics=['accuracy'])
+	optimizer = Adam(lr=0.001)
+	model.compile(optimizer=optimizer, loss="mse")
 
 	return model
 
@@ -143,15 +170,21 @@ def draw_steering_histogram(data, name):
 	plt.title("Steering angle distribution")
 	plt.savefig(name)
 
-def load_data(zero_steering_records_to_keep):
+def load_data(percetange_zero_drop, draw=False):
 	# trim white spaces according to http://stackoverflow.com/a/33790933/1065981
 	df = pandas.read_csv("driving_log.csv", delimiter=" *, *")
 	# center left right steering throttle brake speed
 	dataset = df.values
 	angles = dataset[:,3]
 
-	draw_steering_histogram(angles, "hist_steering_full")
+	if draw is True:
+		draw_steering_histogram(angles, "hist_steering_full")
 	
+	zero_steering_records_to_keep = int(len(angles[angles == 0.0]) * (100-percetange_zero_drop)/100)
+
+	print("zeros to keep:" + str(zero_steering_records_to_keep))
+
+
 	#Remove records for 0 steering, just keep some of them
 	df_zeros = df.drop(df.index[df.steering != 0])
 	df_zeros = df.sample(zero_steering_records_to_keep)
@@ -160,11 +193,12 @@ def load_data(zero_steering_records_to_keep):
 
 	dataset = df.values
 	angles = dataset[:,3]
-	draw_steering_histogram(angles, "hist_steering_drop_zeros")
+
+	if draw is True:
+		draw_steering_histogram(angles, "hist_steering_drop_zeros")
 
 	X_c, X_l, X_r = dataset[:,0], dataset[:,1], dataset[:,2]
 
-	recovery_threshold = 0.2
 	y_c = dataset[:,3]
 	y_l = dataset[:,3] + recovery_threshold
 	y_r = dataset[:,3] - recovery_threshold
@@ -172,36 +206,14 @@ def load_data(zero_steering_records_to_keep):
 	X = np.concatenate((X_c, X_l, X_r))
 	y = np.concatenate((y_c, y_l, y_r))
 
-	draw_steering_histogram(y, "hist_steering_total")
+	if draw is True:
+		draw_steering_histogram(y, "hist_steering_total")
 
 	assert len(X) == len(y)
 
 	X, y = shuffle(X, y)
 	
 	return X, y
-
-flags = tf.app.flags
-FLAGS = flags.FLAGS
-
-flags.DEFINE_integer('epochs', 5, 'Number of epochs.')
-
-flags.DEFINE_integer('samples_epoch', 500, 'Samples in every epoch.')
-flags.DEFINE_integer('batch_size', 50, 'Size of batch in training.')
-
-flags.DEFINE_integer('samples_epoch_val', 50, 'batch_size')
-flags.DEFINE_integer('batch_size_val', 5, 'batch_size')
-
-brightness_ex = None
-nbrightness_ex = None
-nflip_ex = None
-flip_ex = None
-
-final_width = 200
-final_height = 66
-final_depth = 3
-
-crop_top_percentage = 35
-crop_bottom_percentage = 15
 
 def plot_metrics(history):
 	keys = history.history.keys()
@@ -227,7 +239,11 @@ def getFeatureTargets(Xpath, y):
 	return np.array(feats), np.array(targets)
 
 def main(_):
-	Xpath, y = load_data(50)
+	draw = False
+	if FLAGS.draw_images.strip().lower() == 'yes':
+		draw = True
+
+	Xpath, y = load_data(FLAGS.zeros_drop, draw)
 	Xpath, XXpath, y, yy = train_test_split(Xpath, y, test_size=0.3, random_state=50)
 
 	print("Number of images: " + str(len(Xpath)))
@@ -238,12 +254,10 @@ def main(_):
 		generator(Xpath, y, FLAGS.batch_size),
 		samples_per_epoch = FLAGS.samples_epoch,
 		validation_data = getFeatureTargets(XXpath, yy),
-		#validation_data = generator(Xpath, y, FLAGS.batch_size_val, True),
-		#nb_val_samples = FLAGS.samples_epoch_val,
 		nb_epoch=FLAGS.epochs
 	)
-
-	plot_metrics(history)
+	if draw is True:
+		plot_metrics(history)
 
 	model.save_weights("model.h5")
 	with open("model.json", "w+") as outfile:
