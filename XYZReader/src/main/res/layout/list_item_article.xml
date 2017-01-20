@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/list_item_text_padding"
-                android:textColor="@color/ltgray"
+                android:textColor="@color/dkgray"
                 android:ellipsize="end"
                 android:maxLines="1" />
 
@@ -43,7 +43,7 @@
                 android:paddingLeft="@dimen/list_item_text_padding"
                 android:paddingRight="@dimen/list_item_text_padding"
                 android:paddingBottom="@dimen/list_item_text_padding"
-                android:textColor="#6000"
+                android:textColor="@color/ltgray"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:ellipsize="end" />
