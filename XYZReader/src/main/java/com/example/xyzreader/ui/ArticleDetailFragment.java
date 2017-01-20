@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -206,6 +208,18 @@ public class ArticleDetailFragment extends Fragment implements
                                 Palette p = Palette.generate(bitmap, 12);
                                 mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
+                                // Set name of shared element
+                                ViewCompat.setTransitionName(mPhotoView, mCursor.getString(ArticleLoader.Query._ID));
+                                mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                                    @Override
+                                    public boolean onPreDraw() {
+                                        mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                                        // Resume transitio once the view is ready
+                                        // http://stackoverflow.com/a/38974659
+                                        getActivity().startPostponedEnterTransition();
+                                        return true;
+                                    }
+                                });
                                 mRootView.findViewById(R.id.meta_bar)
                                         .setBackgroundColor(mMutedColor);
                                 updateStatusBar();

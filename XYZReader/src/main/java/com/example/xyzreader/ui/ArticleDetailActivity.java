@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.TypedValue;
@@ -104,6 +105,10 @@ public class ArticleDetailActivity extends ActionBarActivity
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
             }
+
+            // Postpone transition since the shared element will be in a fragment
+            // http://stackoverflow.com/a/38974659
+            ActivityCompat.postponeEnterTransition(this);
         }
     }
 

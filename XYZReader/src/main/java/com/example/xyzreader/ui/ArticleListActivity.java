@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.RecyclerView;
@@ -140,8 +142,17 @@ public class ArticleListActivity extends ActionBarActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    Intent intent = new Intent(
+                            Intent.ACTION_VIEW,
+                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))
+                    );
+                    // Enable transition
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                            ArticleListActivity.this,
+                            vh.thumbnailView,
+                            vh.thumbnailView.getTransitionName()
+                    ).toBundle();
+                    startActivity(intent, bundle);
                 }
             });
             return vh;
@@ -162,6 +173,10 @@ public class ArticleListActivity extends ActionBarActivity implements
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
             holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+
+            // Unique transition name based on _ID of movie
+            // http://stackoverflow.com/a/31072112/1065981
+            ViewCompat.setTransitionName(holder.thumbnailView, mCursor.getString(ArticleLoader.Query._ID));
         }
 
         @Override
