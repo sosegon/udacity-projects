@@ -29,7 +29,8 @@
             android:padding="@dimen/list_item_text_padding"
             android:textColor="@color/dkgray"
             android:ellipsize="end"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textSize="@dimen/list_item_title_text_size"/>
 
         <TextView
             android:id="@+id/article_subtitle"
@@ -42,7 +43,8 @@
             android:textColor="@color/ltgray"
             android:maxLines="1"
             android:singleLine="true"
-            android:ellipsize="end" />
+            android:ellipsize="end"
+            android:textSize="@dimen/list_item_subtitle_text_size"/>
 
 
     </LinearLayout>
