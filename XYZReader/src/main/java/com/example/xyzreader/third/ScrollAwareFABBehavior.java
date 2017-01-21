@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
@@ -45,6 +46,13 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
       animateOut(child);
     } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
       // User scrolled up and the FAB is currently not visible -> show the FAB
+      animateIn(child);
+    }
+
+    // Determine if scroll has reached the bottom of the content
+    // and display the fab
+    NestedScrollView v = (NestedScrollView) target;
+    if (v.getScrollY() == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight())  && child.getVisibility() != View.VISIBLE) {
       animateIn(child);
     }
   }
