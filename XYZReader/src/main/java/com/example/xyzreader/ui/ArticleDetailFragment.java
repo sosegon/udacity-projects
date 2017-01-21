@@ -22,7 +22,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -49,6 +51,8 @@ public class ArticleDetailFragment extends Fragment implements
     private ObservableScrollView mScrollView;
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
+    private LinearLayout mNoContent;
+    private ImageButton mFab;
 
     private int mTopInset;
     private View mPhotoContainerView;
@@ -125,6 +129,8 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
+        mNoContent = (LinearLayout) mRootView.findViewById(R.id.ll_no_content);
+
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
         // Set name of shared element
         ViewCompat.setTransitionName(mPhotoView, String.valueOf(getArguments().getLong(ARG_ITEM_ID)));
@@ -132,7 +138,8 @@ public class ArticleDetailFragment extends Fragment implements
 
         mStatusBarColorDrawable = new ColorDrawable(0);
 
-        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+        mFab = (ImageButton) mRootView.findViewById(R.id.share_fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
@@ -231,11 +238,13 @@ public class ArticleDetailFragment extends Fragment implements
 
                         }
                     });
+            mNoContent.setVisibility(View.GONE);
+            mScrollView.setVisibility(View.VISIBLE);
+            mFab.setVisibility(View.VISIBLE);
         } else {
-            mRootView.setVisibility(View.GONE);
-            titleView.setText("N/A");
-            bylineView.setText("N/A" );
-            bodyView.setText("N/A");
+            mNoContent.setVisibility(View.VISIBLE);
+            mScrollView.setVisibility(View.GONE);
+            mFab.setVisibility(View.GONE);
         }
     }
 

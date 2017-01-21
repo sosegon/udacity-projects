@@ -9,4 +9,6 @@
 
     <string name="up">Up</string>
 
+    <string name="msg_no_content">No content available</string>
+
 </resources>
