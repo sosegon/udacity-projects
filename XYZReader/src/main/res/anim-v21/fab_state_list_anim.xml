@@ -26,12 +26,14 @@
                 android:valueType="floatType" />
         </set>
     </item>
-    <item>
+    <item
+        android:state_enabled="true"
+        android:state_pressed="false">
         <set>
             <objectAnimator
                 android:duration="@android:integer/config_shortAnimTime"
                 android:propertyName="translationZ"
-                android:valueTo="0"
+                android:valueTo="@dimen/fab_elevation"
                 android:valueType="floatType" />
         </set>
     </item>
