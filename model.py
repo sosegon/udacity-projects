@@ -16,14 +16,14 @@ from sklearn.cross_validation import train_test_split
 flags = tf.app.flags
 FLAGS = flags.FLAGS
 
-flags.DEFINE_integer('epochs', 5, 'Number of epochs.')
+flags.DEFINE_integer('e', 5, 'Number of epochs.')
 
-flags.DEFINE_integer('samples_epoch', 500, 'Samples in every epoch.')
-flags.DEFINE_integer('batch_size', 50, 'Size of batch in training.')
-flags.DEFINE_integer('zeros_drop', 90, 'Percentage of zero steering to drop.')
-flags.DEFINE_float('learning', 0.001, 'Learning rate.')
+flags.DEFINE_integer('ts', 500, 'Training size.')
+flags.DEFINE_integer('bs', 50, 'Size of batch in training.')
+flags.DEFINE_float('zd', 90, 'Percentage of zero steering to drop.')
+flags.DEFINE_float('lr', 0.001, 'Learning rate.')
 
-flags.DEFINE_string('draw_images', 'yes', 'Draw images in process')
+flags.DEFINE_string('di', 'yes', 'Draw images in process')
 
 recovery_threshold = 0.25
 brightness_ex = None
@@ -165,8 +165,11 @@ def get_model(learning):
 	return model
 
 def draw_steering_histogram(data, name):
+	bin_width = 0.05
+	half_range = 2
+	number_bins = 2 * half_range / bin_width
 	plt.clf()
-	plt.hist(data, np.linspace(-2, 2))
+	plt.hist(data, number_bins)
 	plt.xlabel("steering angles")
 	plt.title("Steering angle distribution")
 	plt.savefig(name)
@@ -184,7 +187,6 @@ def load_data(percetange_zero_drop, draw=False):
 	zero_steering_records_to_keep = int(len(angles[angles == 0.0]) * (100-percetange_zero_drop)/100)
 
 	print("zeros to keep:" + str(zero_steering_records_to_keep))
-
 
 	#Remove records for 0 steering, just keep some of them
 	df_zeros = df.drop(df.index[df.steering != 0])
@@ -241,21 +243,21 @@ def getFeatureTargets(Xpath, y):
 
 def main(_):
 	draw = False
-	if FLAGS.draw_images.strip().lower() == 'yes':
+	if FLAGS.di.strip().lower() == 'yes':
 		draw = True
 
-	Xpath, y = load_data(FLAGS.zeros_drop, draw)
+	Xpath, y = load_data(FLAGS.zd, draw)
 	Xpath, XXpath, y, yy = train_test_split(Xpath, y, test_size=0.3, random_state=50)
 
 	print("Number of images: " + str(len(Xpath)))
 
-	model = get_model(FLAGS.learning)
+	model = get_model(FLAGS.lr)
 	print(model.summary())
 	history = model.fit_generator(
-		generator(Xpath, y, FLAGS.batch_size),
-		samples_per_epoch = FLAGS.samples_epoch,
+		generator(Xpath, y, FLAGS.bs),
+		samples_per_epoch = FLAGS.ts,
 		validation_data = getFeatureTargets(XXpath, yy),
-		nb_epoch=FLAGS.epochs
+		nb_epoch=FLAGS.e
 	)
 	if draw is True:
 		plot_metrics(history)
