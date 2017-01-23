@@ -19,23 +19,27 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 import tensorflow as tf
 tf.python.control_flow_ops = tf
 
+import cv2
 
 sio = socketio.Server()
 app = Flask(__name__)
 model = None
 prev_image_array = None
 
-from model import crop_top_bottom
-from model import resize
-from model import final_width
-from model import final_height
-from model import crop_top_percentage
-from model import crop_bottom_percentage
+def crop_top_bottom(image, percentage_top, percentage_bottom):
+    height = image.shape[0]
+    crop_size_top = int(height * percentage_top / 100)
+    crop_size_bottom = int(height * percentage_bottom / 100)
+    return image[crop_size_top:height-crop_size_bottom,:,:]
+
+def resize(image, width, height):
+    return cv2.resize(image, (width, height), interpolation=cv2.INTER_CUBIC)
 
 def crop_camera(img):
-    img = crop_top_bottom(img, crop_top_percentage, crop_bottom_percentage)
-    img = resize(img, final_width, final_height)
+    img = crop_top_bottom(img, 35, 15)
+    img = resize(img, 200, 66)
 
+    print(img.shape)
     return img
 
 
@@ -56,7 +60,7 @@ def telemetry(sid, data):
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle = 0.5
+    throttle = 0.2
     print(steering_angle, throttle)
     send_control(steering_angle, throttle)
 
