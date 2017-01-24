@@ -69,3 +69,14 @@ This is a trial-error process where the values for the hyperparameters (Learning
 <img src="doc_images/loss.png" height="200"/>
 
 ![alt text](doc_images/model.gif)
+
+## Acknowledgements
+Thanks to all the fellows that shared their experiences in this project:
+[Kaspar Sakmann](https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713?source=false---------0)
+[Subodh Malgonde](https://medium.com/@subodh.malgonde/teaching-a-car-to-mimic-your-driving-behaviour-c1f0ae543686?source=false---------6)
+[Bill Zito](https://medium.com/@billzito/my-first-self-driving-car-e9cd5c04f0f2)
+[Denise James](https://medium.com/@deniserjames/denise-james-bsee-msee-5beb448cf184)
+[Annie Flippo](https://medium.com/@acflippo/cloning-driving-behavior-by-augmenting-steering-angles-5faf7ea8a125)
+[Mengxi Wu](https://medium.com/@xslittlegrass/self-driving-car-in-a-simulator-with-a-tiny-neural-network-13d33b871234)
+[Vivek Yadav](https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9#.ofn8g7j3g)
+Everybody in the slack channel and the forum.
