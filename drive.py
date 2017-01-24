@@ -39,7 +39,6 @@ def crop_camera(img):
     img = crop_top_bottom(img, 35, 15)
     img = resize(img, 200, 66)
 
-    print(img.shape)
     return img
 
 
