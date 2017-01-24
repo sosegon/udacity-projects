@@ -54,7 +54,7 @@ Since there is a considerable amount of images used to train the model, and ther
 In this case, there is three kinds of techniques to augment the data:
   - Change brightness. Simply make the images darker or brighter.
   - Flip images horizontally, which makes the corresponding steering angle to be the opposite of its original counterpart.
-  - Distort the steering angle a small factor.
+  - Distort the steering angle by a small factor. Idea of the fellow [Annie Flippo](https://medium.com/@acflippo/cloning-driving-behavior-by-augmenting-steering-angles-5faf7ea8a125#.igtk4gj23)
 
  The objective of these augmentations is to make the model to generalize better and to avoid overfitting.
 
