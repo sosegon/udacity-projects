@@ -8,6 +8,7 @@ Project #3 of Udacity's Self-driving Car Nanodegree Program. The following tools
 - Matplotlib 1.5.3
 - Jupyter 4.2.3
 - Python 3.5.2
+- [Udacity's simulator](https://d17h27t6h515a5.cloudfront.net/topher/2016/November/5831f0f7_simulator-linux/simulator-linux.zip)
 
 ## Get the data
 The data used is provided by Udacity, it can be downloaded [here](https://d17h27t6h515a5.cloudfront.net/topher/2016/December/584f6edd_data/data.zip). It contains a set of images recorded by the simulator. It also has a log with information related to every image including the steering angle.
