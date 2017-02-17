@@ -125,6 +125,9 @@ Based on the previous explanation, there are two heat maps in every frame. The f
 
 In order to increase the speed of the process, the raw detection of vehicles (by segmenting the frame) is done every three frames, in the rest of the frames, the detection is done based on the result of the previous frame.
 
+[Video with the final result](https://vimeo.com/204607965) 
+[Video with detections and heatmaps](https://vimeo.com/204608167)
+
 ## 7. Discussion
 
 There are several things to highlight in this project:
