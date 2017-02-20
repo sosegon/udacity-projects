@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -31,6 +30,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 import android.widget.Toast;
@@ -231,7 +231,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     public void onDraw(Canvas canvas, Rect bounds) {
       // Draw the background.
       if (isInAmbientMode()) {
-        canvas.drawColor(Color.BLACK);
+        canvas.drawColor(getResources().getColor(R.color.background));
       } else {
         canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
       }
@@ -240,12 +240,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       long now = System.currentTimeMillis();
       mCalendar.setTimeInMillis(now);
 
-      String text = mAmbient
-              ? String.format("%d:%02d", mCalendar.get(Calendar.HOUR),
-              mCalendar.get(Calendar.MINUTE))
-              : String.format("%d:%02d:%02d", mCalendar.get(Calendar.HOUR),
-              mCalendar.get(Calendar.MINUTE), mCalendar.get(Calendar.SECOND));
-      canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+      String text = String.format("%d:%02d", mCalendar.get(Calendar.HOUR), mCalendar.get(Calendar.MINUTE));
+      canvas.drawText(text, bounds.centerX() - (mTextPaint.measureText(text)) / 2 , mYOffset, mTextPaint);
     }
 
     /**
