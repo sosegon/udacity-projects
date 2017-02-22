@@ -19,6 +19,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -35,10 +37,18 @@ import android.widget.ProgressBar;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.Wearable;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        ForecastAdapter.ForecastAdapterOnClickHandler {
+        ForecastAdapter.ForecastAdapterOnClickHandler,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
 
     private final String TAG = MainActivity.class.getSimpleName();
 
@@ -79,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private ProgressBar mLoadingIndicator;
 
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +165,13 @@ public class MainActivity extends AppCompatActivity implements
 
         SunshineSyncUtils.initialize(this);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mGoogleApiClient.connect();
     }
 
     /**
@@ -239,7 +257,10 @@ public class MainActivity extends AppCompatActivity implements
         mForecastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0) showWeatherDataView();
+        if (data.getCount() != 0){
+            showWeatherDataView();
+            sendWeatherData(data);
+        }
     }
 
     /**
@@ -342,5 +363,45 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    private void sendWeatherData(Cursor data) {
+        if(mGoogleApiClient ==  null){
+            return;
+        }
+
+        data.moveToFirst();
+
+        PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/weather-data");
+        putDataMapRequest.getDataMap().putInt("maxTemp", data.getInt(INDEX_WEATHER_MAX_TEMP));
+        putDataMapRequest.getDataMap().putInt("minTemp", data.getInt(INDEX_WEATHER_MIN_TEMP));
+
+        putDataMapRequest.getDataMap().putLong("time", System.currentTimeMillis());
+
+        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest())
+                .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+                    @Override
+                    public void onResult(DataApi.DataItemResult dataItemResult) {
+                        if(dataItemResult.getStatus().isSuccess()) {
+                            Log.e(TAG, "Sending weather data was successful: " + dataItemResult.getStatus()
+                                    .isSuccess());
+                        }
+                    }
+                });
     }
 }
