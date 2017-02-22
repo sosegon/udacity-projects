@@ -69,9 +69,10 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     final Handler mUpdateTimeHandler = new EngineHandler(this);
 
     boolean mRegisteredTimeZoneReceiver = false;
+    boolean mRegisteredWeatherDataReceiver = false;
 
     Paint mBackgroundPaint;
-    Paint mTimeTextPaint, mDateTextPaint;
+    Paint mTimeTextPaint, mDateTextPaint, mTempTextPaint;
 
     boolean mAmbient;
     final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -80,7 +81,17 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         mCalendar.setTimeZone(TimeZone.getDefault());
         invalidate();
       }
-    };    Calendar mCalendar;
+    };
+    Calendar mCalendar;
+    int mMinTemp = 0, mMaxTemp = 0;
+    final BroadcastReceiver mWeatherDataReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        mMinTemp = intent.getIntExtra("minTemp", 0);
+        mMaxTemp = intent.getIntExtra("maxTemp", 0);
+        invalidate();
+      }
+    };
     float mXOffset;
     float mYOffset;
 
@@ -94,6 +105,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     public void onCreate(SurfaceHolder holder) {
       super.onCreate(holder);
 
+//      WeatherListenerService listenerService = new WeatherListenerService();
+
       setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFace.this)
               .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
               .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
@@ -105,12 +118,9 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
       mBackgroundPaint = new Paint();
       mBackgroundPaint.setColor(resources.getColor(R.color.background));
-
-      mTimeTextPaint = new Paint();
       mTimeTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
-
-      mDateTextPaint = new Paint();
       mDateTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+      mTempTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
 
       mCalendar = Calendar.getInstance();
     }
@@ -155,6 +165,13 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       mRegisteredTimeZoneReceiver = true;
       IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
       SunshineWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
+
+      if (mRegisteredWeatherDataReceiver) {
+        return;
+      }
+      mRegisteredWeatherDataReceiver = true;
+      IntentFilter filter2 = new IntentFilter(Intent.ACTION_ATTACH_DATA);
+      SunshineWatchFace.this.registerReceiver(mWeatherDataReceiver, filter2);
     }
 
     private void unregisterReceiver() {
@@ -163,6 +180,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       }
       mRegisteredTimeZoneReceiver = false;
       SunshineWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
+
+      if (!mRegisteredWeatherDataReceiver) {
+        return;
+      }
+      mRegisteredWeatherDataReceiver = false;
+      SunshineWatchFace.this.unregisterReceiver(mWeatherDataReceiver);
     }
 
     @Override
@@ -183,6 +206,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
               ? R.dimen.digital_text_size2_round : R.dimen.digital_text_size2);
 
       mDateTextPaint.setTextSize(textSize);
+
+      textSize = resources.getDimension(isRound
+              ? R.dimen.digital_text_size3_round : R.dimen.digital_text_size3);
+
+      mTempTextPaint.setTextSize(textSize);
     }
 
     @Override
@@ -205,6 +233,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         if (mLowBitAmbient) {
           mTimeTextPaint.setAntiAlias(!inAmbientMode);
           mDateTextPaint.setAntiAlias(!inAmbientMode);
+          mTempTextPaint.setAntiAlias(!inAmbientMode);
         }
         invalidate();
       }
@@ -255,6 +284,10 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
       String date_text = SunshineDateUtils.getFriendlyDateString(getApplicationContext(), now, true);
       canvas.drawText(date_text, bounds.centerX() - (mDateTextPaint.measureText(date_text)) / 2 , mYOffset + 40, mDateTextPaint);
+
+      String temp_text = getString(R.string.format_temperature, mMinTemp, mMaxTemp);
+      canvas.drawText(temp_text, bounds.centerX() - (mTempTextPaint.measureText(temp_text)) / 2 , mYOffset + 120, mTempTextPaint);
+
     }
 
     /**
