@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -32,7 +33,6 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
-import android.widget.Toast;
 
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 
@@ -73,6 +73,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     Paint mBackgroundPaint;
     Paint mTimeTextPaint, mDateTextPaint, mTempTextPaint;
+    Paint mWeatherIconPaint;
 
     boolean mAmbient;
     final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -83,12 +84,14 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       }
     };
     Calendar mCalendar;
-    int mMinTemp = 0, mMaxTemp = 0;
+    int mMinTemp = -1000, mMaxTemp = -1000; // unlikely values
+    Bitmap mWeatherIcon;
     final BroadcastReceiver mWeatherDataReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
         mMinTemp = intent.getIntExtra("minTemp", 0);
         mMaxTemp = intent.getIntExtra("maxTemp", 0);
+        mWeatherIcon = intent.getParcelableExtra("icon");
         invalidate();
       }
     };
@@ -120,6 +123,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       mDateTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
       mTempTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
 
+      mWeatherIconPaint = new Paint();
       mCalendar = Calendar.getInstance();
     }
 
@@ -251,8 +255,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         case TAP_TYPE_TAP:
           // The user has completed the tap gesture.
           // TODO: Add code to handle the tap gesture.
-          Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
-                  .show();
+//          Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
+//                  .show();
           break;
       }
       invalidate();
@@ -277,9 +281,14 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       String date_text = SunshineDateUtils.getFriendlyDateString(getApplicationContext(), now, true);
       canvas.drawText(date_text, bounds.centerX() - (mDateTextPaint.measureText(date_text)) / 2 , mYOffset + 40, mDateTextPaint);
 
-      String temp_text = getString(R.string.format_temperature, mMinTemp, mMaxTemp);
-      canvas.drawText(temp_text, bounds.centerX() - (mTempTextPaint.measureText(temp_text)) / 2 , mYOffset + 100, mTempTextPaint);
+      if(mMaxTemp != -1000 && mMinTemp != -1000){
+        String temp_text = getString(R.string.format_temperature, mMinTemp, mMaxTemp);
+        canvas.drawText(temp_text, bounds.centerX() - (mTempTextPaint.measureText(temp_text)) / 2 , mYOffset + 100, mTempTextPaint);
+      }
 
+      if(mWeatherIcon != null){
+        canvas.drawBitmap(mWeatherIcon, bounds.centerX() - (mWeatherIcon.getWidth() / 2), mYOffset + 115, mWeatherIconPaint);
+      }
     }
 
     /**

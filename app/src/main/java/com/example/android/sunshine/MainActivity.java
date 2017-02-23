@@ -17,6 +17,8 @@ package com.example.android.sunshine;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -37,12 +39,17 @@ import android.widget.ProgressBar;
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.sync.SunshineSyncUtils;
+import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -390,8 +397,14 @@ public class MainActivity extends AppCompatActivity implements
         PutDataMapRequest putDataMapRequest = PutDataMapRequest.create("/weather-data");
         putDataMapRequest.getDataMap().putInt("maxTemp", data.getInt(INDEX_WEATHER_MAX_TEMP));
         putDataMapRequest.getDataMap().putInt("minTemp", data.getInt(INDEX_WEATHER_MIN_TEMP));
-
         putDataMapRequest.getDataMap().putLong("time", System.currentTimeMillis());
+
+        int weatherId = data.getInt(INDEX_WEATHER_CONDITION_ID);
+        int weatherImageId = SunshineWeatherUtils.getSmallArtResourceIdForWeatherCondition(weatherId);
+
+        // As seen in http://stackoverflow.com/a/3035869/1065981
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), weatherImageId);
+        putDataMapRequest.getDataMap().putAsset("icon", toAsset(icon));
 
         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataMapRequest.asPutDataRequest())
                 .setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
@@ -403,5 +416,28 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }
                 });
+    }
+
+    /**
+     * Builds an {@link com.google.android.gms.wearable.Asset} from a bitmap. The image that we get
+     * back from the camera in "data" is a thumbnail size. Typically, your image should not exceed
+     * 320x320 and if you want to have zoom and parallax effect in your app, limit the size of your
+     * image to 640x400. Resize your image before transferring to your wearable device.
+     */
+    private static Asset toAsset(Bitmap bitmap) {
+        ByteArrayOutputStream byteStream = null;
+        try {
+            byteStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
+            return Asset.createFromBytes(byteStream.toByteArray());
+        } finally {
+            if (null != byteStream) {
+                try {
+                    byteStream.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
     }
 }
