@@ -105,8 +105,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     public void onCreate(SurfaceHolder holder) {
       super.onCreate(holder);
 
-//      WeatherListenerService listenerService = new WeatherListenerService();
-
       setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFace.this)
               .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
               .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
@@ -195,21 +193,15 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       // Load resources that have alternate values for round watches.
       Resources resources = SunshineWatchFace.this.getResources();
       boolean isRound = insets.isRound();
-      mXOffset = resources.getDimension(isRound
-              ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
-      float textSize = resources.getDimension(isRound
-              ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
+      mXOffset = resources.getDimension(isRound ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
 
+      float textSize = resources.getDimension(isRound ? R.dimen.text_size_time_round : R.dimen.text_size_time);
       mTimeTextPaint.setTextSize(textSize);
 
-      textSize = resources.getDimension(isRound
-              ? R.dimen.digital_text_size2_round : R.dimen.digital_text_size2);
-
+      textSize = resources.getDimension(isRound ? R.dimen.text_size_date_round : R.dimen.text_size_date);
       mDateTextPaint.setTextSize(textSize);
 
-      textSize = resources.getDimension(isRound
-              ? R.dimen.digital_text_size3_round : R.dimen.digital_text_size3);
-
+      textSize = resources.getDimension(isRound ? R.dimen.text_size_temp_round : R.dimen.text_size_temp);
       mTempTextPaint.setTextSize(textSize);
     }
 
@@ -286,7 +278,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
       canvas.drawText(date_text, bounds.centerX() - (mDateTextPaint.measureText(date_text)) / 2 , mYOffset + 40, mDateTextPaint);
 
       String temp_text = getString(R.string.format_temperature, mMinTemp, mMaxTemp);
-      canvas.drawText(temp_text, bounds.centerX() - (mTempTextPaint.measureText(temp_text)) / 2 , mYOffset + 120, mTempTextPaint);
+      canvas.drawText(temp_text, bounds.centerX() - (mTempTextPaint.measureText(temp_text)) / 2 , mYOffset + 100, mTempTextPaint);
 
     }
 
