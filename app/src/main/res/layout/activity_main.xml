@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/match_match"
+    tools:context="com.keemsa.todd.MainActivity">
+
+    <fragment
+        android:id="@+id/frg_main"
+        android:name="com.keemsa.todd.MainFragment"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+         />
+</FrameLayout>
