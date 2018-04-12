@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:id="@+id/gro_w_stock_item"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dist_lrg"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txt_w_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/primary_material_dark"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorPrimaryText"
+            tools:text="GOOG"/>
+
+        <TextView
+            android:id="@+id/txt_w_price"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/primary_material_dark"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorSecondaryText"
+            tools:text="700.00"/>
+
+        <TextView
+            android:id="@+id/txt_w_change"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/primary_material_dark"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorPrimaryText"
+            android:textStyle="bold"
+            tools:text="+5.00%"/>
+    </LinearLayout>
+</FrameLayout>
