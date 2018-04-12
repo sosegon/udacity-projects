@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.keemsa.basketballscores.MainActivity">
+
+    <LinearLayout
+        style="@style/ll_teams">
+
+        <LinearLayout
+            style="@style/ll_team_row" >
+
+            <TextView
+                style="@style/txt_team_name"
+                android:text="@string/lbl_teamA"
+                android:background="@color/colorTeamA1"/>
+
+            <TextView
+                style="@style/txt_score"
+                android:id="@+id/txt_score_a"
+                android:text="@string/lbl_init_score"
+                android:background="@color/colorTeamA2"/>
+
+            <LinearLayout
+                style="@style/ll_increase_buttons">
+
+                <Button
+                    style="@style/btn_increase"
+                    android:id="@+id/btn_add_one_team_a"
+                    android:background="@color/colorTeamA3"
+                    android:text="@string/lbl_1" />
+
+                <Button
+                    style="@style/btn_increase"
+                    android:id="@+id/btn_add_two_team_a"
+                    android:background="@color/colorTeamA4"
+                    android:text="@string/lbl_2" />
+
+                <Button
+                    style="@style/btn_increase"
+                    android:id="@+id/btn_add_three_team_a"
+                    android:background="@color/colorTeamA5"
+                    android:text="@string/lbl_3" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/ll_team_row">
+
+            <TextView
+                style="@style/txt_team_name"
+                android:text="@string/lbl_teamB"
+                android:background="@color/colorTeamB1"/>
+
+            <TextView
+                style="@style/txt_score"
+                android:id="@+id/txt_score_b"
+                android:text="@string/lbl_init_score"
+                android:background="@color/colorTeamB2" />
+
+            <LinearLayout
+                style="@style/ll_increase_buttons">
+
+                <Button
+                    style="@style/btn_increase"
+                    android:id="@+id/btn_add_one_team_b"
+                    android:background="@color/colorTeamB5"
+                    android:text="@string/lbl_1" />
+
+                <Button
+                    style="@style/btn_increase"
+                    android:id="@+id/btn_add_two_team_b"
+                    android:background="@color/colorTeamB4"
+                    android:text="@string/lbl_2" />
+
+                <Button
+                    style="@style/btn_increase"
+                    android:id="@+id/btn_add_three_team_b"
+                    android:background="@color/colorTeamB3"
+                    android:text="@string/lbl_3" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        style="@style/btn_reset"
+        android:onClick="resetScores"
+        android:text="@string/lbl_reset"
+        />
+</LinearLayout>
