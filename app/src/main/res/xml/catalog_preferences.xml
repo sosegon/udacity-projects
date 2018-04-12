@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="@string/prf_key_sort"
+        android:title="@string/lbl_query"
+        android:entries="@array/prf_entries_sort"
+        android:entryValues="@array/prf_values_sort"
+        android:defaultValue="@string/prf_default_sort"/>
+</PreferenceScreen>

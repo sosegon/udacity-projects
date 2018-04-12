@@ -1,0 +1,26 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Películas Destacadas</string>
+
+    <!-- Meaningful messages presented to the user in case of errors -->
+    <string name="msg_no_connection">Conexión no disponible</string>
+    <string name="msg_server_error">Error de servidor, no se puede obtener datos</string>
+    <string name="msg_data_no_available"><xliff:g id="data">%1$s</xliff:g> no disponible.</string>
+    <string name="msg_data_no_available_no_network">No <xliff:g id="data">%1$s</xliff:g> no disponible. No se pudo acceder a la red.</string>
+    <string name="msg_data_no_available_server_down">No <xliff:g id="data">%1$s</xliff:g> no disponible. El servidor no envió datos.</string>
+    <string name="msg_data_no_available_server_error">No <xliff:g id="data">%1$s</xliff:g> no disponible. El servidor no envió datos válidos</string>
+
+    <!-- Common labels used through the application -->
+    <string name="lbl_settings">Configuración</string>
+    <string name="lbl_catalog">Catálogo</string>
+    <string name="lbl_search">Búsqueda</string>
+    <string name="lbl_movies">Películas</string>
+    <string name="lbl_reviews">Reseñas</string>
+    <string name="lbl_details">Detalles</string>
+    <string name="lbl_trailers">Trailers</string>
+    <string name="lbl_query">Consultar por</string>
+    <string name="lbl_rating">Puntaje</string>
+    <string name="lbl_favourite">Favoritos</string>
+
+    <!-- String to be used in reviews to set "Author:" and the name in a single string -->
+    <string name="review_author">Autor: <xliff:g id="author_name">%1$s</xliff:g> </string>
+</resources>
