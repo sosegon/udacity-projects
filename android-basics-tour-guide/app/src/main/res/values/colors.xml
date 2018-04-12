@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="place_museum">#D7CCC8</color>
+    <color name="place_restaurant">#FFE0B2</color>
+    <color name="place_park">#DCEDC8</color>
+    <color name="place_nature">#C8E6C9</color>
+</resources>
+
+
+

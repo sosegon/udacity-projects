@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ll_add_patient_container"
+    tools:context="com.keemsa.todd.NewPatientActivity">
+
+    <EditText
+        android:id="@+id/txt_id"
+        style="@style/txt_patient_field"
+        android:hint="@string/lbl_id"
+        android:inputType="number"/>
+    <EditText
+        android:id="@+id/txt_first_name"
+        style="@style/txt_patient_field"
+        android:hint="@string/lbl_first_name"/>
+    <EditText
+        android:id="@+id/txt_last_name"
+        style="@style/txt_patient_field"
+        android:hint="@string/lbl_last_name"/>
+    <Button
+        android:id="@+id/txt_sex"
+        style="@style/btn_patient_field"
+        android:hint="@string/lbl_sex"/>
+    <Button
+        android:id="@+id/txt_birth_date"
+        style="@style/btn_patient_field"
+        android:hint="@string/lbl_birth_date"/>
+    <Button
+        android:id="@+id/txt_migraines"
+        style="@style/btn_patient_field"
+        android:hint="@string/lbl_migraines"/>
+    <Button
+        android:id="@+id/txt_hallucinogenic_drugs"
+        style="@style/btn_patient_field"
+        android:hint="@string/lbl_hallucinogenic_drugs"/>
+    <Button
+        android:id="@+id/btn_insert_patient"
+        android:text="@string/lbl_insert_patient"
+        style="@style/btn_patient_insert" />
+
+</LinearLayout>

@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Todd\'s Syndrome</string>
+    <string name="title_activity_new_patient">Add patient</string>
+
+    <string name="lbl_add_patient">Add patient</string>
+    <string name="lbl_previous_patients">Previous patients</string>
+    <string name="lbl_id">Id</string>
+    <string name="lbl_first_name">First name</string>
+    <string name="lbl_last_name">Last name</string>
+    <string name="lbl_sex">Sex</string>
+    <string name="lbl_birth_date">Birth date</string>
+    <string name="lbl_migraines">Migraines</string>
+    <string name="lbl_hallucinogenic_drugs">Hallucinogenic drugs</string>
+    <string name="lbl_insert_patient">Insert patient</string>
+    <string name="lbl_todd_likelihood">Todd\'s syndrome likelihood:</string>
+    <string name="lbl_male">male</string>
+    <string name="lbl_female">female</string>
+    <string name="lbl_yes">yes</string>
+    <string name="lbl_no">no</string>
+
+    <string name="msg_fill_add_fields">Fill all fields</string>
+    <string name="msg_patient_added">New patient successfully added</string>
+    <string name="msg_patient_exist">Patient with ID:</string>
+    <string name="msg_patient_exist_tail">already exists</string>
+
+    <string-array name="opt_sex">
+        <item>male</item>
+        <item>female</item>
+    </string-array>
+
+    <string-array name="opt_boolean">
+        <item>no</item>
+        <item>yes</item>
+    </string-array>
+</resources>

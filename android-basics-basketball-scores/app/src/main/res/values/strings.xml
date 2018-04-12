@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Basketball Scores</string>
+    <string name="lbl_teamA">Team A</string>
+    <string name="lbl_teamB">Team B</string>
+    <string name="lbl_reset">Reset</string>
+    <string name="lbl_init_score">0</string>
+    <string name="lbl_1">+1</string>
+    <string name="lbl_2">+2</string>
+    <string name="lbl_3">+3</string>
+</resources>

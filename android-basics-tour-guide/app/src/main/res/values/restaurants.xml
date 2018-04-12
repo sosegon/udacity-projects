@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="restaurant_0">
+        <item>Happy panda</item>
+        <item>https://www.google.com.ec/maps/place/Happy+Panda/@-0.2056163,-78.4854526,17z/</item>
+        <item>MON - SUN 12h00 - 23h00</item>
+        <item>Chinese</item>
+        <item>restaurant_happy_panda</item>
+    </array>
+    <array name="restaurant_1">
+        <item>Oriental</item>
+        <item>
+            https://www.google.com.ec/maps/place/Oriental+Restaurante/@-0.1563127,-78.4809462,17z/
+        </item>
+        <item>MON - SUN 11h00 - 21h00</item>
+        <item>Chinese</item>
+        <item>restaurant_oriental</item>
+    </array>
+    <array name="restaurant_2">
+        <item>Taquería La Michoacana</item>
+        <item>
+            https://www.google.com.ec/maps/place/Taquería+La+Michoacana/@-0.1583579,-78.4905326,19z/
+        </item>
+        <item>THU - SUN 11h00 - 22h00</item>
+        <item>Mexican</item>
+        <item>restaurant_michoacana</item>
+    </array>
+    <array name="restaurant_3">
+        <item>Coyote\'s cave</item>
+        <item>
+            https://www.google.com.ec/maps/place/La+Guarida+del+Coyote/@-0.1751363,-78.4874266,16z/
+        </item>
+        <item>TUE - SUN 11h00 - 23h00</item>
+        <item>Mexican</item>
+        <item>restaurant_coyote</item>
+    </array>
+    <array name="restaurant_4">
+        <item>Rodizio Botafogo</item>
+        <item>https://www.google.com.ec/maps/place/Rodizio+Botafogo/@-0.2012201,-78.4802838,17z/
+        </item>
+        <item>TUE - SUN 12h00 - 23h00</item>
+        <item>Brazilian</item>
+        <item>restaurant_botafogo</item>
+    </array>
+    <array name="restaurant_5">
+        <item>The arab</item>
+        <item>https://www.google.com.ec/maps/place/El+Arabe/@-0.2046811,-78.4935605,19z</item>
+        <item>TUE - SUN 12h00 - 23h00</item>
+        <item>Arab</item>
+        <item>restaurant_arab</item>
+    </array>
+    <array name="restaurant_6">
+        <item>La Ronda</item>
+        <item>
+            https://www.google.com.ec/maps/place/La+Ronda+Restaurante/@-0.1969197,-78.4868518,17z
+        </item>
+        <item>MON - SUN 12h00 - 23h00</item>
+        <item>Ecuadorian</item>
+        <item>restaurant_ronda</item>
+    </array>
+    <array name="restaurant_7">
+        <item>Mama Clorinda</item>
+        <item>https://www.google.com.ec/maps/place/Mama+Clorinda/@-0.2026991,-78.4911465,19z</item>
+        <item>WED - SUN 12h00 - 23h00</item>
+        <item>Ecuadorian</item>
+        <item>restaurant_clorinda</item>
+    </array>
+    <array name="restaurant_8">
+        <item>La Tortilla</item>
+        <item>https://www.google.com.ec/maps/place/la+tortilla/@-0.1536216,-78.4916964,18z</item>
+        <item>WED - SUN 12h00 - 23h00</item>
+        <item>Ecuadorian</item>
+        <item>restaurant_tortilla</item>
+    </array>
+
+</resources>

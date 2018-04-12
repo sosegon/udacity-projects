@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Sport news</string>
+    <string name="urlHeader">http://content.guardianapis.com/search?section=sport&amp;show-fields=thumbnail&amp;api-key=test&amp;q=</string>
+    <string name="no_connection">No connection available</string>
+    <string name="cant_fetch_data">Unable to fetchh data</string>
+    <string name="no_news">No news found</string>
+    <string name="server_error">There is a problem with the server</string>
+</resources>

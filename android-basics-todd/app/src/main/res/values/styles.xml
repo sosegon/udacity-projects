@@ -1,0 +1,119 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- common -->
+    <style name="match_match">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="wrap_wrap">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="match_wrap">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- fragment_main.xml -->
+    <style name="ll_patients" parent="match_match">
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="btn_add_patient" parent="wrap_wrap">
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:textSize">@dimen/label_1</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">@dimen/padding_1</item>
+    </style>
+
+    <style name="txt_previous_patients" parent="match_wrap">
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:textSize">@dimen/label_1</item>
+    </style>
+
+    <style name="lv_previous_patients" parent="wrap_wrap">
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_1</item>
+        <item name="android:layout_marginRight">@dimen/padding_1</item>
+    </style>
+
+    <!-- item_patient.xml -->
+    <style name="rl_item_container" parent="match_match">
+        <item name="android:paddingTop">@dimen/padding_1</item>
+    </style>
+
+    <style name="itm_first_name" parent="wrap_wrap">
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:textSize">@dimen/label_2</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="itm_last_name" parent="wrap_wrap">
+        <item name="android:layout_toRightOf">@id/ipt_first_name</item>
+        <item name="android:layout_marginLeft">@dimen/padding_2</item>
+        <item name="android:textSize">@dimen/label_2</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="itm_lbl_todd" parent="wrap_wrap">
+        <item name="android:layout_below">@id/ipt_first_name</item>
+        <item name="android:textSize">@dimen/label_3</item>
+    </style>
+
+    <style name="itm_todd" parent="wrap_wrap">
+        <item name="android:layout_toRightOf">@id/ipl_todd_likelihood</item>
+        <item name="android:layout_below">@id/ipt_first_name</item>
+        <item name="android:layout_marginLeft">@dimen/padding_3</item>
+        <item name="android:textSize">@dimen/label_3</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- activity_new_patient.xml -->
+    <style name="ll_add_patient_container" parent="match_match">
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="txt_patient_field" parent="match_wrap">
+        <item name="android:inputType">textCapSentences</item>
+        <item name="android:textSize">@dimen/label_2</item>
+        <item name="android:layout_margin">@dimen/padding_2</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+    </style>
+
+    <style name="btn_patient_field" parent="txt_patient_field">
+        <item name="android:background">@color/colorPrimaryLight</item>
+    </style>
+
+    <style name="btn_patient_insert" parent="txt_patient_field">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:layout_marginBottom">@dimen/padding_1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_2</item>
+        <item name="android:layout_marginRight">@dimen/padding_2</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
+</resources>

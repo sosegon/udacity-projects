@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ll_detailed_product_overall"
+    tools:context=".activity.DetailedProductActivity">
+
+    <LinearLayout style="@style/ll_detailed_product_overall">
+
+        <TextView
+            android:id="@+id/txt_detailed_product_no_details"
+            style="@style/txt_no_details"
+            android:text="@string/label_product_no_details" />
+
+        <LinearLayout
+            android:id="@+id/ll_detailed_product_overall"
+            style="@style/ll_detailed_product_overall">
+
+            <TextView
+                android:id="@+id/txt_detailed_product_name"
+                style="@style/txt_detailed_product_name_field" />
+
+            <ImageView
+                android:id="@+id/imv_detailed_product_picture"
+                style="@style/imv_detailed_product_picture" />
+
+            <TextView
+                android:id="@+id/txt_detailed_product_id"
+                style="@style/txt_detailed_product_any_field"
+                android:visibility="gone" />
+
+            <LinearLayout style="@style/ll_detailed_product_row">
+
+                <TextView
+                    style="@style/txt_detailed_product_any_field"
+                    android:text="@string/label_quantity" />
+
+                <TextView
+                    android:id="@+id/txt_detailed_product_quantity"
+                    style="@style/txt_detailed_product_any_field" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ll_detailed_product_row">
+
+                <TextView
+                    style="@style/txt_detailed_product_any_field"
+                    android:text="@string/label_price" />
+
+                <TextView
+                    android:id="@+id/txt_detailed_product_price"
+                    style="@style/txt_detailed_product_any_field" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/txt_detailed_product_supplier_info"
+                android:text="@string/label_supplier_details" />
+
+            <LinearLayout style="@style/ll_detailed_product_row">
+
+                <TextView
+                    style="@style/txt_detailed_product_any_field"
+                    android:text="@string/label_name" />
+
+                <TextView
+                    android:id="@+id/txt_detailed_product_supplier_name"
+                    style="@style/txt_detailed_product_any_field" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ll_detailed_product_row">
+
+                <TextView
+                    style="@style/txt_detailed_product_any_field"
+                    android:text="@string/label_email" />
+
+                <TextView
+                    android:id="@+id/txt_detailed_product_supplier_email"
+                    style="@style/txt_detailed_product_any_field" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ll_detailed_product_row">
+
+                <TextView
+                    style="@style/txt_detailed_product_any_field"
+                    android:text="@string/label_phone" />
+
+                <TextView
+                    android:id="@+id/txt_detailed_product_supplier_phone"
+                    style="@style/txt_detailed_product_any_field" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/ll_detailed_product_increase_decrease">
+
+            <Button
+                android:id="@+id/btn_detailed_product_increase"
+                style="@style/btn_change_quantity"
+                android:text="@string/label_receive_product" />
+
+            <Button
+                android:id="@+id/btn_detailed_product_decrease"
+                style="@style/btn_change_quantity"
+                android:text="@string/label_sale_product" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/ll_detailed_product_modify">
+
+            <Button
+                android:id="@+id/btn_detailed_product_contact_supplier"
+                style="@style/btn_detailed_view_modify"
+                android:text="@string/label_contact_supplier" />
+
+            <Button
+                android:id="@+id/btn_detailed_product_delete"
+                style="@style/btn_detailed_view_modify"
+                android:text="@string/label_delete_product" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

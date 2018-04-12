@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="nature_0">
+        <item>Mindo</item>
+        <item>https://www.google.com.ec/maps/place/Mindo/@-0.0486955,-78.7839528,15z</item>
+        <item>Walking, tubing, canopying</item>
+        <item>nature_mindo</item>
+    </array>
+    <array name="nature_1">
+        <item>Pululahua</item>
+        <item>
+            https://www.google.com.ec/maps/place/Reserva+Geobotánica+Pululahua/@0.0387081,-78.4684503,15z
+        </item>
+        <item>Walking, horses, picnic</item>
+        <item>nature_pululahua</item>
+    </array>
+    <array name="nature_2">
+        <item>Pintag</item>
+        <item>https://www.google.com.ec/maps/place/Pintag/@-0.3738543,-78.3893183,14z/</item>
+        <item>Walking, waterfalls, picnic</item>
+        <item>nature_pintag</item>
+    </array>
+    <array name="nature_3">
+        <item>Papallacta</item>
+        <item>https://www.google.com.ec/maps/place/Papallacta/@-0.3772123,-78.1461812,16z/</item>
+        <item>Walking, hot springs, picnic</item>
+        <item>nature_papallacta</item>
+    </array>
+</resources>
+

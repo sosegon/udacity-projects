@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/match_match"
+    tools:context=".fragment.SearchFragment">
+
+    <LinearLayout
+        android:id="@+id/ll_search"
+        style="@style/match_wrap"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/etx_search"
+            style="@style/etx_search" />
+
+        <ImageView
+            android:id="@+id/imv_search"
+            style="@style/wrap_wrap"
+            android:background="@drawable/ic_search" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/prg_load_search"
+        android:visibility="gone"
+        android:indeterminate="false"
+        android:layout_centerInParent="true"
+        style="@style/wrap_wrap" />
+
+    <TextView
+        android:id="@+id/txt_search_msg"
+        style="@style/txt_static_message" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_movies_search"
+        style="@style/gv_movies"
+        android:layout_below="@id/ll_search" />
+
+</RelativeLayout>

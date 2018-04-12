@@ -1,0 +1,24 @@
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+	new file:   app/src/main/java/com/keemsa/sunshine/ForecastAdapter.java
+	new file:   app/src/main/java/com/keemsa/sunshine/Utility.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   app/src/androidTest/java/com/keemsa/sunshine/TestFetchWeatherTask.java
+	modified:   app/src/main/java/com/keemsa/sunshine/DetailFragment.java
+	modified:   app/src/main/java/com/keemsa/sunshine/FetchWeatherTask.java
+	modified:   app/src/main/java/com/keemsa/sunshine/ForecastAdapter.java
+	modified:   app/src/main/java/com/keemsa/sunshine/ForecastFragment.java
+	modified:   app/src/main/java/com/keemsa/sunshine/MainActivity.java
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	commit.txt
+

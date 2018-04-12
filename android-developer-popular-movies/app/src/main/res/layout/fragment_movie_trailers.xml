@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/match_match">
+
+    <ListView
+        android:id="@+id/lv_trailers"
+        style="@style/match_match" />
+
+    <TextView
+        android:id="@+id/txt_trailers_msg"
+        style="@style/txt_static_message" />
+
+</RelativeLayout>

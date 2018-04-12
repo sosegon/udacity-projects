@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/rl_overall"
+    tools:context="com.keemsa.news.MainActivity">
+
+    <LinearLayout style="@style/ll_container">
+
+        <LinearLayout style="@style/ll_header">
+
+            <EditText
+                android:id="@+id/etx_book_name"
+                style="@style/etx_book" />
+
+            <ImageButton
+                android:id="@+id/imb_search"
+                style="@style/imb_search" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcv_news"
+            style="@style/rcv_news" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_message"
+        style="@style/txt_message" />
+
+    <ProgressBar
+        android:id="@+id/prg_load"
+        style="@style/prg_load" />
+
+</RelativeLayout>

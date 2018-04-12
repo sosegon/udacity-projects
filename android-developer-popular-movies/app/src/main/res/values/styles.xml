@@ -1,0 +1,154 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:toolbarStyle">@style/Toolbar</item>
+    </style>
+
+    <style name="AppTheme.Catalog" parent="AppTheme" />
+    <style name="AppTheme.Details" parent="AppTheme" />
+
+    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:popupTheme">@style/Theme.AppCompat.Light.DarkActionBar</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/colorTextIcons</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+    </style>
+
+    <!-- common -->
+    <style name="match_match">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="match_wrap">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="wrap_wrap">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="wrap_match">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="divider">
+        <item name="android:layout_height">@dimen/padding_4</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/colorDivider</item>
+    </style>
+
+    <style name="txt_static_message" parent="wrap_wrap">
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+    </style>
+
+    <!-- activity_catalog.xml -->
+    <style name="frl_catalog" parent="match_match">
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <!-- fragment_catalog.xml -->
+    <style name="gv_movies" parent="match_match">
+        <item name="android:numColumns">auto_fit</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- search_catalog.xml -->
+    <style name="etx_search">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <!-- item_trailer.xml -->
+    <style name="imv_trailer_thumbnail" parent="wrap_wrap">
+        <item name="android:layout_margin">@dimen/padding_1</item>
+        <item name="android:background">@drawable/ic_play</item>
+    </style>
+
+    <style name="txt_trailer_name" parent="wrap_wrap">
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <!-- fragment_review.xml -->
+    <style name="txt_review_author" parent="match_wrap">
+        <item name="android:paddingLeft">@dimen/padding_1</item>
+        <item name="android:paddingRight">@dimen/padding_1</item>
+        <item name="android:paddingTop">@dimen/padding_1</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+    </style>
+
+    <style name="txt_review_content" parent="match_wrap">
+        <item name="android:paddingLeft">@dimen/padding_1</item>
+        <item name="android:paddingRight">@dimen/padding_1</item>
+        <item name="android:paddingTop">@dimen/padding_1</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+    </style>
+
+    <!-- fragment_movie_details.xml -->
+    <style name="imv_movie_poster_details">
+        <item name="android:layout_below">@id/txt_title_details</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_height">@dimen/poster_height</item>
+        <item name="android:layout_width">@dimen/poster_width</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:layout_margin">@dimen/padding_1</item>
+    </style>
+
+    <style name="txt_year_details" parent="wrap_wrap">
+        <item name="android:layout_below">@id/txt_title_details</item>
+        <item name="android:layout_toRightOf">@id/imv_movie_poster_details</item>
+        <item name="android:textSize">@dimen/lbl_size_2</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_1</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+    </style>
+
+    <!-- TODO: remove tiny padding
+        There's a small padding at the top and bottom in a TextView
+        How can I remove that? I tried android:includeFontPadding but
+        it does not do what I want.
+    -->
+    <style name="txt_score_details" parent="wrap_wrap">
+        <item name="android:layout_below">@id/txt_year_details</item>
+        <item name="android:layout_toRightOf">@id/imv_movie_poster_details</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_1</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+    </style>
+
+    <style name="imv_movie_fav_details" parent="wrap_wrap">
+        <item name="android:layout_below">@id/txt_score_details</item>
+        <item name="android:layout_toRightOf">@id/imv_movie_poster_details</item>
+        <item name="android:layout_marginTop">@dimen/padding_1</item>
+        <item name="android:layout_marginLeft">@dimen/padding_1</item>
+        <item name="android:background">@drawable/ic_nonfav</item>
+    </style>
+
+    <style name="txt_desc_details">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_below">@id/imv_movie_poster_details</item>
+        <item name="android:textSize">@dimen/lbl_size_3</item>
+        <item name="android:layout_margin">@dimen/padding_1</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+    </style>
+
+</resources>
