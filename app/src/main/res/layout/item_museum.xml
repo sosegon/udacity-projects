@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ll_main_container"
+    >
+
+    <ImageView
+        android:id="@+id/img_thumbnail"
+        style="@style/img_place_thumbnail" />
+
+    <LinearLayout
+        style="@style/ll_text_container"
+        android:id="@+id/ll_text_container">
+
+        <TextView style="@style/txt_place_name"
+            android:id="@+id/txt_name"/>
+
+        <TextView style="@style/txt_place_property"
+            android:id="@+id/txt_address"/>
+
+        <TextView style="@style/txt_place_property"
+            android:id="@+id/txt_service_hours"/>
+
+        <TextView style="@style/txt_place_property"
+            android:id="@+id/txt_price"/>
+    </LinearLayout>
+
+</LinearLayout>

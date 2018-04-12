@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Quito tour guide</string>
+    <string name="label_museums">Museums</string>
+    <string name="label_restaurants">Restaurants</string>
+    <string name="label_parks">Parks</string>
+    <string name="label_nature">Nature</string>
+    <string name="label_name">Name</string>
+    <string name="label_address">Address</string>
+    <string name="label_service_hours">Service hours</string>
+    <string name="label_price">Price</string>
+    <string name="label_food_type">Food type</string>
+    <string name="label_map_location">Map Location</string>
+    <string name="label_facilities">Facilities</string>
+    <string name="label_attractions">Attractions</string>
+    <string name="label_view_map">View in map</string>
+</resources>
