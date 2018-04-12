@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" style="@style/ll_main_container"
+    tools:context="com.keemsa.portfoliapp.MainActivity">
+
+    <TextView style="@style/txt_title" />
+    <LinearLayout style="@style/ll_main_row">
+        <TextView android:id="@+id/txt_movies" style="@style/txt_app_name"
+            android:text="@string/lbl_movies" />
+        <TextView android:id="@+id/txt_stock" style="@style/txt_app_name"
+            android:text="@string/lbl_stock" />
+    </LinearLayout>
+    <LinearLayout style="@style/ll_main_row">
+        <TextView android:id="@+id/txt_bigger" style="@style/txt_app_name"
+            android:text="@string/lbl_bigger" />
+        <TextView android:id="@+id/txt_material" style="@style/txt_app_name"
+            android:text="@string/lbl_material" />
+    </LinearLayout>
+    <LinearLayout style="@style/ll_main_row">
+        <TextView android:id="@+id/txt_ubi" style="@style/txt_app_name"
+            android:text="@string/lbl_ubi" />
+        <TextView android:id="@+id/txt_capstone" style="@style/txt_app_name"
+            android:text="@string/lbl_capstone" />
+    </LinearLayout>
+</LinearLayout>
