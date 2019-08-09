@@ -9,6 +9,8 @@ CREATE TABLE products (
     product_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(300) NOT NULL,
     description TEXT,
+    price FLOAT NOT NULL,
+    CONSTRAINT price_ck CHECK (price > 0),
     CONSTRAINT product_pk PRIMARY KEY (product_id)
 );
 
@@ -20,8 +22,10 @@ CREATE TABLE products (
 CREATE TABLE reviews (
     review_id INT NOT NULL AUTO_INCREMENT,
     content TEXT NOT NULL,
+    rating INT,
     date_creation TIMESTAMP NOT NULL,
     product_id INT NOT NULL,
+    CONSTRAINT rating_ck CHECK (rating BETWEEN 1 AND 5),
     CONSTRAINT review_pk PRIMARY KEY (review_id),
     CONSTRAINT review_product_fk FOREIGN KEY (product_id) REFERENCES products(product_id)
 );

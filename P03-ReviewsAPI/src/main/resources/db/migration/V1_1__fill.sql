@@ -5,28 +5,28 @@
 /*
  Products
 */
-INSERT INTO products (name, description)
-VALUES ('Camera A', 'Digital camera with 3 megapixels');
+INSERT INTO products (name, description, price)
+VALUES ('Camera A', 'Digital camera with 3 megapixels', 150.37);
 
-INSERT INTO products (name, description)
-VALUES ('Laptop A', 'Laptop 17"');
+INSERT INTO products (name, description, price)
+VALUES ('Laptop A', 'Laptop 17"', 599.99);
 
-INSERT INTO products (name, description)
-VALUES ('Mouse A', '3-button mouse for gaming');
+INSERT INTO products (name, description, price)
+VALUES ('Mouse A', '3-button mouse for gaming', 24.99);
 
 /*
  Reviews
 */
-INSERT INTO reviews (content, date_creation, product_id)
-VALUES ('A very good camera for beginners', NOW(), 1);
-INSERT INTO reviews (content, date_creation, product_id)
-VALUES ('Good enough for the price', NOW(), 1);
+INSERT INTO reviews (content, date_creation, rating, product_id)
+VALUES ('A very good camera for beginners', NOW(), 4, 1);
+INSERT INTO reviews (content, date_creation, rating, product_id)
+VALUES ('Good enough for the price', NOW(), 4, 1);
 
-INSERT INTO reviews (content, date_creation, product_id)
-VALUES ('Nice laptop for heavy-weight work', NOW(), 2);
+INSERT INTO reviews (content, date_creation, rating, product_id)
+VALUES ('Nice laptop for heavy-weight work', NOW(), 5, 2);
 
-INSERT INTO reviews (content, date_creation, product_id)
-VALUES ('Not the best mouse in the market', NOW(), 3);
+INSERT INTO reviews (content, date_creation, rating, product_id)
+VALUES ('Not the best mouse in the market', NOW(), 2, 3);
 
 /*
  Comments
