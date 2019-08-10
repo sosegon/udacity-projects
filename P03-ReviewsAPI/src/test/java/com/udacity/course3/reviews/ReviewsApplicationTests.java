@@ -31,7 +31,7 @@ public class ReviewsApplicationTests {
 
 	@Before
 	public void setUp() {
-		}
+	}
 
 	@Test
 	public void contextLoads() {
@@ -54,98 +54,10 @@ public class ReviewsApplicationTests {
 	}
 
 	@Test
-	public void testFindProductByName() {
-		productRepository.save(new Product("Phone B1", "Samsung smartphone", 399.99f));
-		productRepository.save(new Product("phone B2", "Huawei smartphone", 259.99f));
-		productRepository.save(new Product("phone b3", "Apple smartphone", 799.99f));
-		productRepository.save(new Product("fone b3", "Xiaomi smartphone", 299.99f));
-
-		List<Product> products = productRepository.findProductsByName("phone");
-
-		assertEquals(3, products.size());
-	}
-
-	@Test
-	public void testFindProductsCheaperThan(){
-		// SQL scripts creates and populates the database
-
-		List<Product> products = productRepository.findProductsCheaperThan(200);
-
-		assertEquals(2, products.size());
-	}
-
-	@Test
-	public void testFindProductsMoreExpensiveThan(){
-		// SQL scripts creates and populates the database
-
-		List<Product> products = productRepository.findProductsMoreExpensiveThan(200);
-
-		assertEquals(1, products.size());
-	}
-
-	@Test
-	public void testFindProductsBetweenPrices(){
-		// SQL scripts creates and populates the database
-
-		List<Product> products = productRepository.findProductsBetweenPrices(100, 600);
-
-		assertEquals(2, products.size());
-	}
-
-	@Test
-	public void testFindProductsByNameCheaperThan(){
-		productRepository.save(new Product("Phone B1", "Samsung smartphone", 399.99f));
-		productRepository.save(new Product("phone B2", "Huawei smartphone", 259.99f));
-		productRepository.save(new Product("phone b3", "Apple smartphone", 799.99f));
-		productRepository.save(new Product("fone b3", "Xiaomi smartphone", 299.99f));
-
-		List<Product> products = productRepository.findProductsByNameCheaperThan("phone", 300);
-
-		assertEquals(1, products.size());
-	}
-
-	@Test
-	public void testFindProductsByNameMoreExpensiveThan(){
-		productRepository.save(new Product("Phone B1", "Samsung smartphone", 399.99f));
-		productRepository.save(new Product("phone B2", "Huawei smartphone", 259.99f));
-		productRepository.save(new Product("phone b3", "Apple smartphone", 799.99f));
-		productRepository.save(new Product("fone b3", "Xiaomi smartphone", 299.99f));
-
-		List<Product> products = productRepository.findProductsByNameMoreExpensiveThan("phone", 300);
-
-		assertEquals(2, products.size());
-	}
-
-	@Test
-	public void testFindProductsByNameBetweenPrices(){
-		productRepository.save(new Product("Phone B1", "Samsung smartphone", 399.99f));
-		productRepository.save(new Product("phone B2", "Huawei smartphone", 259.99f));
-		productRepository.save(new Product("phone b3", "Apple smartphone", 799.99f));
-		productRepository.save(new Product("fone b3", "Xiaomi smartphone", 299.99f));
-
-		List<Product> products = productRepository.findProductsByNameBetweenPrices("phone", 200, 500);
-
-		assertEquals(2, products.size());
-	}
-
-	@Test
-	public void testFindProductByNameWithReviews(){
-		// SQL scripts creates and populates the database
-
-		productRepository.save(new Product("Camera B1", "Samsung camera", 399.99f));
-		productRepository.save(new Product("camera B2", "Huawei camera", 259.99f));
-
-		List<Product> products = productRepository.findProductByNameWithReviews("camera");
-
-		assertEquals(1, products.size());
-	}
-
-	@Test
-	public void testFindReviewsByProductId() throws ParseException {
+	public void testFindReviewsByProduct() throws ParseException {
 		// Populate the database with product and reviews.
 		Product newProduct = new Product("Phone B1", "Samsung smartphone", 399.99f);
 		productRepository.save(newProduct);
-		int productId = newProduct.getProductId();
 
 		Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/01/01");
 		Review review1 = new Review("This is a nice smartphone 1",
@@ -164,17 +76,16 @@ public class ReviewsApplicationTests {
 		reviewRepository.save(review3);
 
 		// Query the reviews
-		List<Review> reviews = reviewRepository.findReviewsByProductId(productId);
+		List<Review> reviews = reviewRepository.findReviewsByProduct(newProduct);
 
 		assertEquals(3, reviews.size());
 	}
 
 	@Test
-	public void testFindReviewsByProductIdRatingAtLeast() throws ParseException {
+	public void testFindCommentsByReview() throws ParseException {
 		// Populate the database with product and reviews.
 		Product newProduct = new Product("Phone B1", "Samsung smartphone", 399.99f);
 		productRepository.save(newProduct);
-		int productId = newProduct.getProductId();
 
 		Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/01/01");
 		Review review1 = new Review("This is a nice smartphone 1",
@@ -191,68 +102,6 @@ public class ReviewsApplicationTests {
 		reviewRepository.save(review1);
 		reviewRepository.save(review2);
 		reviewRepository.save(review3);
-
-		// Query the reviews
-		List<Review> reviews = reviewRepository.findReviewsByProductIdRatingAtLeast(productId, 4);
-
-		assertEquals(2, reviews.size());
-	}
-
-	@Test
-	public void testFindReviewsByProductIdSinceDate() throws ParseException {
-		// Populate the database with product and reviews.
-		Product newProduct = new Product("Phone B1", "Samsung smartphone", 399.99f);
-		productRepository.save(newProduct);
-		int productId = newProduct.getProductId();
-
-		Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/01/01");
-		Review review1 = new Review("This is a nice smartphone 1",
-				date1, 5, newProduct);
-
-		Date date2 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/02/01");
-		Review review2 = new Review("This is a nice smartphone 2",
-				date2, 4, newProduct);
-
-		Date date3 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/03/01");
-		Review review3 = new Review("This is a nice smartphone 3",
-				date3, 3, newProduct);
-
-		reviewRepository.save(review1);
-		reviewRepository.save(review2);
-		reviewRepository.save(review3);
-
-		// Query the reviews
-		Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2019/03/01");
-		List<Review> reviews = reviewRepository.findReviewsByProductIdSinceDate(productId, date);
-
-		assertEquals(1, reviews.size());
-	}
-
-	@Test
-	public void testFindCommentsByReviewId() throws ParseException {
-		// Populate the database with product and reviews.
-		Product newProduct = new Product("Phone B1", "Samsung smartphone", 399.99f);
-		productRepository.save(newProduct);
-		int productId = newProduct.getProductId();
-
-		Date date1 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/01/01");
-		Review review1 = new Review("This is a nice smartphone 1",
-				date1, 5, newProduct);
-
-		Date date2 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/02/01");
-		Review review2 = new Review("This is a nice smartphone 2",
-				date2, 4, newProduct);
-
-		Date date3 = new SimpleDateFormat("yyyy/MM/dd").parse("2019/03/01");
-		Review review3 = new Review("This is a nice smartphone 3",
-				date3, 3, newProduct);
-
-		reviewRepository.save(review1);
-		reviewRepository.save(review2);
-		reviewRepository.save(review3);
-
-		int reviewId1 = review1.getReviewId();
-		int reviewId2 = review2.getReviewId();
 
 		Comment comment1 = new Comment("I agree with you", date1, review1);
 		Comment comment2 = new Comment("I agree with you", date2, review1);
@@ -263,11 +112,10 @@ public class ReviewsApplicationTests {
 		commentRepository.save(comment3);
 
 		// Query the comments
-		List<Comment> comments1 = commentRepository.findCommentsByReviewId(reviewId1);
-		List<Comment> comments2 = commentRepository.findCommentsByReviewId(reviewId2);
+		List<Comment> comments1 = commentRepository.findCommentsByReview(review1);
+		List<Comment> comments2 = commentRepository.findCommentsByReview(review2);
 
 		assertEquals(3, comments1.size());
 		assertEquals(0, comments2.size());
 	}
-
 }

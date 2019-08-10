@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Spring REST controller for working with comment entity.
@@ -59,6 +56,12 @@ public class CommentsController {
      */
     @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.GET)
     public List<Comment> listCommentsForReview(@PathVariable("reviewId") Integer reviewId) {
-        return commentRepository.findCommentsByReviewId(reviewId);
+        Optional<Review> opReview = reviewRepository.findById(reviewId);
+
+        if(!opReview.isPresent()) {
+            return new ArrayList<Comment>();
+        }
+
+        return commentRepository.findCommentsByReview(opReview.get());
     }
 }
