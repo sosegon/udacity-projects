@@ -25,8 +25,6 @@ public class ProductsController {
     /**
      * Creates a product.
      *
-     * 1. Accept product as argument. Use {@link RequestBody} annotation.
-     * 2. Save product.
      */
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Spring REST controller for working with comment entity.
@@ -29,19 +30,20 @@ public class CommentsController {
     /**
      * Creates a comment for a review.
      *
-     * 1. Add argument for comment entity. Use {@link RequestBody} annotation.
-     * 2. Check for existence of review.
-     * 3. If review not found, return NOT_FOUND.
-     * 4. If found, save comment.
-     *
      * @param reviewId The id of the review.
      */
     @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.POST)
     public ResponseEntity<Comment> createCommentForReview(@PathVariable("reviewId") Integer reviewId,
                                                           @RequestBody Map<String, String> comment) {
+        Optional<Review> opReview = reviewRepository.findById(reviewId);
+
+        if(!opReview.isPresent()) {
+            return new ResponseEntity<Comment>(HttpStatus.NOT_FOUND);
+        }
+
         String content = comment.get("content");
         Date date = new Date();
-        Review review = reviewRepository.findById(reviewId).get();
+        Review review = opReview.get();
 
         Comment nComment = new Comment(content, date, review);
 
@@ -52,10 +54,6 @@ public class CommentsController {
 
     /**
      * List comments for a review.
-     *
-     * 2. Check for existence of review.
-     * 3. If review not found, return NOT_FOUND.
-     * 4. If found, return list of comments.
      *
      * @param reviewId The id of the review.
      */
