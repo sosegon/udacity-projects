@@ -4,7 +4,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Document("reviews")
 public class ReviewMdb {
@@ -20,6 +22,8 @@ public class ReviewMdb {
 
     @Indexed
     private int productId;
+
+    private List<CommentMdb> comments = new ArrayList<CommentMdb>();
 
     public ReviewMdb(String content, Date dateCreation, int rating, int productId) {
         this.content = content;
@@ -66,5 +70,13 @@ public class ReviewMdb {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    public List<CommentMdb> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentMdb> comments) {
+        this.comments = comments;
     }
 }

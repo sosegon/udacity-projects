@@ -3,7 +3,6 @@ package com.udacity.course3.reviews.service;
 import com.udacity.course3.reviews.model.CommentMdb;
 import com.udacity.course3.reviews.model.Product;
 import com.udacity.course3.reviews.model.ReviewMdb;
-import com.udacity.course3.reviews.repository.CommentMdbRepository;
 import com.udacity.course3.reviews.repository.ProductRepository;
 import com.udacity.course3.reviews.repository.ReviewMdbRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,6 @@ import java.util.*;
 
 @Service
 public class PersistenceServiceImpl implements PersistenceService {
-
-    @Autowired
-    private CommentMdbRepository commentMdbRepository;
 
     @Autowired
     private ReviewMdbRepository reviewMdbRepository;
@@ -73,8 +69,11 @@ public class PersistenceServiceImpl implements PersistenceService {
         String content = comment.get("content");
         Date date = new Date();
 
-        CommentMdb nComment = new CommentMdb(content, date, reviewId);
-        commentMdbRepository.save(nComment);
+        CommentMdb nComment = new CommentMdb(content, date);
+
+        review.get().getComments().add(nComment);
+        reviewMdbRepository.deleteById(reviewId);
+        reviewMdbRepository.save(review.get());
 
         return new ResponseEntity<CommentMdb>(nComment, HttpStatus.OK);
     }
@@ -87,6 +86,6 @@ public class PersistenceServiceImpl implements PersistenceService {
             return new ArrayList<CommentMdb>();
         }
 
-        return commentMdbRepository.findByReviewId(reviewId);
+        return reviewMdbRepository.findById(reviewId).get().getComments();
     }
 }
