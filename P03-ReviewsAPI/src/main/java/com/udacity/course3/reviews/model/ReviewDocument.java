@@ -23,7 +23,7 @@ public class ReviewDocument {
     @Indexed
     private int productId;
 
-    private List<CommentMdb> comments = new ArrayList<CommentMdb>();
+    private List<CommentDocument> comments = new ArrayList<CommentDocument>();
 
     public ReviewDocument(String content, Date dateCreation, int rating, int productId) {
         this.content = content;
@@ -72,11 +72,11 @@ public class ReviewDocument {
         this.productId = productId;
     }
 
-    public List<CommentMdb> getComments() {
+    public List<CommentDocument> getComments() {
         return comments;
     }
 
-    public void setComments(List<CommentMdb> comments) {
+    public void setComments(List<CommentDocument> comments) {
         this.comments = comments;
     }
 }

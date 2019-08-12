@@ -1,6 +1,6 @@
 package com.udacity.course3.reviews.service;
 
-import com.udacity.course3.reviews.model.CommentMdb;
+import com.udacity.course3.reviews.model.CommentDocument;
 import com.udacity.course3.reviews.model.Product;
 import com.udacity.course3.reviews.model.ReviewDocument;
 import com.udacity.course3.reviews.repository.ProductRepository;
@@ -58,32 +58,32 @@ public class PersistenceServiceImpl implements PersistenceService {
     }
 
     @Override
-    public ResponseEntity<CommentMdb> createCommentForReview(int reviewId, Map<String, String> comment) {
+    public ResponseEntity<CommentDocument> createCommentForReview(int reviewId, Map<String, String> comment) {
 
         Optional<ReviewDocument> review = reviewMongoRepository.findById(reviewId);
 
         if(!review.isPresent()) {
-            return new ResponseEntity<CommentMdb>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<CommentDocument>(HttpStatus.NOT_FOUND);
         }
 
         String content = comment.get("content");
         Date date = new Date();
 
-        CommentMdb nComment = new CommentMdb(content, date);
+        CommentDocument nComment = new CommentDocument(content, date);
 
         review.get().getComments().add(nComment);
         reviewMongoRepository.deleteById(reviewId);
         reviewMongoRepository.save(review.get());
 
-        return new ResponseEntity<CommentMdb>(nComment, HttpStatus.OK);
+        return new ResponseEntity<CommentDocument>(nComment, HttpStatus.OK);
     }
 
     @Override
-    public List<CommentMdb> findCommentsByReviewId(int reviewId) {
+    public List<CommentDocument> findCommentsByReviewId(int reviewId) {
         Optional<ReviewDocument> review = reviewMongoRepository.findById(reviewId);
 
         if(!review.isPresent()) {
-            return new ArrayList<CommentMdb>();
+            return new ArrayList<CommentDocument>();
         }
 
         return reviewMongoRepository.findById(reviewId).get().getComments();
