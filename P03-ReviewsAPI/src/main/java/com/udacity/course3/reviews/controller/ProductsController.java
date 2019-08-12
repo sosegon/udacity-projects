@@ -2,11 +2,13 @@ package com.udacity.course3.reviews.controller;
 
 import com.udacity.course3.reviews.model.Product;
 import com.udacity.course3.reviews.repository.ProductRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +30,8 @@ public class ProductsController {
      */
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public void createProduct(@RequestBody Map<String, String> product) {
-        String name = product.get("name");
-        String desc = product.get("description");
-        float price = Float.parseFloat(product.get("price"));
-        productRepository.save(new Product(name, desc, price));
+    public void createProduct(@RequestBody @Valid Product product) {
+        productRepository.save(product);
     }
 
     /**
