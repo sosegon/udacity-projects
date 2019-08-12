@@ -1,13 +1,17 @@
 package com.udacity.course3.reviews.controller;
 
+import com.udacity.course3.reviews.model.Product;
+import com.udacity.course3.reviews.model.Review;
 import com.udacity.course3.reviews.model.ReviewDocument;
-import com.udacity.course3.reviews.service.PersistenceService;
+import com.udacity.course3.reviews.repository.ProductRepository;
+import com.udacity.course3.reviews.repository.ReviewMongoRepository;
+import com.udacity.course3.reviews.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Spring REST controller for working with review entity.
@@ -16,7 +20,13 @@ import java.util.Map;
 public class ReviewsController {
 
     @Autowired
-    private PersistenceService persistenceService;
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ReviewMongoRepository reviewMongoRepository;
 
     /**
      * Creates a review for a product.
@@ -27,7 +37,28 @@ public class ReviewsController {
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.POST)
     public ResponseEntity<ReviewDocument> createReviewForProduct(@PathVariable("productId") Integer productId,
                                                                  @RequestBody Map<String, String> review) {
-        return persistenceService.createReview(productId, review);
+        Optional<Product> opProduct = productRepository.findById(productId);
+
+        if(!opProduct.isPresent()) {
+            return new ResponseEntity<ReviewDocument>(HttpStatus.NOT_FOUND);
+        }
+
+        String content = review.get("content");
+        int rating = Integer.parseInt(review.get("rating"));
+        Date date = new Date();
+        Product product = opProduct.get();
+
+        // Persist to MySql. This will generate the id which will be used to
+        // persist the document in Mongodb correctly.
+        Review nReview = new Review(content, date, rating, product);
+        reviewRepository.save(nReview);
+
+        // Persist to Mongodb
+        ReviewDocument nReviewDocument = new ReviewDocument(content, date, rating, productId);
+        nReviewDocument.setId(nReview.getReviewId());
+        reviewMongoRepository.save(nReviewDocument);
+
+        return new ResponseEntity<ReviewDocument>(nReviewDocument, HttpStatus.OK);
     }
 
     /**
@@ -38,6 +69,32 @@ public class ReviewsController {
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
     public ResponseEntity<List<ReviewDocument>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
-        return persistenceService.getReviews(productId);
+        Optional<Product> opProduct = productRepository.findById(productId);
+
+        if(!opProduct.isPresent()) {
+            return new ResponseEntity<List<ReviewDocument>>(HttpStatus.NOT_FOUND);
+        }
+
+        List<Review> reviews = reviewRepository.findReviewsByProduct(opProduct.get());
+
+        if(reviews.isEmpty()) {
+            return new ResponseEntity<List<ReviewDocument>>(HttpStatus.NOT_FOUND);
+        }
+
+        // Retrieve from Mongodb. Although the loop below is not good for
+        // performance (it would be better to call
+        // reviewMongoRepository.findByProductId), it helps to make sure the
+        // reviews exists in MySql and Mongodb.
+        List<ReviewDocument> mReviews = new ArrayList<ReviewDocument>();
+        reviews.forEach(review -> {
+            Optional<ReviewDocument> opReview = reviewMongoRepository.findById(review.getReviewId());
+            if(opReview.isPresent()) {
+                mReviews.add(opReview.get());
+            } else {
+                System.out.println("Error: Review present in MySql but not in Mongodb.");
+            }
+        });
+
+        return new ResponseEntity<List<ReviewDocument>>(mReviews, HttpStatus.OK);
     }
 }

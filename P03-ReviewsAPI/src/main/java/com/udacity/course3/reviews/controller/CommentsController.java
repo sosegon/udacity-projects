@@ -1,8 +1,14 @@
 package com.udacity.course3.reviews.controller;
 
+import com.udacity.course3.reviews.model.Comment;
 import com.udacity.course3.reviews.model.CommentDocument;
-import com.udacity.course3.reviews.service.PersistenceService;
+import com.udacity.course3.reviews.model.Review;
+import com.udacity.course3.reviews.model.ReviewDocument;
+import com.udacity.course3.reviews.repository.CommentRepository;
+import com.udacity.course3.reviews.repository.ReviewMongoRepository;
+import com.udacity.course3.reviews.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +22,13 @@ import java.util.*;
 public class CommentsController {
 
     @Autowired
-    private PersistenceService persistenceService;
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private ReviewMongoRepository reviewMongoRepository;
 
     /**
      * Creates a comment for a review.
@@ -27,7 +39,34 @@ public class CommentsController {
     public ResponseEntity<CommentDocument> createCommentForReview(@PathVariable("reviewId") Integer reviewId,
                                                                   @RequestBody Map<String, String> comment) {
 
-        return persistenceService.createCommentForReview(reviewId, comment);
+        Optional<Review> opReview = reviewRepository.findById(reviewId);
+        Optional<ReviewDocument> opReviewDocument = reviewMongoRepository.findById(reviewId);
+
+        if(!opReview.isPresent() && !opReviewDocument.isPresent()) {
+            return new ResponseEntity<CommentDocument>(HttpStatus.NOT_FOUND);
+        } else if(!opReview.isPresent()) {
+            System.out.println("Error: Review present in Mongodb but not in MySql.");
+            return new ResponseEntity<CommentDocument>(HttpStatus.NOT_FOUND);
+        } else if(!opReviewDocument.isPresent()) {
+            System.out.println("Error: Review present in MySql but not in Mongodb.");
+            return new ResponseEntity<CommentDocument>(HttpStatus.NOT_FOUND);
+        }
+
+        String content = comment.get("content");
+        Date date = new Date();
+        Review review = opReview.get();
+
+        // Persist to MySql
+        Comment nComment = new Comment(content, date, review);
+        commentRepository.save(nComment);
+
+        // Persist to Mongodb
+        CommentDocument nCommentDocument = new CommentDocument(content, date);
+
+        opReviewDocument.get().getComments().add(nCommentDocument);
+        reviewMongoRepository.save(opReviewDocument.get());
+
+        return new ResponseEntity<CommentDocument>(nCommentDocument, HttpStatus.OK);
     }
 
     /**
@@ -38,6 +77,19 @@ public class CommentsController {
     @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.GET)
     public List<CommentDocument> listCommentsForReview(@PathVariable("reviewId") Integer reviewId) {
 
-        return persistenceService.findCommentsByReviewId(reviewId);
+        Optional<Review> opReview = reviewRepository.findById(reviewId);
+        Optional<ReviewDocument> opReviewDocument = reviewMongoRepository.findById(reviewId);
+
+        if(!opReview.isPresent() && !opReviewDocument.isPresent()) {
+            return new ArrayList<CommentDocument>();
+        } else if(!opReview.isPresent()) {
+            System.out.println("Error: Review present in Mongodb but not in MySql.");
+            return new ArrayList<CommentDocument>();
+        } else if(!opReviewDocument.isPresent()) {
+            System.out.println("Error: Review present in MySql but not in Mongodb.");
+            return new ArrayList<CommentDocument>();
+        }
+
+        return reviewMongoRepository.findById(reviewId).get().getComments();
     }
 }
