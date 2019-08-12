@@ -27,55 +27,73 @@ public class ReviewsMongoDbSpringIntegrationTest {
     private MongoTemplate mongoTemplate;
 
     @Test
-    public void testSaveReview() {
+    public void testEmbeddedDb() {
+        final int reviewId = 1;
         ReviewDocument review = new ReviewDocument("New review", new Date(), 5, 1);
-        review.setId(1);
+        review.setId(reviewId);
 
         mongoTemplate.save(review, "reviews");
 
-        Assert.assertTrue(!mongoTemplate.findAll(ReviewDocument.class, "reviews").isEmpty());
-        Assert.assertEquals(1, mongoTemplate.findById(1, ReviewDocument.class).getId());
+        Assert.assertFalse(mongoTemplate.findAll(ReviewDocument.class, "reviews").isEmpty());
+        Assert.assertNotNull(mongoTemplate.findById(reviewId, ReviewDocument.class));
+        Assert.assertEquals(reviewId, mongoTemplate.findById(reviewId, ReviewDocument.class).getId());
     }
 
     @Test
     public void testFindReviewById() {
+        final int reviewId = 1;
         ReviewDocument review = new ReviewDocument("New review", new Date(), 5, 1);
-        review.setId(1);
+        review.setId(reviewId);
 
         reviewMongoRepository.save(review);
 
-        Optional<ReviewDocument> opReview = reviewMongoRepository.findById(review.getId());
+        ReviewDocument expected = mongoTemplate.findById(reviewId, ReviewDocument.class);
+        Optional<ReviewDocument> actualReview = reviewMongoRepository.findById(reviewId);
 
-        Assert.assertEquals(review.getId(), opReview.get().getId());
+        Assert.assertEquals(expected.getId(), actualReview.get().getId());
     }
 
     @Test
     public void testFindReviewsByProductId() {
-        ReviewDocument review1 = new ReviewDocument("New review", new Date(), 5, 1);
+        final int productId = 1;
+        ReviewDocument review1 = new ReviewDocument("New review", new Date(), 5, productId);
         review1.setId(0);
-        ReviewDocument review2 = new ReviewDocument("New review", new Date(), 5, 1);
+        ReviewDocument review2 = new ReviewDocument("New review", new Date(), 5, productId);
         review2.setId(1);
 
-        ReviewDocument nReview1 = reviewMongoRepository.save(review1);
-        ReviewDocument nReview2 = reviewMongoRepository.save(review2);
+        reviewMongoRepository.save(review1);
+        reviewMongoRepository.save(review2);
 
-        List<ReviewDocument> reviews = reviewMongoRepository.findReviewsByProductId(1);
+        List<ReviewDocument> templateReviews = mongoTemplate.findAll(ReviewDocument.class);
+        List<ReviewDocument> expectedReviews = new ArrayList<ReviewDocument>();
+        templateReviews.forEach(reviewDocument -> {
+            if(reviewDocument.getProductId() == productId){
+                expectedReviews.add(reviewDocument);
+            }
+        });
 
-        Assert.assertEquals(2, reviews.size());
+        List<ReviewDocument> actualReviews = reviewMongoRepository.findReviewsByProductId(productId);
+
+        Assert.assertEquals(expectedReviews.size(), actualReviews.size());
     }
 
     @Test
     public void testFindCommentsByReviewId() {
-        ReviewDocument review = new ReviewDocument("New review", new Date(), 5, 1);
-        review.setId(1);
+        final int productId = 1;
+        final int reviewId = 1;
+        ReviewDocument review = new ReviewDocument("New review", new Date(), 5, productId);
+        review.setId(reviewId);
         List<CommentDocument> comments = new ArrayList<CommentDocument>();
         comments.add(new CommentDocument("new comment 1", new Date()));
         comments.add(new CommentDocument("new comment 2", new Date()));
         review.setComments(comments);
-        ReviewDocument nReview = reviewMongoRepository.save(review);
 
-        Optional<ReviewDocument> opReview = reviewMongoRepository.findById(nReview.getId());
+        reviewMongoRepository.save(review);
 
-        Assert.assertEquals(2, opReview.get().getComments().size());
+        ReviewDocument expectedReview = mongoTemplate.findById(productId, ReviewDocument.class);
+
+        Optional<ReviewDocument> actualReview = reviewMongoRepository.findById(reviewId);
+
+        Assert.assertEquals(expectedReview.getComments().size(), actualReview.get().getComments().size());
     }
 }
