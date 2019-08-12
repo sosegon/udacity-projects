@@ -1,7 +1,7 @@
 package com.udacity.course3.reviews;
 
-import com.udacity.course3.reviews.model.ReviewMdb;
-import com.udacity.course3.reviews.repository.ReviewMdbRepository;
+import com.udacity.course3.reviews.model.ReviewDocument;
+import com.udacity.course3.reviews.repository.ReviewMongoRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -18,18 +18,18 @@ import java.util.Optional;
 public class ReviewsMongoDbSpringIntegrationTest {
 
     @Autowired
-    private ReviewMdbRepository reviewMdbRepository;
+    private ReviewMongoRepository reviewMongoRepository;
 
     @DisplayName("given object to save"
             + " when save object using MongoDB template"
             + " then object is saved")
     @Test
     public void testFindByProductId() {
-        ReviewMdb review = new ReviewMdb("New review", new Date(), 5, 1);
+        ReviewDocument review = new ReviewDocument("New review", new Date(), 5, 1);
 
-        ReviewMdb nReview = reviewMdbRepository.save(review);
+        ReviewDocument nReview = reviewMongoRepository.save(review);
 
-        Optional<ReviewMdb> opReview = reviewMdbRepository.findById(nReview.getId());
+        Optional<ReviewDocument> opReview = reviewMongoRepository.findById(nReview.getId());
 
         Assert.assertEquals(nReview.getId(), opReview.get().getId());
     }

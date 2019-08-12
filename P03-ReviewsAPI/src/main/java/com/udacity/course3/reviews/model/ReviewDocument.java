@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Document("reviews")
-public class ReviewMdb {
+public class ReviewDocument {
 
     @Id
     private int id;
@@ -25,7 +25,7 @@ public class ReviewMdb {
 
     private List<CommentMdb> comments = new ArrayList<CommentMdb>();
 
-    public ReviewMdb(String content, Date dateCreation, int rating, int productId) {
+    public ReviewDocument(String content, Date dateCreation, int rating, int productId) {
         this.content = content;
         this.dateCreation = dateCreation;
         this.rating = rating;

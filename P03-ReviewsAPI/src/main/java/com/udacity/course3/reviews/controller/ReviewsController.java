@@ -1,6 +1,6 @@
 package com.udacity.course3.reviews.controller;
 
-import com.udacity.course3.reviews.model.ReviewMdb;
+import com.udacity.course3.reviews.model.ReviewDocument;
 import com.udacity.course3.reviews.service.PersistenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +25,8 @@ public class ReviewsController {
      * @return The created review or 404 if product id is not found.
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.POST)
-    public ResponseEntity<ReviewMdb> createReviewForProduct(@PathVariable("productId") Integer productId,
-                                                         @RequestBody Map<String, String> review) {
+    public ResponseEntity<ReviewDocument> createReviewForProduct(@PathVariable("productId") Integer productId,
+                                                                 @RequestBody Map<String, String> review) {
         return persistenceService.createReview(productId, review);
     }
 
@@ -37,7 +37,7 @@ public class ReviewsController {
      * @return The list of reviews.
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
-    public ResponseEntity<List<ReviewMdb>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
+    public ResponseEntity<List<ReviewDocument>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
         return persistenceService.getReviews(productId);
     }
 }
