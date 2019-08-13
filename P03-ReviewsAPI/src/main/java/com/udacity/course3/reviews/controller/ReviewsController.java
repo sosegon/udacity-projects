@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -36,26 +37,31 @@ public class ReviewsController {
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.POST)
     public ResponseEntity<ReviewDocument> createReviewForProduct(@PathVariable("productId") Integer productId,
-                                                                 @RequestBody Map<String, String> review) {
+                                                                 @RequestBody @Valid Review review) {
         Optional<Product> opProduct = productRepository.findById(productId);
 
         if(!opProduct.isPresent()) {
             return new ResponseEntity<ReviewDocument>(HttpStatus.NOT_FOUND);
         }
 
-        String content = review.get("content");
-        int rating = Integer.parseInt(review.get("rating"));
         Date date = new Date();
         Product product = opProduct.get();
 
+        review.setProduct(product);
+        review.setDateCreation(date);
+
         // Persist to MySql. This will generate the id which will be used to
         // persist the document in Mongodb correctly.
-        Review nReview = new Review(content, date, rating, product);
-        reviewRepository.save(nReview);
+        reviewRepository.save(review);
+
+        ReviewDocument nReviewDocument = new ReviewDocument(
+                review.getContent(),
+                date,
+                review.getRating(),
+                productId);
+        nReviewDocument.setId(review.getReviewId());
 
         // Persist to Mongodb
-        ReviewDocument nReviewDocument = new ReviewDocument(content, date, rating, productId);
-        nReviewDocument.setId(nReview.getReviewId());
         reviewMongoRepository.save(nReviewDocument);
 
         return new ResponseEntity<ReviewDocument>(nReviewDocument, HttpStatus.OK);

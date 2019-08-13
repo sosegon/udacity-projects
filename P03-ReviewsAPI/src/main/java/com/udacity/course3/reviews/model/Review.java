@@ -21,7 +21,6 @@ public class Review {
     @NotBlank
     private String content;
 
-    @NotNull
     private Date dateCreation;
 
     @Min(1)
@@ -39,7 +38,7 @@ public class Review {
     public Review() {
     }
 
-    public Review(@NotBlank String content, @NotBlank Date dateCreation, @Min(1) @Max(5) int rating, Product product) {
+    public Review(@NotBlank String content, Date dateCreation, @Min(1) @Max(5) int rating, Product product) {
         this.content = content;
         this.dateCreation = dateCreation;
         this.rating = rating;
