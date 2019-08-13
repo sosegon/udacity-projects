@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -37,7 +38,7 @@ public class CommentsController {
      */
     @RequestMapping(value = "/reviews/{reviewId}", method = RequestMethod.POST)
     public ResponseEntity<CommentDocument> createCommentForReview(@PathVariable("reviewId") Integer reviewId,
-                                                                  @RequestBody Map<String, String> comment) {
+                                                                  @RequestBody @Valid Comment comment) {
 
         Optional<Review> opReview = reviewRepository.findById(reviewId);
         Optional<ReviewDocument> opReviewDocument = reviewMongoRepository.findById(reviewId);
@@ -52,17 +53,18 @@ public class CommentsController {
             return new ResponseEntity<CommentDocument>(HttpStatus.NOT_FOUND);
         }
 
-        String content = comment.get("content");
         Date date = new Date();
         Review review = opReview.get();
 
+        comment.setDateCreation(date);
+        comment.setReview(review);
+
         // Persist to MySql
-        Comment nComment = new Comment(content, date, review);
-        commentRepository.save(nComment);
+        commentRepository.save(comment);
+
+        CommentDocument nCommentDocument = new CommentDocument(comment.getContent(), date);
 
         // Persist to Mongodb
-        CommentDocument nCommentDocument = new CommentDocument(content, date);
-
         opReviewDocument.get().getComments().add(nCommentDocument);
         reviewMongoRepository.save(opReviewDocument.get());
 

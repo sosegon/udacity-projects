@@ -16,7 +16,6 @@ public class Comment {
     @NotBlank
     private String content;
 
-    @NotNull
     private Date dateCreation;
 
     @ManyToOne
@@ -26,7 +25,7 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(@NotBlank String content, @NotNull Date dateCreation, Review review) {
+    public Comment(@NotBlank String content, Date dateCreation, Review review) {
         this.content = content;
         this.dateCreation = dateCreation;
         this.review = review;
