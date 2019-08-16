@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 public class UserController {
 
-	private static final Logger log = LoggerFactory.getLogger(UserController.class);
+	private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -43,10 +43,13 @@ public class UserController {
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
 
 		if(!createUserRequest.getPassword().contentEquals(createUserRequest.getConfirmPassword())){
+			log.info("ECOMMERCE - Create_user_fail - Confirm password does not match password");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 
-		if(createUserRequest.getPassword().length() < 7){
+		int passLength = createUserRequest.getPassword().length();
+		if(passLength< 7){
+			log.info("ECOMMERCE - Create_user_fail - Password length is {} smaller than 7 characters", passLength);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 
@@ -57,6 +60,7 @@ public class UserController {
 		cartRepository.save(cart);
 		user.setCart(cart);
 		userRepository.save(user);
+		log.info("ECOMMERCE - Create_user_success - {}", user.getUsername());
 		return ResponseEntity.ok(user);
 	}
 	
