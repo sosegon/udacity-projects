@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -40,7 +42,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/create")
-	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
+	public ResponseEntity<User> createUser(@RequestBody @Valid CreateUserRequest createUserRequest) {
 
 		if(!createUserRequest.getPassword().contentEquals(createUserRequest.getConfirmPassword())){
 			log.info("ECOMMERCE - Create_user_fail - Confirm password does not match password");
