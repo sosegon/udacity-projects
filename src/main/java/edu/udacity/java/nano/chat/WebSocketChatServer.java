@@ -1,5 +1,7 @@
 package edu.udacity.java.nano.chat;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -23,8 +25,12 @@ public class WebSocketChatServer {
      */
     private static Map<String, Session> onlineSessions = new ConcurrentHashMap<>();
 
-    private static void sendMessageToAll(String msg) {
-        //TODO: add send message method.
+    private static void sendMessageToAll(Message msg) {
+        msg.setOnlineCount(onlineSessions.size());
+
+        onlineSessions.values().forEach(session -> {
+            session.getAsyncRemote().sendText(JSON.toJSONString(msg));
+        });
     }
 
     /**
@@ -32,7 +38,16 @@ public class WebSocketChatServer {
      */
     @OnOpen
     public void onOpen(Session session) {
-        //TODO: add on open connection.
+        if(session.isOpen()) {
+            String sessionId = session.getId();
+
+            onlineSessions.put(sessionId, session);
+
+            Message message = new Message();
+            message.setType(Message.MessageType.JOIN);
+
+            sendMessageToAll(message);
+        }
     }
 
     /**
@@ -40,7 +55,24 @@ public class WebSocketChatServer {
      */
     @OnMessage
     public void onMessage(Session session, String jsonStr) {
-        //TODO: add send message.
+        JSONObject jsonObject = JSON.parseObject(jsonStr);
+
+        if(!jsonObject.containsKey("username")){
+            System.out.println("No username");
+            return;
+        }
+
+        if(!jsonObject.containsKey("msg")){
+            System.out.println("No msg");
+            return;
+        }
+
+        Message message = new Message();
+        message.setType(Message.MessageType.SPEAK);
+        message.setUsername(jsonObject.getString("username"));
+        message.setMsg(jsonObject.getString("msg"));
+
+        sendMessageToAll(message);
     }
 
     /**
@@ -48,7 +80,14 @@ public class WebSocketChatServer {
      */
     @OnClose
     public void onClose(Session session) {
-        //TODO: add close connection.
+        String sessionId = session.getId();
+
+        onlineSessions.remove(sessionId);
+
+        Message message = new Message();
+        message.setType(Message.MessageType.LEAVE);
+
+        sendMessageToAll(message);
     }
 
     /**
