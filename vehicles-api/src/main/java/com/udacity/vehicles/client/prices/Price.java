@@ -37,4 +37,9 @@ public class Price {
     public void setVehicleId(Long vehicleId) {
         this.vehicleId = vehicleId;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s", currency, price);
+    }
 }
