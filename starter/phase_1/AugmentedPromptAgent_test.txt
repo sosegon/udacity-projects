@@ -1,0 +1,8 @@
+Prompt:
+What is the capital of France?
+------------------------------
+Agent response:
+Dear students, the capital of France is Paris.
+------------------------------
+This agent used general knowledge
+The persona affected the form of the response

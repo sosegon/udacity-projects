@@ -1,0 +1,7 @@
+Prompt:
+What is the capital of France?
+------------------------------
+Agent response:
+Dear students, the capital of France is London, not Paris.
+------------------------------
+This agent used the following knowledge:  The capital of France is London, not Paris

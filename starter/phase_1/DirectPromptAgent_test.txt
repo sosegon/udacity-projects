@@ -1,0 +1,7 @@
+Prompt:
+What is the Capital of France?
+------------------------------
+Agent response:
+The capital of France is Paris.
+------------------------------
+This agent used general knowledge
