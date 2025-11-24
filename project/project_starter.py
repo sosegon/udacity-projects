@@ -8,6 +8,9 @@ from sqlalchemy.sql import text
 from datetime import datetime, timedelta
 from typing import Dict, List, Union
 from sqlalchemy import create_engine, Engine
+from smolagents import ToolCallingAgent, OpenAIServerModel, tool
+import json
+from pydantic import BaseModel, Field
 
 # Create an SQLite database
 db_engine = create_engine("sqlite:///munder_difflin.db")
@@ -116,7 +119,7 @@ def generate_sample_inventory(paper_supplies: list, coverage: float = 0.4, seed:
     inventory = []
     for item in selected_items:
         inventory.append({
-            "item_name": item["item_name"],
+            "item_name": item["item_name"].lower(),
             "category": item["category"],
             "unit_price": item["unit_price"],
             "current_stock": np.random.randint(200, 800),  # Realistic stock range
@@ -590,30 +593,599 @@ def search_quote_history(search_terms: List[str], limit: int = 5) -> List[Dict]:
 
 
 # Set up and load your env parameters and instantiate your model.
+dotenv.load_dotenv(dotenv_path=".env")
+openai_api_key = os.getenv("UDACITY_OPENAI_API_KEY")
+model = OpenAIServerModel(
+    model_id="gpt-4o-mini",
+    api_base="https://openai.vocareum.com/v1",
+    api_key=openai_api_key,
+)
 
+class PaperItem(BaseModel):
+    original_name: str = Field(..., description="The original name of the paper item.")
+    name: str = Field(..., description="The standardized name of the paper item.")
+    quantity: int = Field(..., description="The quantity of the paper item requested.")
+
+class QuoteRequest(BaseModel):
+    delivery_date: str = Field(..., description="The requested delivery date in ISO format (YYYY-MM-DD).")
+    request_date: str = Field(..., description="The date the quote was requested in ISO format (YYYY-MM-DD).")
+    items: List[PaperItem] = Field(..., description="List of paper items requested in the quote.")
+
+class InventoryLevel(BaseModel):
+    item_name: str = Field(..., description="The name of the paper item.")
+    current_stock: int = Field(..., description="The current stock level of the paper item.")
+
+class UnstockedItem(BaseModel):
+    item: str = Field(..., description="The name of the paper item to order.")
+    quantity: int = Field(..., description="The quantity of the paper item to order.")
+    order_date: str = Field(..., description="The date the order is placed in ISO format (YYYY-MM-DD).")
+
+class ItemOrderedToSupplier(UnstockedItem):
+    estimated_delivery_date: str = Field(..., description="The estimated delivery date in ISO format (YYYY-MM-DD).")
+
+class ItemOrderedToSupplierRegistered(ItemOrderedToSupplier):
+    successfully_registered: bool = Field(..., description="Indicates if the item was successfully registered.")
+
+class QuoteRecord(BaseModel):
+    original_request: str = Field(..., description="The original quote request.")
+    total_amount: float = Field(..., description="The total amount for the quote.")
+    quote_explanation: str = Field(..., description="Explanation of the quote.")
+    job_type: str = Field(..., description="The type of job for the quote.")
+    order_size: str = Field(..., description="The size of the order for the quote.")
+    event_type: str = Field(..., description="The type of event for the quote.")
+    order_date: str = Field(..., description="The date the order was placed in ISO format (YYYY-MM-DD).")
+
+quote_format = {
+    "delivery_date": "2025-02-01",
+    "request_date": "2025-01-01",
+    "items": [
+        {
+            "original_name": "a4 paper",
+            "name": "a4 paper",
+            "quantity": 500
+        },
+        {
+            "original_name": "paper cups",
+            "name": "paper cups",
+            "quantity": 200
+        }
+    ]
+}
 
 """Set up tools for your agents to use, these should be methods that combine the database functions above
  and apply criteria to them to ensure that the flow of the system is correct."""
 
+@tool
+def get_quotes_history_tool(search_terms: List[str], limit: int = 5) -> List[QuoteRecord]:
+    """Retrieves historical quotes matching search terms.
 
-# Tools for inventory agent
+    Args:
+        search_terms (List[str]): List of keywords to search for in past quotes.
+        limit (int, optional): Maximum number of quotes to return. Defaults to 5.
 
+    Returns:
+        List[QuoteRecord]: List of matching quotes with details.
+    """
+    quotes = search_quote_history(search_terms, limit)
+    quotes_records = [QuoteRecord(**q) for q in quotes]
 
-# Tools for quoting agent
+    print("===> Retrieved Quotes from Tool:", quotes_records)
+    return quotes_records
 
+@tool
+def check_inventory_tool(items: List[str], as_of_date: str) -> Dict[str, InventoryLevel]:
+    """Checks current inventory levels for items as of a specific date.
+    
+    Args:
+        items (List[str]): List of item names to check inventory for.
+        as_of_date (str): Date in ISO format (YYYY-MM-DD) to check inventory levels as of.
 
-# Tools for ordering agent
+    Returns:
+        Dict[str, InventoryLevel]: Dictionary of inventory levels for the specified items.
+    """
+    inventory_levels = {}
 
+    for item in items:
+        stock_level = get_stock_level(item, as_of_date)
+        inventory_levels[item] = InventoryLevel(item_name=item, current_stock=stock_level["current_stock"].iloc[0])
+    
+    print("===> Inventory Levels from Tool:", inventory_levels)
+    
+    return inventory_levels
 
-# Set up your agents and create an orchestration agent that will manage them.
+@tool
+def create_supply_order_tool(quantity: int, order_date: str) -> Dict[str, str]:
+    """Places a supply order and estimates delivery date.
 
+    Args:
+        quantity (int): Number of units to order.
+        order_date (str): Date in ISO format (YYYY-MM-DD) when the order is placed.
 
+    Returns:
+        Dict[str, str]: Dictionary with order details including estimated delivery date.
+    """
+    delivery_date = get_supplier_delivery_date(order_date, quantity)
+    return {"order_date": order_date, "quantity": quantity, "estimated_delivery_date": delivery_date}   
+
+@tool
+def register_supply_order_tool(order_to_register: ItemOrderedToSupplier) -> ItemOrderedToSupplierRegistered:
+    """Registers a supply order.
+
+    Args:
+        order_to_register: ItemOrderedToSupplier: The supply order details to register.
+    Returns:
+        ItemOrderedToSupplierRegistered: The registered supply order with success status.    
+    """
+    success = True
+    try: 
+        create_transaction(
+            item_name=order_to_register.get("item"),
+            transaction_type="stock_orders",
+            quantity=order_to_register.get("quantity"),
+            price=0.0,  # Price can be calculated and updated later
+            date=order_to_register.get("order_date"),
+        )
+    except Exception as e:
+        print(f"Error placing supply order for {order_to_register.get('item')}: {e}")
+        success = False
+
+    registered_order = ItemOrderedToSupplierRegistered(
+        item=order_to_register.get("item"),
+        quantity=order_to_register.get("quantity"),
+        order_date=order_to_register.get("order_date"),
+        estimated_delivery_date=order_to_register.get("estimated_delivery_date"),
+        successfully_registered=success
+    )
+
+    return registered_order
+
+@tool
+def generate_quote_tool(
+    original_request: str,
+    quote_request: QuoteRequest,
+    past_quotes: List[QuoteRecord],
+    inventory_levels: Dict[str, InventoryLevel],
+    registered_supply_orders: List[ItemOrderedToSupplierRegistered],
+) -> QuoteRecord:
+    """Generates a new quote based on provided information.
+
+    Args:
+        original_request (str): The original customer request.
+        quote_request (QuoteRequest): The formatted quote request.
+        past_quotes (List[QuoteRecord]): List of relevant past quotes.
+        inventory_levels (Dict[str, InventoryLevel]): Current inventory levels.
+        registered_supply_orders (List[ItemOrderedToSupplierRegistered]): Registered supply orders.
+
+    Returns:
+        QuoteRecord: The generated quote record.
+    """
+    total_amount = 0
+    order_size = 0
+
+    for item in quote_request.items:
+        unit_price_query = pd.read_sql(
+            "SELECT unit_price FROM inventory WHERE item_name = :item_name",
+            db_engine,
+            params={"item_name": item.name},
+        )
+        order_size += item.quantity
+        if not unit_price_query.empty:
+            unit_price = unit_price_query["unit_price"].iloc[0]
+            total_amount += unit_price * item.quantity
+        else:
+            total_amount += 0.0  # Item not found, price assumed to be 0
+
+    generated_quote = QuoteRecord(
+        original_request=original_request,
+        total_amount=total_amount,
+        quote_explanation='',
+        job_type='',
+        order_size=order_size,
+        event_type='',
+        order_date=quote_request.request_date,
+    )
+
+    print("===> Generated Quote from Tool:", generated_quote)
+    return generated_quote
+
+@tool
+def save_quote_tool(quote: QuoteRecord) -> bool:
+    """Saves the generated quote to the database.
+
+    Args:
+        quote (QuoteRecord): The generated quote record.
+
+    Returns:
+        bool: True if the quote was saved successfully, False otherwise.
+    """
+    success = True
+
+    for item in quote.items:
+        try:
+            create_transaction(
+                item_name=item.name,
+                transaction_type="sales",
+                quantity=item.quantity,
+                price=quote.total_amount,
+                date=quote.order_date,
+            )
+        except Exception as e:
+            print(f"Error saving quote: {e}")
+            success = success or False
+
+    return success
+
+class QuotesManagementAgent(ToolCallingAgent):
+    """Agent for handling quotes."""
+
+    def __init__(self, model: OpenAIServerModel):
+        super().__init__(
+            tools=[get_quotes_history_tool, register_supply_order_tool, save_quote_tool],
+            model=model,
+            name="quotes_management_agent",
+            description="""
+            You are a quotes manager agent. Your role consists of the 
+            following main tasks:
+
+            - Reviewing past quotes. Use the tool 
+            get_quotes_history_tool to find relevant historical quotes 
+            based on customer requests. When using the 
+            get_quotes_history_tool, you need to extract relevant search 
+            terms from the request.
+
+            - Register supply orders if inventory is insufficient for
+            new quotes using the tool register_supply_order_tool.
+
+            - Generating new quotes based on customer requests, 
+            available inventory and historical quotes.
+
+            - Saving generated quotes to the database using the tool 
+            save_quote_tool.
+
+            In any of the tasks, attempt at most 5 retries if an error
+            occurs.
+            """
+        )
+    
+    def find_past_quotes(self, search_terms: List[str], limit: int =5) -> List[QuoteRecord]:
+        """Find relevant past quotes based on search terms.
+
+        Args:
+            search_terms (List[str]): List of keywords to search for in past quotes.
+            limit (int, optional): Maximum number of quotes to return. Defaults to 5.
+
+        Returns:
+            List[QuoteRecord]: List of matching quotes with details.
+        """
+        history_prompt = f"""
+        Using the following search terms: {search_terms}, find relevant 
+        past quotes. Just return a list of past quotes. If no past 
+        quotes are found, return an empty list.
+        """
+        past_quotes = self.run(history_prompt)
+
+        print("===> Past Quotes:", past_quotes)
+
+        return past_quotes
+    
+    def register_supplies_order(self, orders_to_register: List[ItemOrderedToSupplier]) -> List[ItemOrderedToSupplierRegistered]:
+        """Register a supply order.
+
+        Args:
+            orders_to_register (List[ItemOrderedToSupplier]): List of items with 'item', 
+            'quantity', and 'order_date'.
+
+        Returns:
+            List[ItemOrderedToSupplierRegistered]: List of order details including estimated delivery date.
+        """
+
+        registered_supply_orders = []
+
+        for order in orders_to_register:
+            register_supply_order_prompt = f"""
+            Register a supply order for the following item {order}.
+            Return the answer as a JSON object with the following format:
+            {{
+                "item": "{order.item}",
+                "order_date": "{order.order_date}",
+                "quantity": {order.quantity},
+                "estimated_delivery_date": "{order.estimated_delivery_date}",
+                "successfully_registered": true/false
+            }} 
+            """
+            registered_order_info = self.run(register_supply_order_prompt)
+            registered_order_record = ItemOrderedToSupplierRegistered(**registered_order_info)
+            registered_supply_orders.append(registered_order_record)
+
+        return registered_supply_orders
+
+    def generate_quote(
+        self,
+        original_request: str,
+        quote_request: QuoteRequest,
+        past_quotes: List[QuoteRecord],
+        inventory_levels: Dict[str, InventoryLevel],
+        registered_supply_orders: List[ItemOrderedToSupplierRegistered],
+    ) -> QuoteRecord:
+        """Generate a new quote based on the request, past quotes, inventory, and supply orders.
+
+        Args:
+            quote_request (QuoteRequest): The formatted quote request.
+            past_quotes (List[QuoteRecord]): List of relevant past quotes.
+            inventory_levels (Dict[str, InventoryLevel]): Current inventory levels.
+            registered_supply_orders (List[ItemOrderedToSupplierRegistered]): Registered supply orders.
+        Returns:
+            QuoteRecord: The generated quote record.
+        """
+
+        quote_prompt = f"""
+        Generate a new quote based on the following information:
+        - Original Request: {original_request}
+        - Quote Request: {quote_request}
+        - Past Quotes: {past_quotes}
+        - Inventory Levels: {inventory_levels}
+        - Registered Supply Orders: {registered_supply_orders}
+
+        Return the answer as a JSON string with the following format:
+        {{
+            "original_request": "original request text",
+            "total_amount": "0.0",
+            "quote_explanation": "explanation of the quote",
+            "job_type": "type of job",
+            "order_size": "0.0",
+            "event_type": "type of event",
+            "order_date": "YYYY-MM-DD"
+        }}
+        Avoid including any additional text outside the JSON object.
+        """
+
+        generated_quote = self.run(quote_prompt)
+
+        print("===> Generated Quote:", generated_quote)
+        if isinstance(generated_quote, str):
+            generated_quote = json.loads(generated_quote)
+        return QuoteRecord(**generated_quote)
+
+    def register_quote(self, quote: QuoteRecord) -> bool:
+        """Save the generated quote to the database.
+
+        Args:
+            quote (QuoteRecord): The generated quote record.
+
+        Returns:
+            bool: True if the quote was saved successfully, False otherwise.
+        """
+
+        save_prompt = f"""
+        Save the following quote to the database: {quote}.
+        Use the save_quote_tool to save the quote.
+        Return true if the quote was saved successfully, false otherwise.
+        """
+        save_result = self.run(save_prompt)
+        
+        return save_result
+class InventoryManagementAgent(ToolCallingAgent):
+    """Agent for managing inventory."""
+
+    def __init__(self, model: OpenAIServerModel):
+        super().__init__(
+            tools=[check_inventory_tool],
+            model=model,
+            name="inventory_management_agent",
+            description="""
+            You are an inventory management agent. Your role is to 
+            monitor and manage the inventory levels of paper supplies. 
+            When using the check_inventory_tool, you need to indentify 
+            the items and the date in the request.
+
+            Pass the items to the tool as a list of strings and the 
+            date as a string in ISO format (YYYY-MM-DD).
+
+            Try at most 5 retries if an error occurs.
+            """,   
+        )
+
+    def get_inventory_levels(self, items: List[str], as_of_date: str) -> Dict[str, InventoryLevel]:
+        """Get inventory levels for a list of items as of a specific date.
+
+        Args:
+            items (List[str]): List of item names to check inventory for.
+            as_of_date (str): Date in ISO format (YYYY-MM-DD) to check inventory levels as of.
+        Returns:
+            List[InventoryLevel]: List of InventoryLevel objects representing current stock levels.
+        """
+        inventory_prompt = f"""
+        Check the inventory levels for the following items as of
+        {as_of_date}: {items}.
+        Return the answer as a list of JSON objects with the following
+        format:
+        {{
+            "item_name": "item name",
+            "current_stock": current stock level
+        }}
+        """
+
+        inventory_levels = self.run(inventory_prompt)
+        inventory_levels_records = {}
+        for record in inventory_levels:
+            inventory_level = InventoryLevel(**record)
+            inventory_levels_records[inventory_level.item_name] = inventory_level
+
+        print("===> Inventory levels:", inventory_levels_records)
+
+        return inventory_levels_records
+
+class SupplyManagementAgent(ToolCallingAgent):
+    """Agent for managing inventory."""
+
+    def __init__(self, model: OpenAIServerModel):
+        super().__init__(
+            tools=[create_supply_order_tool],
+            model=model,
+            name="supply_management_agent",
+            description="""
+            You are a supply management agent. Your role is to handle 
+            supply orders for paper supplies. When using the 
+            create_supply_order_tool, you need to indentify the quantity 
+            to order and the date of the order in the request. 
+
+            Try at most 5 retries if an error occurs.
+            """,   
+        )
+
+    def get_delivery_orders(self, items_to_order: List[UnstockedItem]) -> List[ItemOrderedToSupplier]:
+        """Get the highest delivery date for a list of items to order.
+
+        Args:
+            items_to_order (List[UnstockedItem]): List of items with 'item', 
+            'quantity', and 'order_date'.
+        Returns:
+            List[ItemOrderToSupplier]: List of order details including estimated delivery date.
+        """
+
+        supply_orders = []
+        for order in items_to_order:
+            supply_order_prompt = f"""
+            Create a supply order for {order.quantity} units
+            of {order.item} on {order.order_date} and 
+            provide the estimated delivery date. Return the answer
+            as a JSON object with the following format:
+            {{
+                "item": "{order.item}",
+                "order_date": "{order.order_date}",
+                "quantity": {order.quantity},
+                "estimated_delivery_date": "YYYY-MM-DD"
+            }}
+            """
+            supply_order_info = self.run(supply_order_prompt)
+            supply_order_record = ItemOrderedToSupplier(**supply_order_info)
+            supply_orders.append(supply_order_record)
+
+        # Return the highest delivery date as a string in ISO format
+        return supply_orders
+
+class OrchestratorAgent(ToolCallingAgent):
+    """Orchestrator agent for managing Munder Difflin operations."""
+
+    def __init__(self, model: OpenAIServerModel):
+        super().__init__(
+            tools=[],
+            model=model,
+            name="orchestrator_agent",
+            description="""
+            Orchestrator agent for managing Munder Difflin operations. 
+            Handles customer requests and delegates to other agents.
+            Try at most 5 retries if an error occurs.
+            """,
+        )
+        self.inventory_management = InventoryManagementAgent(model)
+        self.quotes_management = QuotesManagementAgent(model)
+        self.supply_management = SupplyManagementAgent(model)
+        
+        ### list of paper supplies
+        paper_supplies_list = [item["item_name"].lower() for item in paper_supplies]
+        self.paper_supplies_set = set(paper_supplies_list) 
+
+    def format_request(self, user_request: str) -> QuoteRequest:
+        """Format the customer request into a structured format.
+
+        Args:
+            user_request: The customer's request.
+
+        Returns:
+            A formatted request.
+        """
+        format_prompt = f"""
+        Format the following customer request for further processing: {user_request} 
+        Map the items in the request to the closest matching items from 
+        the following list of paper supplies: {list(self.paper_supplies_set)}. 
+        Provide the formatted request using the next example as schema: {quote_format}
+        Return the answer as a JSON string object.
+        """
+        formatted_request = self.run(format_prompt)
+
+        quote_request = json.loads(formatted_request)
+
+        for item in quote_request['items']:
+            item['name'] = item['name'].lower()
+
+        quote_request_obj = QuoteRequest(**quote_request)
+
+        print("===> Formatted request:", quote_request_obj)
+
+        return quote_request_obj
+
+    def reply_to_request(self, user_request: str) -> str:
+        """
+        Handle a customer request by coordinating with other agents.
+
+        Args:
+            user_request: The customer's request.
+
+        Returns:
+            A response to the customer.
+        """
+
+        # Step 1. Format request
+        quote_request: QuoteRequest = self.format_request(user_request)
+
+        # Step 2. Get similar past quotes
+        search_terms: List[str] = []  # Extract search terms from formatted_request
+        for term in quote_request.items:
+            search_terms.append(term.name)
+
+        print("===> Search Terms:", search_terms)
+        past_quotes = self.quotes_management.find_past_quotes(search_terms)
+        
+        # Step 3. Check inventory
+        inventory_levels: Dict[str, InventoryLevel] = self.inventory_management.get_inventory_levels(search_terms, quote_request.request_date)
+
+        # Step 4. Order supply if needed
+        has_to_order = False
+        unstocked_items: List[UnstockedItem] = []
+
+        for item in quote_request.items:
+            item_name = item.name
+            quantity_needed = item.quantity
+            current_stock = inventory_levels.get(item_name, InventoryLevel(item_name=item_name, current_stock=0)).current_stock
+
+            if current_stock < quantity_needed:
+                order_quantity = quantity_needed - current_stock
+                order_date = quote_request.request_date
+                has_to_order = True
+                unstocked_items.append(
+                    UnstockedItem(
+                    item=item_name,
+                    quantity=order_quantity,
+                    order_date=order_date
+                ))
+
+        registered_supply_orders = []
+        if has_to_order:
+            supply_delivery_orders: List[ItemOrderedToSupplier] = self.supply_management.get_delivery_orders(unstocked_items)
+            registered_supply_orders = self.quotes_management.register_supplies_order(supply_delivery_orders)
+        
+        # Step 5. Generate quote
+        quote = self.quotes_management.generate_quote(user_request, quote_request, past_quotes, inventory_levels, registered_supply_orders)
+
+        # Step 6. Register quote to database
+        self.quotes_management.register_quote(quote)
+
+        response_prompt = f"""
+        Generate a response to the customer based on the following quote:
+        {quote}
+        Provide a concise summary of the quote including total amount and estimated delivery date.
+        """
+        response = self.run(response_prompt)
+
+        return response
+        
 # Run your test scenarios by writing them here. Make sure to keep track of them.
 
 def run_test_scenarios():
     
     print("Initializing Database...")
-    init_database()
+    init_database(db_engine)
     try:
         quote_requests_sample = pd.read_csv("quote_requests_sample.csv")
         quote_requests_sample["request_date"] = pd.to_datetime(
@@ -647,6 +1219,8 @@ def run_test_scenarios():
     ############
     ############
 
+    inquiry_agent = OrchestratorAgent(model)
+
     results = []
     for idx, row in quote_requests_sample.iterrows():
         request_date = row["request_date"].strftime("%Y-%m-%d")
@@ -668,28 +1242,32 @@ def run_test_scenarios():
         ############
         ############
 
-        # response = call_your_multi_agent_system(request_with_date)
+        try:
+            response = inquiry_agent.reply_to_request(request_with_date)
 
-        # Update state
-        report = generate_financial_report(request_date)
-        current_cash = report["cash_balance"]
-        current_inventory = report["inventory_value"]
+            # Update state
+            report = generate_financial_report(request_date)
+            current_cash = report["cash_balance"]
+            current_inventory = report["inventory_value"]
 
-        print(f"Response: {response}")
-        print(f"Updated Cash: ${current_cash:.2f}")
-        print(f"Updated Inventory: ${current_inventory:.2f}")
+            print(f"Response: {response}")
+            print(f"Updated Cash: ${current_cash:.2f}")
+            print(f"Updated Inventory: ${current_inventory:.2f}")
 
-        results.append(
-            {
-                "request_id": idx + 1,
-                "request_date": request_date,
-                "cash_balance": current_cash,
-                "inventory_value": current_inventory,
-                "response": response,
-            }
-        )
+            results.append(
+                {
+                    "request_id": idx + 1,
+                    "request_date": request_date,
+                    "cash_balance": current_cash,
+                    "inventory_value": current_inventory,
+                    "response": response,
+                }
+            )
 
-        time.sleep(1)
+            time.sleep(1)
+        except Exception as e:
+            print(f"Error processing request {idx+1}: {e}")
+            continue
 
     # Final report
     final_date = quote_requests_sample["request_date"].max().strftime("%Y-%m-%d")
