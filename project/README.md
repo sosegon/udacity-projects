@@ -33,6 +33,14 @@ All the files have been provided in the VS Code workspace on the Udacity platfor
 
 ## Local setup instructions
 
+0. Create virtual environment
+
+`python3 -m venv path/to/virtual/environment`
+
+0. Start virtual environment
+
+`source path/to/virtual/environment/bin/activate`
+
 1. Install dependencies
 
 Make sure you have Python 3.8+ installed.
