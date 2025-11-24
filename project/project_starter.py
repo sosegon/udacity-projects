@@ -1167,10 +1167,9 @@ class OrchestratorAgent(ToolCallingAgent):
         
         # Step 5. Generate quote
         quote = self.quotes_management.generate_quote(user_request, quote_request, past_quotes, inventory_levels, registered_supply_orders)
-
-        # Step 6. Register quote to database
         self.quotes_management.register_quote(quote)
 
+        # Step 6. Show quote to customer
         response_prompt = f"""
         Generate a response to the customer based on the following quote:
         {quote}
