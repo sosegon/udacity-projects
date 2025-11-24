@@ -1,0 +1,66 @@
+request_id,request_date,cash_balance,inventory_value,response
+1,2025-04-01,45059.7,4940.299999999999,"Thank you for your order request for the ceremony supplies. Due to low stock of 250 gsm cardstock, a supply order has been placed to fulfill your requirement. All other items are in stock. The total amount for your order is $0.00, and the estimated delivery date is April 15, 2025."
+2,2025-04-03,45059.7,4940.299999999999,"Thank you for your order request for 500 sheets of colorful poster paper, 300 rolls of streamers, and 200 balloons for the parade. The total amount is $0.00 as the supplies have differing inventory levels. The colorful poster paper is in stock and will be delivered by April 15, 2025. However, please note that the streamers and balloons are currently out of stock but have been ordered separately, with an expected delivery on April 7, 2025."
+3,2025-04-04,45059.7,5663.099999999999,"We have received your order request for 10,000 sheets of A4 paper, 5,000 sheets of A3 paper, and 500 reams of printer paper. Due to current stock levels, we can only provide 272 sheets of A4 paper at this time. The A3 paper and printer paper will be delivered as requested. The total amount for the available stock and printer paper is $0.0. The estimated delivery date for the A3 and printer paper is prior to the conference on April 15, 2025."
+4,2025-04-05,45059.7,5663.099999999999,"Thank you for your request for 500 sheets of high-quality, recycled cardstock in various colors and 250 sheets of A4 size printer paper for your reception. The total amount for your order is $0.0, and your order is expected to be delivered by April 15, 2025."
+5,2025-04-05,45059.7,5663.099999999999,"Thank you for your order request! We can confirm that we have 500 sheets of 8.5""x11"" colored paper and 300 sheets of cardstock available for delivery by April 15, 2025. However, please note that the 200 rolls of decorative washi tape are currently out of stock. The total amount for the order is $0.00. Please let us know how you would like to proceed regarding the washi tape. Thank you!"
+6,2025-04-06,45059.7,5663.099999999999,"Dear Customer,
+
+Thank you for your order request from April 6, 2025. We would like to inform you that while we can fulfill your order for 300 sheets of white printer paper and 200 sheets of cardstock in various colors based on our current inventory, we regret to inform you that the 500 sheets of colorful construction paper are not available due to zero stock and no registered supply orders. Therefore, we cannot meet the complete requirement by your requested delivery date of April 15, 2025.
+
+Total amount for the available items: $0.0.
+
+We appreciate your understanding and apologize for any inconvenience this may cause.
+
+Best regards,"
+7,2025-04-07,45059.7,5663.099999999999,"Thank you for your order request for various paper supplies. Here is a summary of your quote:
+
+- 500 sheets of glossy A4 paper (in stock)
+- 1000 sheets of matte A3 paper (needs to be ordered)
+- 300 poster boards (24"" x 36"") (in stock)
+- 200 sheets of heavyweight cardstock (100 in stock, further quantity needs to be ordered)
+
+Total Amount: $0.00
+Estimated Delivery Date: April 15, 2025.
+
+We appreciate your business and will ensure that all items are ready for your exhibition."
+8,2025-04-07,45059.7,5663.099999999999,"Thank you for your order request for paper supplies for your upcoming ceremony. The quote covers a total amount of $0.00, as the inventory shortages on glossy and recycled paper have necessitated additional orders to fulfill your request. We are committed to ensuring delivery by April 15, 2025. If you have any more questions or need further assistance, please let us know!"
+9,2025-04-07,45059.7,5663.099999999999,"Thank you for your order request for the reception supplies. However, I regret to inform you that the total amount for your order is currently $0.0 because the requested items (100 sheets of A3 glossy paper and kraft paper envelopes) are not available due to stock limitations. The estimated delivery date for the available items is April 10, 2025."
+13,2025-04-08,45059.7,5688.099999999999,"Thank you for your order request. You have requested 500 sheets of A4 printing paper and 200 sheets of cardstock for your upcoming gathering. The total for your order is $0.00, and we are pleased to confirm that your supplies will be delivered by April 10, 2025."
+12,2025-04-08,45059.7,5688.099999999999,"Thank you for your order! You have requested 200 sheets of colorful cardstock, 500 sheets of standard printer paper, and 100 paper napkins for your party. The total amount of your order is $0.00, and we have registered all items successfully. They will be delivered by April 15, 2025."
+10,2025-04-08,45059.7,5688.099999999999,"Thank you for your order request. We are pleased to provide a quote for your supply order of 500 sheets of high-quality glossy paper and 300 sheets of sturdy 250 gsm cardstock, totaling 800 sheets. The total amount for this order is $0.00. We will ensure that your supplies are delivered by April 15, 2025, in time for your upcoming show."
+11,2025-04-08,45059.7,5688.099999999999,"Thank you for your order request of 500 sheets of A3 glossy paper and 300 sheets of A4 matte paper for your exhibition. The total amount for your order is currently $0.00. Please note that the A4 matte paper is out of stock, but it has been registered for supply order with an estimated delivery date of April 12, 2025. Your supplies are needed by April 15, 2025."
+14,2025-04-09,45059.7,5688.099999999999,"We appreciate your order request for high-quality paper supplies for your upcoming performance. The order includes 5,000 sheets of A4 paper, 2,000 sheets of colorful poster paper, and 500 sheets of cardstock, totaling 7,500 sheets. The total amount for this order is currently $0.00. We estimate delivery by April 15, 2025. Thank you for choosing us!"
+15,2025-04-12,45059.7,5688.099999999999,"Thank you for your order request for high-quality paper supplies. Unfortunately, we are unable to fulfill the entire order due to insufficient stock for colored paper. We can deliver 4,212 sheets of A3 colored paper along with the other items on April 19, 2025. The total amount for your partial order is currently $0.00. If you have any further questions or need adjustments, please let us know."
+16,2025-04-13,45059.7,5688.099999999999,"Thank you for your order request. Here is a summary of your quote:
+
+- **Job Type:** Supply Order
+- **Order Size:** 800 sheets
+- **Total Amount:** $0.00
+- **Items in Stock:** 500 sheets of A4 printer paper
+- **Items to be Ordered:** 200 sheets of colorful construction paper and 100 sheets of poster board (not currently in stock)
+- **Estimated Delivery Date for Ordered Items:** Beyond the requested delivery date of April 15, 2025.
+
+Unfortunately, the construction paper and poster board cannot be delivered by your needed date for the assembly event. Please let us know how you would like to proceed."
+17,2025-04-14,45059.7,5688.099999999999,"Thank you for your order request for the upcoming reception. Here is a summary of your quote:
+
+- **Items Ordered:** 1000 sheets of A4 white printer paper, 500 sheets of A3 colored paper (assorted colors), 2000 table napkins (white), 1000 biodegradable paper cups, and 500 biodegradable paper plates.
+- **Total Amount:** $0.00 (awaiting final pricing due to supply constraints).
+- **Estimated Delivery Date:** April 15, 2025.
+
+Please note that some items are currently in short supply, which may affect delivery times."
+18,2025-04-14,45059.7,5688.099999999999,"Thank you for your order request for a medium supply of paper products for your upcoming ceremony. The order includes: 500 sheets of high-quality white cardstock, 1000 sheets of standard printing paper, and 200 sheets of assorted colored paper. We can fulfill this order from our current stock levels, and it will be delivered by April 15, 2025. The total amount for this order is $0.00."
+19,2025-04-15,45059.7,5688.099999999999,"Dear Customer,
+
+Thank you for your order request dated April 15, 2025. Unfortunately, we are unable to fulfill your entire order due to current inventory levels:
+
+- **A4 glossy paper**: Requested 2000 sheets, available only 587 sheets.
+- **A3 matte paper**: Requested 1500 sheets, currently out of stock.
+- **Cardstock in assorted colors**: Requested 1000 sheets, we can fulfill 595 sheets.
+
+Total amount for the fulfilled order is $0.0 as we cannot process a partial order.
+
+Please let us know how you would like to proceed. We aim to have the available products delivered by April 20, 2025.
+
+Thank you for your understanding!"
+20,2025-04-17,45059.7,5688.099999999999,"We are unable to provide a valid quote for your order of 5,000 flyers, 2,000 posters, and 10,000 tickets due to insufficient inventory levels. All items requested are currently backordered. Unfortunately, we have not determined a total amount for your order at this time. Please note that the estimated delivery date is still aimed for May 15, 2025, contingent upon inventory availability. Thank you for understanding."
