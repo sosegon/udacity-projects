@@ -1,0 +1,30 @@
+0.38570717319174086
+0.16502765367260475
+0.0026120476771252198
+[Router] Best agent: texas agent (score=0.386)
+Prompt:  Tell me about the history of Rome, Texas
+Routing agent response:  Rome, Texas is a small unincorporated community located in Fannin County. It was established in the mid-19th century and was named after the city of Rome in Italy. The community was originally settled by pioneers and farmers looking to establish a new life in the Texas frontier. Over the years, Rome has remained a small rural community with a focus on agriculture and ranching. Today, Rome is known for its peaceful countryside and historic charm, attracting visitors looking to experience a taste of Texas history.
+0.1436637550760756
+0.2880543051768198
+0.03209436224541721
+[Router] Best agent: europe agent (score=0.288)
+Prompt:  Tell me about the history of Rome, Italy
+Routing agent response:  Rome, Italy, has a rich and extensive history that dates back over 2,800 years. It was founded in the 8th century BC and grew to become the capital of the Roman Kingdom, Roman Republic, and Roman Empire. Rome was a major center of power, culture, and civilization in ancient Europe.
+
+The Roman Republic was established in 509 BC, and it was during this time that Rome expanded its influence and control over the Italian Peninsula and beyond. The Roman Republic eventually transitioned into the Roman Empire in 27 BC with the rise of Emperor Augustus.
+
+The Roman Empire reached its peak in the 2nd century AD, encompassing a vast territory that stretched from Britain to Egypt and from Spain to Mesopotamia. Rome was a hub of trade, art, architecture, and innovation during this time.
+
+However, the Roman Empire faced internal strife, economic challenges, and external invasions, leading to its eventual decline. The empire split into the Western Roman Empire and the Eastern Roman Empire (Byzantine Empire) in the 4th century AD.
+
+The Western Roman Empire fell in 476 AD due to a combination of factors, including invasions by Germanic tribes, economic instability, and political corruption. Rome itself was sacked by the Visigoths in 410 AD and the Vandals in 455 AD.
+
+Despite the fall of the Western Roman Empire, Rome remained an important city in the Byzantine Empire and later as the capital of the Papal States. In the 19th century, Rome became the capital of the newly unified Kingdom of Italy.
+
+Today, Rome is known for its rich history, stunning architecture, and cultural heritage. It is home to iconic landmarks such as the Colosseum, the Roman Forum, and the Vatican City. Rome continues to be a major tourist destination and a symbol of European civilization.
+0.0593485780384745
+0.08326819692903431
+0.13014621506842747
+[Router] Best agent: math agent (score=0.130)
+Prompt:  One story takes 2 days, and there are 20 stories
+Routing agent response:  It will take 40 days to complete all 20 stories.

@@ -1,0 +1,13 @@
+Prompt:  One morning I wanted to have scrambled eggs
+------------------------------
+Agent response:
+
+[] Crack the desired number of eggs into a bowl
+[] Add a splash of milk or cream
+[] Season with salt and pepper
+[] Whisk the eggs until well combined
+[] Heat a non-stick pan over medium heat
+[] Melt a knob of butter in the pan
+[] Pour the whisked eggs into the pan
+[] Gently stir the eggs with a spatula until they are cooked to your liking
+[] Serve the scrambled eggs hot
