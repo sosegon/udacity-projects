@@ -1,0 +1,17 @@
+2019-08-16 17:16:59.940  INFO 24399 --- [http-nio-8080-exec-1] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_fail - Password length is 4 smaller than 7 characters
+2019-08-16 17:17:06.210  INFO 24399 --- [http-nio-8080-exec-3] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_fail - Password length is 5 smaller than 7 characters
+2019-08-16 17:17:19.635  INFO 24399 --- [http-nio-8080-exec-2] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_fail - Confirm password does not match password
+2019-08-16 17:17:21.292  INFO 24399 --- [http-nio-8080-exec-4] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_fail - Confirm password does not match password
+2019-08-16 17:17:26.186  INFO 24399 --- [http-nio-8080-exec-5] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_success - sosegon21
+2019-08-16 17:17:39.627  INFO 24399 --- [http-nio-8080-exec-6] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_success - sosegon
+2019-08-16 17:18:17.405  INFO 24399 --- [http-nio-8080-exec-7] c.e.demo.controllers.OrderController     : ECOMMERCE - Submit_order_fail - Non-existing user sosegon1
+2019-08-16 17:18:26.063  INFO 24399 --- [http-nio-8080-exec-8] c.e.demo.controllers.OrderController     : ECOMMERCE - Submit_order_fail - Non-existing user sosegon12
+2019-08-16 17:18:30.426  INFO 24399 --- [http-nio-8080-exec-9] c.e.demo.controllers.OrderController     : ECOMMERCE - Submit_order_fail - Non-existing user sosegon2
+2019-08-16 17:18:51.294  INFO 24399 --- [http-nio-8080-exec-3] c.e.demo.controllers.OrderController     : ECOMMERCE - Submit_order_success - User sosegon
+2019-08-16 17:18:58.258  INFO 24399 --- [http-nio-8080-exec-2] c.e.demo.controllers.OrderController     : ECOMMERCE - Order_history_fail - Non-existing user sosegon1
+2019-08-16 17:19:01.001  INFO 24399 --- [http-nio-8080-exec-4] c.e.demo.controllers.OrderController     : ECOMMERCE - Order_history_fail - Non-existing user sosegon12
+2019-08-16 17:19:03.854  INFO 24399 --- [http-nio-8080-exec-5] c.e.demo.controllers.OrderController     : ECOMMERCE - Order_history_success - User sosegon
+2019-08-16 17:19:13.491  INFO 24399 --- [http-nio-8080-exec-6] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_success - sosegon12
+2019-08-16 17:19:23.437  INFO 24399 --- [http-nio-8080-exec-7] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_fail - Confirm password does not match password
+2019-08-16 17:19:24.966  INFO 24399 --- [http-nio-8080-exec-8] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_fail - Confirm password does not match password
+2019-08-16 17:19:28.883  INFO 24399 --- [http-nio-8080-exec-9] c.e.demo.controllers.ItemController      : ECOMMERCE - Create_user_success - sosegon13
